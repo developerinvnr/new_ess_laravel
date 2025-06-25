@@ -3,7 +3,7 @@
 																<thead>
 																	<tr>
 																		<th rowspan="2" class="text-center">SN.</th>
-																		<th rowspan="2" class="text-center">His.</th>
+																		<!--<th rowspan="2" class="text-center">His.</th>-->
 																		<th rowspan="2" class="text-center">EC</th>
 																		<th rowspan="2" style="width:110px;">Name</th>
 																		<th rowspan="2" class="text-center" style="width:90px;">DOJ</th>
@@ -71,8 +71,7 @@
 																		<td>{{ $row['Designation'] }}</td>
 																		<td class="text-center">{{ $row['Grade'] }}</td>
 																		<td class="text-center">{{ $row['MxGrDate'] }}</td>
-																		<td class="text-center">{{ $row['MxCrPer'] }}</td>
-																		<td class="text-center">{{ $row['MxCrDate'] }}</td>
+																		<td class="text-center">{{ $row['MxCrPer'] }} <br> {{ $row['MxCrDate'] }}</td>
 																		<td class="text-center">{{ $row['PrevFixed']}}</td>
 																		<td class="text-center"><b>{{ $row['Rating'] }}</b></td>
 																		<!-- <td class="text-center">{{ $row['ProDesignation'] }}</td> -->

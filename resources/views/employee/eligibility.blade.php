@@ -136,7 +136,7 @@
                                         </span>
                                     </li>
 
-                                    @if(!empty($eligibility) && $eligibility->Travel_FourWeeKM !== "NA" && $eligibility->Travel_FourWeeKM !== '' && ($eligibility->VehiclePolicy == 0 || $eligibility->VehiclePolicy === 0))
+                                    @if(!empty($eligibility) && $eligibility->Travel_FourWeeKM != "NA" && $eligibility->Travel_FourWeeKM != '' && ($eligibility->VehiclePolicy == 0 || $eligibility->VehiclePolicy === 0 || $eligibility->VehiclePolicy === "" || $eligibility->VehiclePolicy == ''))
                                         <li>
                                             <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
                                             <strong>4 Wheeler:</strong> 
@@ -157,15 +157,15 @@
                                         </ul>
                                
                                     @endif
-                                    @if(!in_array($eligibility->CostOfVehicle, ['NA', '', null]))
-                                        <li>
-                                            <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
-                                            <strong>Vehicle Entitlement value:</strong> 
-                                            <span style="color: #DC7937; float: right; padding-left: 10px;">
-                                                <i class="fas fa-rupee-sign"></i>{{ $eligibility->CostOfVehicle }}
-                                            </span>
-                                        </li>
-                                    @endif
+                                    <!--@if(!in_array($eligibility->CostOfVehicle, ['NA', '', null]))-->
+                                    <!--    <li>-->
+                                    <!--        <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> -->
+                                    <!--        <strong>Vehicle Entitlement value:</strong> -->
+                                    <!--        <span style="color: #DC7937; float: right; padding-left: 10px;">-->
+                                    <!--            <i class="fas fa-rupee-sign"></i>{{ $eligibility->CostOfVehicle }}-->
+                                    <!--        </span>-->
+                                    <!--    </li>-->
+                                    <!--@endif-->
 
                                     <li>
                                     <div class="trv-eligi-left">

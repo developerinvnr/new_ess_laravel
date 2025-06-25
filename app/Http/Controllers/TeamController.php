@@ -55,6 +55,7 @@ class TeamController extends Controller
                         ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
                         ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
                         ->leftJoin('core_departments as dp', 'eg.DepartmentId', '=', 'dp.id')  // Left Join to fetch DepartmentName
+                        ->leftJoin('core_functions as cf', 'eg.EmpFunction', '=', 'cf.id') 
                         ->where('e.EmployeeID', $employee->EmployeeID)
                         ->where('e.EmpStatus', 'A')
                        
@@ -64,7 +65,7 @@ class TeamController extends Controller
                             'd.designation_name', 
                             'v.vertical_name', 
                             'g.grade_name', 
-                            'dp.department_code'  // Select DepartmentName from hrm_department
+                            'dp.department_code','cf.function_name'
                         )  // Select all columns from e, eg, and the additional columns
                         ->get(); 
                            // If the employee has data, check if they have a team
@@ -246,6 +247,7 @@ class TeamController extends Controller
                         ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
                         ->leftJoin('core_designation as d', 'eg.DesigId', '=', 'd.id')  // Join to fetch designation_name
                         ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
+                        ->leftJoin('core_functions as cf', 'eg.EmpFunction', '=', 'cf.id') 
                         ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
                         ->leftJoin('core_departments as dp', 'eg.DepartmentId', '=', 'dp.id')  // Left Join to fetch DepartmentName
                         ->where('e.EmployeeID', $employee->EmployeeID)
@@ -256,7 +258,7 @@ class TeamController extends Controller
                             'd.designation_name', 
                             'v.vertical_name', 
                             'g.grade_name', 
-                            'dp.department_code'  // Select DepartmentName from hrm_department
+                            'dp.department_code','cf.function_name'  // Select DepartmentName from hrm_department
                         )  // Select all columns from e, eg, and the additional columns
                         ->get(); 
               
@@ -337,8 +339,11 @@ class TeamController extends Controller
                     ->leftjoin('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id')  // Join with the hrm_headquater table
                     ->where('hrm_employee_general.EmployeeID', $employee->EmployeeID)
                     ->select('hrm_employee_general.DateJoining')  // Select DateJoining and HqName
-                    ->select('hrm_employee_general.DateJoining', 'core_city_village_by_state.city_village_name','hrm_employee_general.DepartmentId','hrm_employee_general.TerrId')  // Select DateJoining and HqName
+                    ->select('hrm_employee_general.DateJoining', 
+                    'core_city_village_by_state.city_village_name',
+                    'hrm_employee_general.DepartmentId','hrm_employee_general.TerrId')  // Select DateJoining and HqName
                     ->first();
+
                     $results = DB::table('core_departments as d')
                     ->select('d.department_name as DepartmentName', 'cf.function_name as FunName')
                     ->leftJoin('core_vertical_department_mapping as cvdm', 'd.id', '=', 'cvdm.department_id')
@@ -347,6 +352,14 @@ class TeamController extends Controller
                     ->leftJoin('core_verticals as v', 'v.id', '=', 'cvfm.vertical_id')
                     ->where('d.id', '=', $employeeDatadetails->DepartmentId)
                     ->first();
+                    // $results = DB::table('core_departments as d')
+                    // ->select('d.department_name as DepartmentName', 'cf.function_name as FunName')
+                    // ->leftJoin('core_vertical_department_mapping as cvdm', 'd.id', '=', 'cvdm.department_id')
+                    // ->leftJoin('core_vertical_function_mapping as cvfm', 'cvdm.function_vertical_id', '=', 'cvfm.id')
+                    // ->leftJoin('core_functions as cf', 'cvfm.org_function_id', '=', 'cf.id')
+                    // ->leftJoin('core_verticals as v', 'v.id', '=', 'cvfm.vertical_id')
+                    // ->where('d.id', '=', $employeeDatadetails->DepartmentId)
+                    // ->first();
                     $functionName = $results->FunName ?? null;
 
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
@@ -1082,868 +1095,682 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         }
         return response()->json($queriesteam);
     }
-    public function teamleaveatt(Request $request)
-    {
-        
-        $EmployeeID = Auth::user()->EmployeeID;
-        $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
-        $currentYear = now()->year;
-        $currentMonth = now()->month;
-       
-        // Capture the selected month from the request
-        $selectedMonth = $request->input('month', $currentMonth); // Default to current month if no input
-        
-        // Calculate the month that is two months ago
-        $twoMonthsBack = now()->subMonths(2)->month;
-        
-        // If the selected month is two months back, use the specific table for that year
-        // if ($selectedMonth <= $twoMonthsBack) {
-        //     // Adjust the table to be specific to the year for two months back
-        //     $attendanceTable = 'hrm_employee_attendance_' . $currentYear;
-        // } else {
-            // Use the default attendance table
-            $attendanceTable = 'hrm_employee_attendance';
-        // }
+   public function teamleaveatt(Request $request)
+{
+    $EmployeeID = Auth::user()->EmployeeID;
+    $isHodView = $request->has('hod_view');
+    $currentYear = now()->year;
+    $currentMonth = now()->month;
+    $selectedMonth = $request->input('month', $currentMonth);
+    $daysInMonth = Carbon::createFromDate($currentYear, $selectedMonth)->daysInMonth;
 
-        // Calculate the number of days in the selected month
-        $daysInMonth = Carbon::createFromDate($currentYear, $selectedMonth)->daysInMonth;
-        $isReviewer = \DB::table('hrm_employee_reporting')
-                    ->where('ReviewerId', Auth::user()->EmployeeID)
-                    ->exists();  // Returns true if the EmployeeID is found in ReviewerID
+    $isReviewer = DB::table('hrm_employee_reporting')
+        ->where('ReviewerId', $EmployeeID)
+        ->exists();
 
-            $attendanceData = [];
-            if($isHodView){
-                $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
-                foreach ($employeeChain as $employee) {
-                    $attendance = \DB::table('hrm_employee_attendance')
-                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
-                    ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
-                    ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
-                    ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
-                    ->get(); // Get attendance records for the employee
+    $attendanceData = [];
+    $empdataleaveattdata = [];
 
-                    $requestsAttendnace_approved = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
-                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    ->whereStatus('1')  // Assuming 0 means pending requests
-                    ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
-                    ->select(
-                        'hrm_employee.Fname',
-                        'hrm_employee.Lname',
-                        'hrm_employee.Sname',
-                        'hrm_employee.EmpCode',
-                        'hrm_employee.EmployeeID',
-                        'hrm_employee_attendance_req.*'
-                    )
-                    ->get();
+    $employeeChain = $isHodView
+        ? $this->getEmployeeReportingChain($EmployeeID)
+        : DB::table('hrm_employee_general')->where('RepEmployeeID', $EmployeeID)->get();
 
-                    $currentYear = now()->year;  // Get the current year
-                    $currentMonth = now()->month;  // Get the current month
+    $dailyreports = DB::table("hrm_employee_moreve_report_{$currentYear} as r")
+        ->leftJoin('hrm_employee as e', 'r.EmployeeID', '=', 'e.EmployeeID')
+        ->leftJoin('hrm_employee_general as g', 'r.EmployeeID', '=', 'g.EmployeeID')
+        ->leftJoin('hrm_employee_personal as p', 'r.EmployeeID', '=', 'p.EmployeeID')
+        ->leftJoin('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
+        ->where('g.RepEmployeeID', $EmployeeID)
+        ->when($request->month, fn($q) => $q->whereMonth('r.MorEveDate', $request->month))
+        ->when($request->employee, fn($q) => $q->where('r.EmployeeID', $request->employee))
+        ->select([
+            'r.*', 'g.DepartmentId', 'g.DesigId', 'e.EmpCode', 'e.Fname', 'e.Sname', 'e.Lname',
+            'p.Married', 'p.Gender', 'hq.city_village_name', 'p.DR'
+        ])->get();
 
-                    // Fetch attendance data for all employees in the current month and year
-                    $attendanceSummary = \DB::table('hrm_employee_attendance')
-                        ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
-                        ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
-                        ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
-                        ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
-                        
-                        ->select(
-                            'hrm_employee_attendance.EmployeeID',
-                            'hrm_employee.Fname',
-                            'hrm_employee.Sname',
-                            'hrm_employee.Lname',
-                            'hrm_employee.EmpCode',
-                            \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "P" THEN 1 END) as Present'),
-                            \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "A" THEN 1 END) as Absent'),
-                            \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "OD" THEN 1 END) as OD'),
-                            \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue NOT IN ("P", "A", "OD") THEN 1 END) as Other')
-                        )  // Select the required fields and counts for each attendance value
-                        ->groupBy(
-                            'hrm_employee_attendance.EmployeeID',
-                            'hrm_employee.Fname',
-                            'hrm_employee.Sname',
-                            'hrm_employee.Lname',
-                            'hrm_employee.EmpCode'
-                        )
-                        ->get();  // Execute the query and get the results
-                        $leaveApplications = \DB::table('hrm_employee_applyleave')
-                        ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
-                        ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
-                        ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
-                        ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                        // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                        // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
-                        ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
-                        'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
-                        'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
-                        'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
-                        ->get();
-                        $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
-                            $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
-                            return $item;
-                        });
-                        $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
-                        ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
-                        ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
-                        ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
-                        ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                        // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                        // ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
-                        ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
-                        'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
-                        'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
-                        'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
-                        ->get();
-                        $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
-                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    //->whereStatus('0')  // Assuming 0 means pending requests
-                    ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
-                    // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
-                    ->select(
-                        'hrm_employee.Fname',
-                        'hrm_employee.Lname',
-                        'hrm_employee.Sname',
-                        'hrm_employee.EmpCode',
-                        'hrm_employee.EmployeeID',
-                        'hrm_employee_attendance_req.*'
-                    )
-                    ->orderBy('hrm_employee_attendance_req.AttDate', 'desc')  // Order by Attendance Date in descending order
-                    ->get();
-                    $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
-                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
-                        return $item;
-                    });
-                    $year = $request->input('Y', date('Y'));
-                    $month = $request->input('m', date('m'));
-                    $tableName = "hrm_employee_moreve_report_" . $year;
+    foreach ($employeeChain as $employee) {
+        $empId = $employee->EmployeeID;
 
-                    $dailyreportsQuery = DB::table($tableName . ' as r')
-                    ->leftJoin('hrm_employee as e', 'r.EmployeeID', '=', 'e.EmployeeID')
-                    ->leftJoin('hrm_employee_general as g', 'r.EmployeeID', '=', 'g.EmployeeID')
-                    ->leftJoin('hrm_employee_personal as p', 'r.EmployeeID', '=', 'p.EmployeeID')
-                    ->leftJoin('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id') // Join with Headquater table
-                    ->where('g.RepEmployeeID',  Auth::user()->EmployeeID)
-                    ->select([
-                        'r.*',
-                        'g.DepartmentId',
-                        'g.DesigId',
-                        'e.EmpCode',
-                        'e.Fname',
-                        'e.Sname',
-                        'e.Lname',
-                        'p.Married',
-                        'p.Gender',
-                        'hq.city_village_name',
-                        'p.DR'
-                    ]);
-            
-                // Apply month and employee filters if selected
-                if ($request->month) {
-                    $dailyreportsQuery->whereMonth('r.MorEveDate', $request->month);
-                }
-            
-                if ($request->employee) {
-                    $dailyreportsQuery->where('r.EmployeeID', $request->employee);
-                }
-            
-                // Get daily reports
-                $dailyreports = $dailyreportsQuery->get();
-                        
-                            // Build the query for attendance details and balances
-            $emploid = $employee->EmployeeID;
+        $attendance = DB::table('hrm_employee_attendance as a')
+            ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
+            ->where('a.EmployeeID', $empId)
+            ->whereDate('a.AttDate', now())
+            ->select('a.Inn', 'a.Outt', 'e.Fname', 'e.Sname', 'e.Lname')
+            ->get();
 
-            $query = DB::table($attendanceTable . ' as a') // Dynamically set the table for attendance
-                    ->leftJoin('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear, $emploid) {
-                    $join->on('a.EmployeeID', '=', 'l.EmployeeID')
-                        ->where('l.Month', '=', $selectedMonth)
-                        ->where('l.Year', '=', $currentYear);
-                })
-                ->leftJoin('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
-                ->where('a.EmployeeID', $emploid)
-                ->where('e.EmpStatus', 'A')
-                ->whereYear('a.AttDate', $currentYear)
-                ->whereMonth('a.AttDate', $selectedMonth)
-                ->select(
-                    'a.EmployeeID',
-                    'e.Fname',
-                    'e.Lname',
-                    'e.Sname',
-                    'e.empcode',
-                    'l.OpeningCL',
-                    'l.OpeningPL',
-                    'l.OpeningEL',
-                    'l.OpeningOL',
-                    'l.OpeningSL',
-                    'l.BalanceCL',
-                    'l.BalancePL',
-                    'l.BalanceEL',
-                    'l.BalanceOL',
-                    'l.BalanceSL'
-                );
+        $attendanceSummary = DB::table('hrm_employee_attendance as a')
+            ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
+            ->where('a.EmployeeID', $empId)
+            ->whereYear('a.AttDate', $currentYear)
+            ->whereMonth('a.AttDate', $currentMonth)
+            ->select(
+                'a.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode',
+                DB::raw('COUNT(CASE WHEN a.AttValue = "P" THEN 1 END) as Present'),
+                DB::raw('COUNT(CASE WHEN a.AttValue = "A" THEN 1 END) as Absent'),
+                DB::raw('COUNT(CASE WHEN a.AttValue = "OD" THEN 1 END) as OD'),
+                DB::raw('COUNT(CASE WHEN a.AttValue NOT IN ("P", "A", "OD") THEN 1 END) as Other')
+            )
+            ->groupBy('a.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode')
+            ->get();
 
-            // Dynamically generate the CASE WHEN for each day of the month
-            for ($i = 1; $i <= $daysInMonth; $i++) {
-                // Select attendance value for each day
-                $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
-                
-                // Select Inn and Outt for each day (if available)
-                $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Inn END) AS Inn_$i"));
-                $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Outt END) AS Outt_$i"));
-            }
+        $leaveApplications = DB::table('hrm_employee_applyleave as l')
+            ->leftJoin('hrm_employee as e', 'l.EmployeeID', '=', 'e.EmployeeID')
+            ->where('l.EmployeeID', $empId)
+            ->whereNull('l.deleted_at')
+            ->whereYear('l.Apply_Date', $currentYear)
+            ->select('l.*', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode', 'e.EmployeeID')
+            ->get()
+            ->map(function ($item) use ($employee) {
+                $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID);
+                return $item;
+            });
 
-            // Add totals for OD, A, P
-            $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "OD" THEN 1 ELSE 0 END) AS total_OD'));
-            $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "A" THEN 1 ELSE 0 END) AS total_A'));
-            $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "P" THEN 1 ELSE 0 END) AS total_P'));
+        $requestsAttendance = AttendanceRequest::join('hrm_employee as e', 'e.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+            ->where('hrm_employee_attendance_req.EmployeeID', $empId)
+            ->whereStatus('0')
+            ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)
+            ->select('e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode', 'e.EmployeeID', 'hrm_employee_attendance_req.*')
+            ->orderByDesc('hrm_employee_attendance_req.AttDate')
+            ->get()
+            ->map(function ($item) use ($employee) {
+                $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID);
+                return $item;
+            });
 
-            // Group by necessary fields
-            $query->groupBy(
-                'a.EmployeeID',
-                'e.Fname', 
-                'e.Lname', 
-                'e.Sname', 
-                'e.empcode', 
-                'l.OpeningCL',
-                'l.OpeningPL',
-                'l.OpeningEL',
-                'l.OpeningOL',
-                'l.OpeningSL',
-                'l.BalanceCL',
-                'l.BalancePL',
-                'l.BalanceEL',
-                'l.BalanceOL',
-                'l.BalanceSL'
-            );
+        $requestsAttendanceApproved = AttendanceRequest::join('hrm_employee as e', 'e.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+            ->where('hrm_employee_attendance_req.EmployeeID', $empId)
+            ->whereStatus('1')
+            ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)
+            ->select('e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode', 'e.EmployeeID', 'hrm_employee_attendance_req.*')
+            ->get();
 
-            // Execute the query
-            $empdataleaveattdata[] = $query->get();
-                        
-                        $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
-                                ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
-                                ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
-                                ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
-                                ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
-                                ->select(
-                                    'hrm_employee_monthlyleave_balance.EmployeeID',
-                                    'hrm_employee_monthlyleave_balance.OpeningCL',
-                                    'hrm_employee_monthlyleave_balance.AvailedCL',
-                                    'hrm_employee_monthlyleave_balance.BalanceCL',
-                                    'hrm_employee_monthlyleave_balance.OpeningSL',
-                                    'hrm_employee_monthlyleave_balance.AvailedSL',
-                                    'hrm_employee_monthlyleave_balance.BalanceSL',
-                                    'hrm_employee_monthlyleave_balance.OpeningPL',
-                                    'hrm_employee_monthlyleave_balance.AvailedPL',
-                                    'hrm_employee_monthlyleave_balance.BalancePL',
-                                    'hrm_employee_monthlyleave_balance.OpeningEL',
-                                    'hrm_employee_monthlyleave_balance.AvailedEL',
-                                    'hrm_employee_monthlyleave_balance.BalanceEL',
-                                    'hrm_employee_monthlyleave_balance.OpeningOL',
-                                    'hrm_employee_monthlyleave_balance.AvailedOL',
-                                    'hrm_employee_monthlyleave_balance.BalanceOL',
-                                    'hrm_employee_monthlyleave_balance.EC',
-                                    'hrm_employee.Fname',
-                                    'hrm_employee.Sname',
-                                    'hrm_employee.EmpCode'
-                                )
-                                ->get();
-                        
-                    $attendanceData[] = [
-                    'attendance' => $attendance,
-                    'attendanceSummary'=>$attendanceSummary,
-                    'leaveApplications'=>$leaveApplications,
-                    'leaveBalances'=>$leaveBalances,
-                    'attendnacerequest'=>$requestsAttendnace,
-                    'approved_attendnace_status'=>$requestsAttendnace_approved,
-                    'approved_leave_request'=>$leaveApplications_approval,
-                    
-
-                ];
-                }
-                                
-            return view('employee.teamleaveatt',compact('selectedMonth','attendanceData','empdataleaveattdata','daysInMonth','isReviewer','isHodView','dailyreports'));
-        }
-
-        $employeesReportingTo = \DB::table('hrm_employee_general')
-            ->where('RepEmployeeID', $EmployeeID)
-            ->get();  // Get all employees reporting to the RepEmployeeID
-                
-     
-            foreach ($employeesReportingTo as $employee) {
-                $attendance = \DB::table('hrm_employee_attendance')
-                ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
-                ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
-                ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
-                ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
-                ->get(); // Get attendance records for the employee
-                
-                $currentYear = now()->year;  // Get the current year
-                $currentMonth = now()->month;  // Get the current month
-
-                // Fetch attendance data for all employees in the current month and year
-                $attendanceSummary = \DB::table('hrm_employee_attendance')
-                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
-                    ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
-                    ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
-                    ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
-                    
-                    ->select(
-                        'hrm_employee_attendance.EmployeeID',
-                        'hrm_employee.Fname',
-                        'hrm_employee.Sname',
-                        'hrm_employee.Lname',
-                        'hrm_employee.EmpCode',
-                        \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "P" THEN 1 END) as Present'),
-                        \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "A" THEN 1 END) as Absent'),
-                        \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "OD" THEN 1 END) as OD'),
-                        \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue NOT IN ("P", "A", "OD") THEN 1 END) as Other')
-                    )  // Select the required fields and counts for each attendance value
-                    ->groupBy(
-                        'hrm_employee_attendance.EmployeeID',
-                        'hrm_employee.Fname',
-                        'hrm_employee.Sname',
-                        'hrm_employee.Lname',
-                        'hrm_employee.EmpCode'
-                    )
-                    ->get();  // Execute the query and get the results
-                    $leaveApplications = \DB::table('hrm_employee_applyleave')
-                    ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
-                    ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
-                    ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
-                    ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                    // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                    // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
-                    ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
-                    'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
-                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
-                     'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname','hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
-                    ->get();
-                    
-                    $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
-                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
-                        return $item;
-                    });
-                    $year = $request->input('Y', date('Y'));
-                    $month = $request->input('m', date('m'));
-                    $tableName = "hrm_employee_moreve_report_" . $year;
-
-                    $dailyreportsQuery = DB::table($tableName . ' as r')
-                    ->leftJoin('hrm_employee as e', 'r.EmployeeID', '=', 'e.EmployeeID')
-                    ->leftJoin('hrm_employee_general as g', 'r.EmployeeID', '=', 'g.EmployeeID')
-                    ->leftJoin('hrm_employee_personal as p', 'r.EmployeeID', '=', 'p.EmployeeID')
-                    ->leftJoin('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id') // Join with Headquater table
-                    ->where('g.RepEmployeeID',  Auth::user()->EmployeeID)
-                    ->select([
-                        'r.*',
-                        'g.DepartmentId',
-                        'g.DesigId',
-                        'e.EmpCode',
-                        'e.Fname',
-                        'e.Sname',
-                        'e.Lname',
-                        'p.Married',
-                        'p.Gender',
-                        'hq.city_village_name',
-                        'p.DR'
-                    ]);
-            
-                // Apply month and employee filters if selected
-                if ($request->month) {
-                    $dailyreportsQuery->whereMonth('r.MorEveDate', $request->month);
-                }
-            
-                if ($request->employee) {
-                    $dailyreportsQuery->where('r.EmployeeID', $request->employee);
-                }
-            
-                // Get daily reports
-                $dailyreports = $dailyreportsQuery->get();
-
-                    $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
-                        ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
-                        ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
-                        ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
-                        ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                        // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                        // ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
-                        ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
-                        'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
-                        'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
-                        'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
-                        ->get();
-                    $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
-                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    // ->whereStatus('0')  // Assuming 0 means pending requests
-                    ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
-                    // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
-                    ->select(
-                        'hrm_employee.Fname',
-                        'hrm_employee.Lname',
-                        'hrm_employee.Sname',
-                        'hrm_employee.EmpCode',
-                        'hrm_employee.EmployeeID',
-                        'hrm_employee_attendance_req.*'
-                    )
-                    ->orderBy('hrm_employee_attendance_req.AttDate', 'desc')  // Order by Attendance Date in descending order
-                    ->get();
-                    $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
-                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
-                        return $item;
-                    });
-
-                    $requestsAttendnace_approved = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
-                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    // ->whereStatus('1')  // Assuming 0 means pending requests
-                    // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
-                    ->select(
-                        'hrm_employee.Fname',
-                        'hrm_employee.Lname',
-                        'hrm_employee.Sname',
-                        'hrm_employee.EmpCode',
-                        'hrm_employee.EmployeeID',
-                        'hrm_employee_attendance_req.*'
-                    )
-                    ->get();
-                           // Build the query for attendance details and balances
-        $emploid = $employee->EmployeeID;
-
-        $query = DB::table($attendanceTable . ' as a') // Dynamically set the table for attendance
-                ->leftJoin('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear, $emploid) {
-                $join->on('a.EmployeeID', '=', 'l.EmployeeID')
+        $query = DB::table('hrm_employee as e')
+            ->leftJoin('hrm_employee_attendance as a', function ($join) use ($selectedMonth, $currentYear) {
+                $join->on('a.EmployeeID', '=', 'e.EmployeeID')
+                    ->whereYear('a.AttDate', $currentYear)
+                    ->whereMonth('a.AttDate', $selectedMonth);
+            })
+            ->leftJoin('hrm_employee_monthlyleave_balance as l', function ($join) use ($selectedMonth, $currentYear) {
+                $join->on('l.EmployeeID', '=', 'e.EmployeeID')
                     ->where('l.Month', '=', $selectedMonth)
                     ->where('l.Year', '=', $currentYear);
             })
-            ->leftJoin('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
-            ->where('a.EmployeeID', $emploid)
+            ->where('e.EmployeeID', $empId)
             ->where('e.EmpStatus', 'A')
-            ->whereYear('a.AttDate', $currentYear)
-            ->whereMonth('a.AttDate', $selectedMonth)
             ->select(
-                'a.EmployeeID',
-                // 'a.Inn',
-                // 'a.Outt',
-                'e.Fname',
-                'e.Lname',
-                'e.Sname',
-                'e.empcode',
-                'l.OpeningCL',
-                'l.OpeningPL',
-                'l.OpeningEL',
-                'l.OpeningOL',
-                'l.OpeningSL',
-                'l.BalanceCL',
-                'l.BalancePL',
-                'l.BalanceEL',
-                'l.BalanceOL',
-                'l.BalanceSL'
+                'e.EmployeeID', 'e.Fname', 'e.Lname', 'e.Sname', 'e.empcode',
+                'l.OpeningCL', 'l.OpeningPL', 'l.OpeningEL', 'l.OpeningOL', 'l.OpeningSL',
+                'l.BalanceCL', 'l.BalancePL', 'l.BalanceEL', 'l.BalanceOL', 'l.BalanceSL'
             );
 
-        // Dynamically generate the CASE WHEN for each day of the month
         for ($i = 1; $i <= $daysInMonth; $i++) {
-            // Select attendance value for each day
             $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
-            
-            // Select Inn and Outt for each day (if available)
             $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Inn END) AS Inn_$i"));
             $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Outt END) AS Outt_$i"));
         }
 
-        // Add totals for OD, A, P
         $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "OD" THEN 1 ELSE 0 END) AS total_OD'));
         $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "A" THEN 1 ELSE 0 END) AS total_A'));
         $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "P" THEN 1 ELSE 0 END) AS total_P'));
 
-        // Group by necessary fields
         $query->groupBy(
-            'a.EmployeeID',
-            // 'a.Inn',
-            // 'a.Outt',
-            'e.Fname', 
-            'e.Lname', 
-            'e.Sname', 
-            'e.empcode', 
-            'l.OpeningCL',
-            'l.OpeningPL',
-            'l.OpeningEL',
-            'l.OpeningOL',
-            'l.OpeningSL',
-            'l.BalanceCL',
-            'l.BalancePL',
-            'l.BalanceEL',
-            'l.BalanceOL',
-            'l.BalanceSL'
+            'e.EmployeeID', 'e.Fname', 'e.Lname', 'e.Sname', 'e.empcode',
+            'l.OpeningCL', 'l.OpeningPL', 'l.OpeningEL', 'l.OpeningOL', 'l.OpeningSL',
+            'l.BalanceCL', 'l.BalancePL', 'l.BalanceEL', 'l.BalanceOL', 'l.BalanceSL'
         );
 
-        // Execute the query
         $empdataleaveattdata[] = $query->get();
-                    
-                    $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
-                            ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
-                            ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
-                            ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
-                            ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
-                            ->select(
-                                'hrm_employee_monthlyleave_balance.EmployeeID',
-                                'hrm_employee_monthlyleave_balance.OpeningCL',
-                                'hrm_employee_monthlyleave_balance.AvailedCL',
-                                'hrm_employee_monthlyleave_balance.BalanceCL',
-                                'hrm_employee_monthlyleave_balance.OpeningSL',
-                                'hrm_employee_monthlyleave_balance.AvailedSL',
-                                'hrm_employee_monthlyleave_balance.BalanceSL',
-                                'hrm_employee_monthlyleave_balance.OpeningPL',
-                                'hrm_employee_monthlyleave_balance.AvailedPL',
-                                'hrm_employee_monthlyleave_balance.BalancePL',
-                                'hrm_employee_monthlyleave_balance.OpeningEL',
-                                'hrm_employee_monthlyleave_balance.AvailedEL',
-                                'hrm_employee_monthlyleave_balance.BalanceEL',
-                                'hrm_employee_monthlyleave_balance.OpeningOL',
-                                'hrm_employee_monthlyleave_balance.AvailedOL',
-                                'hrm_employee_monthlyleave_balance.BalanceOL',
-                                'hrm_employee_monthlyleave_balance.EC',
-                                'hrm_employee.Fname',
-                                'hrm_employee.Sname',
-                                'hrm_employee.EmpCode'
-                            )
-                            ->get();
-                           
-                $attendanceData[] = [
-                    'attendance' => $attendance,
-                    'attendanceSummary'=>$attendanceSummary,
-                    'leaveApplications'=>$leaveApplications,
-                    'leaveBalances'=>$leaveBalances,
-                    'attendnacerequest'=>$requestsAttendnace,
-                    'approved_attendnace_status'=>$requestsAttendnace_approved,
-                    'approved_leave_request'=>$leaveApplications_approval
-                ];
-            }
-            
-        return view('employee.teamleaveatt',compact('selectedMonth','attendanceData','empdataleaveattdata','daysInMonth','isReviewer','isHodView','dailyreports'));
+
+        $leaveBalances = DB::table('hrm_employee_monthlyleave_balance as l')
+            ->leftJoin('hrm_employee as e', 'l.EmployeeID', '=', 'e.EmployeeID')
+            ->where('l.EmployeeID', $empId)
+            ->where('l.Year', $currentYear)
+            ->where('l.Month', $currentMonth)
+            ->select('l.*', 'e.Fname', 'e.Sname', 'e.EmpCode')
+            ->get();
+
+        $attendanceData[] = [
+            'attendance' => $attendance,
+            'attendanceSummary' => $attendanceSummary,
+            'leaveApplications' => $leaveApplications,
+            'leaveBalances' => $leaveBalances,
+            'attendnacerequest' => $requestsAttendance,
+            'approved_attendnace_status' => $requestsAttendanceApproved,
+            'approved_leave_request' => $leaveApplications
+        ];
     }
-    // public function teamcost( Request $request) {
-    //     $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
+
+    return view('employee.teamleaveatt', compact(
+        'selectedMonth', 'attendanceData', 'empdataleaveattdata',
+        'daysInMonth', 'isReviewer', 'isHodView', 'dailyreports'
+    ));
+}
+
+    // public function teamleaveatt(Request $request)
+    // {
+        
     //     $EmployeeID = Auth::user()->EmployeeID;
+    //     $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
+    //     $currentYear = now()->year;
+    //     $currentMonth = now()->month;
+       
+    //     // Capture the selected month from the request
+    //     $selectedMonth = $request->input('month', $currentMonth); // Default to current month if no input
+        
+    //     // Calculate the month that is two months ago
+    //     $twoMonthsBack = now()->subMonths(2)->month;
+        
+    //     $attendanceTable = 'hrm_employee_attendance';
+       
+
+    //     // Calculate the number of days in the selected month
+    //     $daysInMonth = Carbon::createFromDate($currentYear, $selectedMonth)->daysInMonth;
     //     $isReviewer = \DB::table('hrm_employee_reporting')
-    //         ->where('ReviewerId', Auth::user()->EmployeeID)
-    //         ->exists();  // Returns true if the EmployeeID is found in ReviewerID
+    //                 ->where('ReviewerId', Auth::user()->EmployeeID)
+    //                 ->exists();  // Returns true if the EmployeeID is found in ReviewerID
 
-    //     // Get the employee IDs under the same team (where RepEmployeeID matches current user)
-    //     // $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
-    //     if($isHodView){
-    //         $employeeChain = collect($this->getEmployeeReportingChain($EmployeeID)); // Convert to collection
+    //         $attendanceData = [];
+    //         if($isHodView){
+    //                 $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+    //                 foreach ($employeeChain as $employee) {
+    //                     $attendance = \DB::table('hrm_employee_attendance')
+    //                     ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+    //                     ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
+    //                     ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
+    //                     ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
+    //                     ->get(); // Get attendance records for the employee
 
-    //         // Now you can use pluck to get the EmployeeID
-    //         $employeeIds = $employeeChain->pluck('EmployeeID'); 
-          
-    //         $ctcttotal = \DB::table('hrm_employee as e')
-    //         ->leftJoin('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table
-    //         ->whereIn('e.EmployeeID', $employeeIds)  // Use whereIn to handle the collection of employee IDs
-    //         ->where('e.EmpStatus', 'A')  // Filter by EmpStatus = 'A'
-    //         ->where('ctc.Status', '=', 'A')  // Filter CTC status = 'A'
-    //         //->select('ctc.Tot_CTC as TotalCTC','e.EmployeeID')
-    //         ->sum('ctc.Tot_CTC');  // Get the sum of Tot_CTC for all employees
-        
-        
-    //             // Define the months mapping
-    //             $months = [
-    //                 4 => 'APR', 5 => 'MAY', 
-    //                 6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
-    //                 11 => 'NOV', 12 => 'DEC',1 => 'JAN', 2 => 'FEB', 3 => 'MAR',
-    //             ];
+    //                     $requestsAttendnace_approved = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+    //                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+    //                     ->whereStatus('1')  // Assuming 0 means pending requests
+    //                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+    //                     ->select(
+    //                         'hrm_employee.Fname',
+    //                         'hrm_employee.Lname',
+    //                         'hrm_employee.Sname',
+    //                         'hrm_employee.EmpCode',
+    //                         'hrm_employee.EmployeeID',
+    //                         'hrm_employee_attendance_req.*'
+    //                     )
+    //                     ->get();
+
+    //                     $currentYear = now()->year;  // Get the current year
+    //                     $currentMonth = now()->month;  // Get the current month
+
+    //                     // Fetch attendance data for all employees in the current month and year
+    //                     $attendanceSummary = \DB::table('hrm_employee_attendance')
+    //                         ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+    //                         ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
+    //                         ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
+    //                         ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
+                            
+    //                         ->select(
+    //                             'hrm_employee_attendance.EmployeeID',
+    //                             'hrm_employee.Fname',
+    //                             'hrm_employee.Sname',
+    //                             'hrm_employee.Lname',
+    //                             'hrm_employee.EmpCode',
+    //                             \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "P" THEN 1 END) as Present'),
+    //                             \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "A" THEN 1 END) as Absent'),
+    //                             \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "OD" THEN 1 END) as OD'),
+    //                             \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue NOT IN ("P", "A", "OD") THEN 1 END) as Other')
+    //                         )  // Select the required fields and counts for each attendance value
+    //                         ->groupBy(
+    //                             'hrm_employee_attendance.EmployeeID',
+    //                             'hrm_employee.Fname',
+    //                             'hrm_employee.Sname',
+    //                             'hrm_employee.Lname',
+    //                             'hrm_employee.EmpCode'
+    //                         )
+    //                         ->get();  // Execute the query and get the results
+    //                         $leaveApplications = \DB::table('hrm_employee_applyleave')
+    //                         ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+    //                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+    //                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+    //                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+    //                         // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+    //                         // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
+    //                         ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
+    //                         'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
+    //                         'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
+    //                         'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
+    //                         ->get();
+    //                         $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
+    //                             $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+    //                             return $item;
+    //                         });
+    //                         $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
+    //                         ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+    //                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+    //                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+    //                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+    //                         // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+    //                         // ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
+    //                         ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
+    //                         'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
+    //                         'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+    //                         'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
+    //                         ->get();
+    //                         $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+    //                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+    //                     ->whereStatus('0')  // Assuming 0 means pending requests
+    //                     ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
+    //                     // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+    //                     ->select(
+    //                         'hrm_employee.Fname',
+    //                         'hrm_employee.Lname',
+    //                         'hrm_employee.Sname',
+    //                         'hrm_employee.EmpCode',
+    //                         'hrm_employee.EmployeeID',
+    //                         'hrm_employee_attendance_req.*'
+    //                     )
+    //                     ->orderBy('hrm_employee_attendance_req.AttDate', 'desc')  // Order by Attendance Date in descending order
+    //                     ->get();
+    //                     $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
+    //                         $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+    //                         return $item;
+    //                     });
+    //                     $year = $request->input('Y', date('Y'));
+    //                     $month = $request->input('m', date('m'));
+    //                     $tableName = "hrm_employee_moreve_report_" . $year;
+
+    //                     $dailyreportsQuery = DB::table($tableName . ' as r')
+    //                     ->leftJoin('hrm_employee as e', 'r.EmployeeID', '=', 'e.EmployeeID')
+    //                     ->leftJoin('hrm_employee_general as g', 'r.EmployeeID', '=', 'g.EmployeeID')
+    //                     ->leftJoin('hrm_employee_personal as p', 'r.EmployeeID', '=', 'p.EmployeeID')
+    //                     ->leftJoin('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id') // Join with Headquater table
+    //                     ->where('g.RepEmployeeID',  Auth::user()->EmployeeID)
+    //                     ->select([
+    //                         'r.*',
+    //                         'g.DepartmentId',
+    //                         'g.DesigId',
+    //                         'e.EmpCode',
+    //                         'e.Fname',
+    //                         'e.Sname',
+    //                         'e.Lname',
+    //                         'p.Married',
+    //                         'p.Gender',
+    //                         'hq.city_village_name',
+    //                         'p.DR'
+    //                     ]);
                 
-    //             // Define payment heads (the attribute names in your payslip data)
-    //             $paymentHeads = [
-    //                 // 'Gross Earning' => 'Tot_Gross', 
-    //                 'Bonus' => 'Bonus_Month',
-    //                 'Basic' => 'Basic',
-    //                 'House Rent Allowance' => 'Hra', 
-    //                 'PerformancePay' => 'PP_year',
-    //                 'Bonus/ Exgeatia' => 'Bonus', 
-    //                 'Special Allowance' => 'Special',
-    //                 'DA'=>'DA',
-    //                 'Arrear'=>'Arreares',
-    //                 'Leave Encash'=>'LeaveEncash',
-    //                 'Car Allowance'=>'Car_Allowance',
-    //                 'Incentive'=>'Incentive',
-    //                 'Var Remburmnt'=>'VarRemburmnt',
-    //                 'Variable Adjustment'=>"VariableAdjustment",
-    //                 'City Compensatory Allowance'=>'CCA',
-    //                 'Relocation Allownace'=>'RA',
-    //                 'Arrear Basic'=>'Arr_Basic',
-    //                 'Arrear Hra'=>'Arr_Hra',
-    //                 'Arrear Spl'=>'Arr_Spl',
-    //                 'Arrear Conv'=>'Arr_Conv',
-    //                 'CEA'=>'YCea',
-    //                 'MR'=>'YMr',
-    //                 'LTA'=>'YLta',
-    //                 'Arrear Car Allowance'=>'Car_Allowance_Arr',
-    //                 'Arrear Leave Encash'=>'Arr_LvEnCash',
-    //                 'Arrear Bonus'=>'Arr_Bonus',
-    //                 'Arrear LTA Remb.'=>'Arr_LTARemb',
-    //                 'Arrear RA'=>'Arr_RA',
-    //                 'Arrear PP'=>'Arr_PP',
-    //                 'Bonus Adjustment'=>'Bonus_Adjustment',
-    //                 'Performance Incentive'=>'PP_Inc',
-    //                 'National pension scheme'=>'NPS',
-    //             ];
-                
-    //             $deductionHeads = [
-    //                 // 'Gross Deduction' => 'Tot_Deduct', 
-    //                 'TDS' => 'TDS', 
-    //                 'Provident Fund' => 'Tot_Pf_Employee', 
-    //                 'ESIC'=>'ESCI_Employee',
-    //                 'NPS Contribution'=>'NPS_Value',
-    //                 'Arrear Pf'=>'Arr_Pf',
-    //                 'Arrear Esic'=>'Arr_Esic',
-    //                 'Voluntary Contribution'=>'VolContrib',
-    //                 'Deduct Adjustment'=>'DeductAdjmt',
-    //                 'Recovery Spl. Allow'=>'RecSplAllow',
-    //             ];
-    //             if (\Carbon\Carbon::now()->month >= 4) {
-    //                 // If the current month is April or later, the financial year starts from the current year
-    //                 $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
-    //                 $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
-    //             } else {
-    //                 // If the current month is before April, the financial year started the previous year
-    //                 $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
-    //                 $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
-    //             }
-        
-    //             // Fetch the current financial year record
-    //             $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
-    //                 ->whereDate('ToDate', '=', $financialYearEnd)
-    //                 ->first();
-        
-    //             // Determine the previous financial year
-    //             $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
-    //             $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
-        
-    //             // Fetch the previous financial year record
-    //             $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
-    //                 ->whereDate('ToDate', '=', $previousYearEnd)
-    //                 ->first();
-    //             $year_id_current = $currentYearRecord->YearId;
-    //             // Get payslip data for the employee IDs for all months
-    //             $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->where('PaySlipYearId',$year_id_current)
-    //                                   ->select('EmployeeID', 'Month', 
-    //                                     ...array_values($paymentHeads), // select all payment heads columns
-    //                                     ...array_values($deductionHeads) // select all deduction heads columns
-    //                                   )
-    //                                   ->get();
-                
-    //             // Flatten the data into a simple structure: [EmployeeID, Month, Payment Heads, Deduction Heads]
-    //             $flattenedPayslips = $payslipData->map(function ($payslip) use ($months, $paymentHeads, $deductionHeads) {
-    //                 $payslipData = [
-    //                     'EmployeeID' => $payslip->EmployeeID,
-    //                     'Month' => $months[$payslip->Month], // Month name
-    //                 ];
-                    
-    //                 // Add payment head data only if it's non-zero
-    //                 foreach ($paymentHeads as $label => $column) {
-    //                     $value = $payslip->$column ?? 0;
-    //                     if ($value != 0) {
-    //                         $payslipData[$label] = $value;  // Only add if the value is non-zero
-    //                     }
+    //                 // Apply month and employee filters if selected
+    //                 if ($request->month) {
+    //                     $dailyreportsQuery->whereMonth('r.MorEveDate', $request->month);
     //                 }
-                    
-    //                 // Add deduction head data only if it's non-zero
-    //                 foreach ($deductionHeads as $label => $column) {
-    //                     $value = $payslip->$column ?? 0;
-    //                     if ($value != 0) {
-    //                         $payslipData[$label] = $value;  // Only add if the value is non-zero
-    //                     }
+                
+    //                 if ($request->employee) {
+    //                     $dailyreportsQuery->where('r.EmployeeID', $request->employee);
     //                 }
-                    
-    //                 return $payslipData;
-    //             });
-            
-    //             // Filter out heads that have no data across all months for any employee
-    //             $filteredPaymentHeads = $paymentHeads;
-    //             $filteredDeductionHeads = $deductionHeads;
-            
-    //             foreach ($paymentHeads as $label => $column) {
-    //                 $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
-    //                 if (!$hasData) {
-    //                     unset($filteredPaymentHeads[$label]);
+                
+    //                 // Get daily reports
+    //                 $dailyreports = $dailyreportsQuery->get();
+                            
+    //                             // Build the query for attendance details and balances
+    //                 $emploid = $employee->EmployeeID;
+
+    //                 $query = DB::table('hrm_employee as e')  // Start from employee table now
+    //                 ->leftJoin($attendanceTable . ' as a', function($join) use ($selectedMonth, $currentYear) {
+    //                     $join->on('a.EmployeeID', '=', 'e.EmployeeID')
+    //                         ->whereYear('a.AttDate', $currentYear)
+    //                         ->whereMonth('a.AttDate', $selectedMonth);
+    //                 })
+    //                 ->leftJoin('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear) {
+    //                     $join->on('l.EmployeeID', '=', 'e.EmployeeID')
+    //                         ->where('l.Month', '=', $selectedMonth)
+    //                         ->where('l.Year', '=', $currentYear);
+    //                 })
+    //                 ->where('e.EmployeeID', $emploid)    // Filter employee ID from employee table
+    //                 ->where('e.EmpStatus', 'A')
+    //                 ->select(
+    //                     'e.EmployeeID',
+    //                     'e.Fname',
+    //                     'e.Lname',
+    //                     'e.Sname',
+    //                     'e.empcode',
+    //                     'l.OpeningCL',
+    //                     'l.OpeningPL',
+    //                     'l.OpeningEL',
+    //                     'l.OpeningOL',
+    //                     'l.OpeningSL',
+    //                     'l.BalanceCL',
+    //                     'l.BalancePL',
+    //                     'l.BalanceEL',
+    //                     'l.BalanceOL',
+    //                     'l.BalanceSL'
+    //                 );
+
+    //                 // Your loop for days — same as before
+    //                 for ($i = 1; $i <= $daysInMonth; $i++) {
+    //                     $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
+    //                     $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Inn END) AS Inn_$i"));
+    //                     $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Outt END) AS Outt_$i"));
     //                 }
-    //             }
-            
-    //             foreach ($deductionHeads as $label => $column) {
-    //                 $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
-    //                 if (!$hasData) {
-    //                     unset($filteredDeductionHeads[$label]);
-    //                 }
-    //             }
-            
-    //             // Group the payslip data by EmployeeID for easier display in the view
-    //             $groupedPayslips = $flattenedPayslips->groupBy('EmployeeID');
-                
-    //             // Get the employee details
-    //             $employeeData = Employee::whereIn('EmployeeID', $employeeIds)
-                
-    //                                     ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
-    //                                     ->get();
-                
-                
-    //             // Pass the necessary data to the view
-    //             return view("employee.teamcost", compact('employeeData', 'groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads','ctcttotal','isReviewer'));
-    //     }
-    //     $employeeIds = EmployeeGeneral::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-    //         ->where('RepEmployeeID', $EmployeeID)  // Filter by RepEmployeeID
-    //         ->where('hrm_employee.EmpStatus', 'A') // Filter by EmpStatus = 'A'
-    //         ->pluck('hrm_employee_general.EmployeeID'); // Pluck the EmployeeID from EmployeeGeneral
+
+    //                 // Totals — unchanged
+    //                 $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "OD" THEN 1 ELSE 0 END) AS total_OD'));
+    //                 $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "A" THEN 1 ELSE 0 END) AS total_A'));
+    //                 $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "P" THEN 1 ELSE 0 END) AS total_P'));
+
+    //                 // Group by employee and leave balance fields — only change 'a.EmployeeID' to 'e.EmployeeID'
+    //                 $query->groupBy(
+    //                 'e.EmployeeID',
+    //                 'e.Fname',
+    //                 'e.Lname',
+    //                 'e.Sname',
+    //                 'e.empcode',
+    //                 'l.OpeningCL',
+    //                 'l.OpeningPL',
+    //                 'l.OpeningEL',
+    //                 'l.OpeningOL',
+    //                 'l.OpeningSL',
+    //                 'l.BalanceCL',
+    //                 'l.BalancePL',
+    //                 'l.BalanceEL',
+    //                 'l.BalanceOL',
+    //                 'l.BalanceSL'
+    //                 );
 
 
-    //         $ctcttotal = \DB::table('hrm_employee as e')
-    //         ->leftJoin('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table
-    //         ->whereIn('e.EmployeeID', $employeeIds)  // Use whereIn to handle the collection of employee IDs
-    //         ->where('e.EmpStatus', 'A')  // Filter by EmpStatus = 'A'
-    //         ->where('ctc.Status', '=', 'A')  // Filter CTC status = 'A'
-    //         //->select('ctc.Tot_CTC as TotalCTC','e.EmployeeID')
-    //         ->sum('ctc.Tot_CTC');  // Get the sum of Tot_CTC for all employees
-
-
-    //         // Define the months mapping
-    //         $months = [
-    //             4 => 'APR', 5 => 'MAY', 
-    //             6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
-    //             11 => 'NOV', 12 => 'DEC',1 => 'JAN', 2 => 'FEB', 3 => 'MAR',
-    //         ];
-            
-    //         // Define payment heads (the attribute names in your payslip data)
-    //         $paymentHeads = [
-    //             // 'Gross Earning' => 'Tot_Gross', 
-    //             'Bonus' => 'Bonus_Month', 
-    //             'Basic' => 'Basic',
-    //             'House Rent Allowance' => 'Hra', 
-    //             'Bonus/ Exgeatia' => 'Bonus', 
-    //             'Special Allowance' => 'Special',
-    //             'DA'=>'DA',
-    //             'Arrear'=>'Arreares',
-    //             'Leave Encash'=>'LeaveEncash',
-    //             'Car Allowance'=>'Car_Allowance',
-    //             'Incentive'=>'Incentive',
-    //             'Var Remburmnt'=>'VarRemburmnt',
-    //             'Variable Adjustment'=>"VariableAdjustment",
-    //             'City Compensatory Allowance'=>'CCA',
-    //             'Relocation Allownace'=>'RA',
-    //             'Arrear Basic'=>'Arr_Basic',
-    //             'Arrear Hra'=>'Arr_Hra',
-    //             'Arrear Spl'=>'Arr_Spl',
-    //             'Arrear Conv'=>'Arr_Conv',
-    //             'CEA'=>'YCea',
-    //             'MR'=>'YMr',
-    //             'LTA'=>'YLta',
-    //             'Arrear Car Allowance'=>'Car_Allowance_Arr',
-    //             'Arrear Leave Encash'=>'Arr_LvEnCash',
-    //             'Arrear Bonus'=>'Arr_Bonus',
-    //             'Arrear LTA Remb.'=>'Arr_LTARemb',
-    //             'Arrear RA'=>'Arr_RA',
-    //             'Arrear PP'=>'Arr_PP',
-    //             'Bonus Adjustment'=>'Bonus_Adjustment',
-    //             'Performance Incentive'=>'PP_Inc',
-    //             'National pension scheme'=>'NPS',
-    //             'PerformancePay' => 'PP_year',
-    //         ];
-            
-    //         $deductionHeads = [
-    //             // 'Gross Deduction' => 'Tot_Deduct', 
-    //             'TDS' => 'TDS', 
-    //             'Provident Fund' => 'Tot_Pf_Employee', 
-    //             'ESIC'=>'ESCI_Employee',
-    //             'NPS Contribution'=>'NPS_Value',
-    //             'Arrear Pf'=>'Arr_Pf',
-    //             'Arrear Esic'=>'Arr_Esic',
-    //             'Voluntary Contribution'=>'VolContrib',
-    //             'Deduct Adjustment'=>'DeductAdjmt',
-    //             'Recovery Spl. Allow'=>'RecSplAllow',
-    //         ];
-    //         if (\Carbon\Carbon::now()->month >= 4) {
-    //             // If the current month is April or later, the financial year starts from the current year
-    //             $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
-    //             $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
-    //         } else {
-    //             // If the current month is before April, the financial year started the previous year
-    //             $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
-    //             $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
-    //         }
-
-    //         // Fetch the current financial year record
-    //         $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
-    //             ->whereDate('ToDate', '=', $financialYearEnd)
-    //             ->first();
-
-    //         // Determine the previous financial year
-    //         $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
-    //         $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
-
-    //         // Fetch the previous financial year record
-    //         $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
-    //             ->whereDate('ToDate', '=', $previousYearEnd)
-    //             ->first();
-    //         $year_id_current = $currentYearRecord->YearId;
-    //         // Get payslip data for the employee IDs for all months
-    //         $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->where('PaySlipYearId',$year_id_current)
-    //                             ->select('EmployeeID', 'Month', 
-    //                                 ...array_values($paymentHeads), // select all payment heads columns
-    //                                 ...array_values($deductionHeads) // select all deduction heads columns
-    //                             )
-    //                             ->get();
-            
-    //         // Flatten the data into a simple structure: [EmployeeID, Month, Payment Heads, Deduction Heads]
-    //         $flattenedPayslips = $payslipData->map(function ($payslip) use ($months, $paymentHeads, $deductionHeads) {
-    //             $payslipData = [
-    //                 'EmployeeID' => $payslip->EmployeeID,
-    //                 'Month' => $months[$payslip->Month], // Month name
-    //             ];
-                
-    //             // Add payment head data only if it's non-zero
-    //             foreach ($paymentHeads as $label => $column) {
-    //                 $value = $payslip->$column ?? 0;
-    //                 if ($value != 0) {
-    //                     $payslipData[$label] = $value;  // Only add if the value is non-zero
-    //                 }
-    //             }
-                
-    //             // Add deduction head data only if it's non-zero
-    //             foreach ($deductionHeads as $label => $column) {
-    //                 $value = $payslip->$column ?? 0;
-    //                 if ($value != 0) {
-    //                     $payslipData[$label] = $value;  // Only add if the value is non-zero
-    //                 }
-    //             }
-                
-    //             return $payslipData;
-    //         });
-        
-    //         // Filter out heads that have no data across all months for any employee
-    //         $filteredPaymentHeads = $paymentHeads;
-    //         $filteredDeductionHeads = $deductionHeads;
-        
-    //         foreach ($paymentHeads as $label => $column) {
-    //             $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
-    //             if (!$hasData) {
-    //                 unset($filteredPaymentHeads[$label]);
-    //             }
-    //         }
-        
-    //         foreach ($deductionHeads as $label => $column) {
-    //             $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
-    //             if (!$hasData) {
-    //                 unset($filteredDeductionHeads[$label]);
-    //             }
-    //         }
-        
-    //         // Group the payslip data by EmployeeID for easier display in the view
-    //         $groupedPayslips = $flattenedPayslips->groupBy('EmployeeID');
-            
-    //         // Get the employee details
-    //         $employeeData = Employee::whereIn('EmployeeID', $employeeIds)
-    //                                 ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
+    //                 // Execute the query
+    //                 $empdataleaveattdata[] = $query->get();
+                            
+    //                         $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
+    //                                 ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
+    //                                 ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+    //                                 ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
+    //                                 ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
+    //                                 ->select(
+    //                                     'hrm_employee_monthlyleave_balance.EmployeeID',
+    //                                     'hrm_employee_monthlyleave_balance.OpeningCL',
+    //                                     'hrm_employee_monthlyleave_balance.AvailedCL',
+    //                                     'hrm_employee_monthlyleave_balance.BalanceCL',
+    //                                     'hrm_employee_monthlyleave_balance.OpeningSL',
+    //                                     'hrm_employee_monthlyleave_balance.AvailedSL',
+    //                                     'hrm_employee_monthlyleave_balance.BalanceSL',
+    //                                     'hrm_employee_monthlyleave_balance.OpeningPL',
+    //                                     'hrm_employee_monthlyleave_balance.AvailedPL',
+    //                                     'hrm_employee_monthlyleave_balance.BalancePL',
+    //                                     'hrm_employee_monthlyleave_balance.OpeningEL',
+    //                                     'hrm_employee_monthlyleave_balance.AvailedEL',
+    //                                     'hrm_employee_monthlyleave_balance.BalanceEL',
+    //                                     'hrm_employee_monthlyleave_balance.OpeningOL',
+    //                                     'hrm_employee_monthlyleave_balance.AvailedOL',
+    //                                     'hrm_employee_monthlyleave_balance.BalanceOL',
+    //                                     'hrm_employee_monthlyleave_balance.EC',
+    //                                     'hrm_employee.Fname',
+    //                                     'hrm_employee.Sname',
+    //                                     'hrm_employee.EmpCode'
+    //                                 )
     //                                 ->get();
+                            
+    //                     $attendanceData[] = [
+    //                     'attendance' => $attendance,
+    //                     'attendanceSummary'=>$attendanceSummary,
+    //                     'leaveApplications'=>$leaveApplications,
+    //                     'leaveBalances'=>$leaveBalances,
+    //                     'attendnacerequest'=>$requestsAttendnace,
+    //                     'approved_attendnace_status'=>$requestsAttendnace_approved,
+    //                     'approved_leave_request'=>$leaveApplications_approval,
+    //                 ];
+    //                 }
+                                
+    //                 return view('employee.teamleaveatt',compact('selectedMonth','attendanceData','empdataleaveattdata','daysInMonth','isReviewer','isHodView','dailyreports'));
+    //         }
+
+    //     $employeesReportingTo = \DB::table('hrm_employee_general')
+    //         ->where('RepEmployeeID', $EmployeeID)
+    //         ->get();  // Get all employees reporting to the RepEmployeeID
+                
+     
+    //         foreach ($employeesReportingTo as $employee) {
+    //             $attendance = \DB::table('hrm_employee_attendance')
+    //             ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+    //             ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
+    //             ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
+    //             ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
+    //             ->get(); // Get attendance records for the employee
+                
+    //             $currentYear = now()->year;  // Get the current year
+    //             $currentMonth = now()->month;  // Get the current month
+
+    //             // Fetch attendance data for all employees in the current month and year
+    //             $attendanceSummary = \DB::table('hrm_employee_attendance')
+    //                 ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+    //                 ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
+    //                 ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
+    //                 ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
+                    
+    //                 ->select(
+    //                     'hrm_employee_attendance.EmployeeID',
+    //                     'hrm_employee.Fname',
+    //                     'hrm_employee.Sname',
+    //                     'hrm_employee.Lname',
+    //                     'hrm_employee.EmpCode',
+    //                     \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "P" THEN 1 END) as Present'),
+    //                     \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "A" THEN 1 END) as Absent'),
+    //                     \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue = "OD" THEN 1 END) as OD'),
+    //                     \DB::raw('COUNT(CASE WHEN hrm_employee_attendance.AttValue NOT IN ("P", "A", "OD") THEN 1 END) as Other')
+    //                 )  // Select the required fields and counts for each attendance value
+    //                 ->groupBy(
+    //                     'hrm_employee_attendance.EmployeeID',
+    //                     'hrm_employee.Fname',
+    //                     'hrm_employee.Sname',
+    //                     'hrm_employee.Lname',
+    //                     'hrm_employee.EmpCode'
+    //                 )
+    //                 ->get();  // Execute the query and get the results
+    //                 $leaveApplications = \DB::table('hrm_employee_applyleave')
+    //                 ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+    //                 ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+    //                 ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+    //                 ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+    //                 // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+    //                 // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
+    //                 ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
+    //                 'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
+    //                 'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
+    //                  'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname','hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
+    //                 ->get();
+                    
+    //                 $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
+    //                     $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+    //                     return $item;
+    //                 });
+    //                 $year = $request->input('Y', date('Y'));
+    //                 $month = $request->input('m', date('m'));
+    //                 $tableName = "hrm_employee_moreve_report_" . $year;
+
+    //                 $dailyreportsQuery = DB::table($tableName . ' as r')
+    //                 ->leftJoin('hrm_employee as e', 'r.EmployeeID', '=', 'e.EmployeeID')
+    //                 ->leftJoin('hrm_employee_general as g', 'r.EmployeeID', '=', 'g.EmployeeID')
+    //                 ->leftJoin('hrm_employee_personal as p', 'r.EmployeeID', '=', 'p.EmployeeID')
+    //                 ->leftJoin('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id') // Join with Headquater table
+    //                 ->where('g.RepEmployeeID',  Auth::user()->EmployeeID)
+    //                 ->select([
+    //                     'r.*',
+    //                     'g.DepartmentId',
+    //                     'g.DesigId',
+    //                     'e.EmpCode',
+    //                     'e.Fname',
+    //                     'e.Sname',
+    //                     'e.Lname',
+    //                     'p.Married',
+    //                     'p.Gender',
+    //                     'hq.city_village_name',
+    //                     'p.DR'
+    //                 ]);
             
+    //             // Apply month and employee filters if selected
+    //             if ($request->month) {
+    //                 $dailyreportsQuery->whereMonth('r.MorEveDate', $request->month);
+    //             }
             
-    //     // Pass the necessary data to the view
-    //     return view("employee.teamcost", compact('employeeData', 'groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads','ctcttotal','isReviewer'));
-    
+    //             if ($request->employee) {
+    //                 $dailyreportsQuery->where('r.EmployeeID', $request->employee);
+    //             }
+            
+    //             // Get daily reports
+    //             $dailyreports = $dailyreportsQuery->get();
+
+    //                 $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
+    //                     ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+    //                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+    //                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+    //                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+    //                     // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+    //                     // ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
+    //                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
+    //                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
+    //                     'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+    //                     'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
+    //                     ->get();
+    //                 $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+    //                 ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+    //                 ->whereStatus('0')  // Assuming 0 means pending requests
+    //                 ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
+    //                 // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+    //                 ->select(
+    //                     'hrm_employee.Fname',
+    //                     'hrm_employee.Lname',
+    //                     'hrm_employee.Sname',
+    //                     'hrm_employee.EmpCode',
+    //                     'hrm_employee.EmployeeID',
+    //                     'hrm_employee_attendance_req.*'
+    //                 )
+    //                 ->orderBy('hrm_employee_attendance_req.AttDate', 'desc')  // Order by Attendance Date in descending order
+    //                 ->get();
+    //                 $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
+    //                     $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+    //                     return $item;
+    //                 });
+
+    //                 $requestsAttendnace_approved = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+    //                 ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+    //                 // ->whereStatus('1')  // Assuming 0 means pending requests
+    //                 // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+    //                 ->select(
+    //                     'hrm_employee.Fname',
+    //                     'hrm_employee.Lname',
+    //                     'hrm_employee.Sname',
+    //                     'hrm_employee.EmpCode',
+    //                     'hrm_employee.EmployeeID',
+    //                     'hrm_employee_attendance_req.*'
+    //                 )
+    //                 ->get();
+    //                        // Build the query for attendance details and balances
+    //     $emploid = $employee->EmployeeID;
+
+      
+    //     $query = DB::table('hrm_employee as e')  // Start from employee table now
+    //         ->leftJoin($attendanceTable . ' as a', function($join) use ($selectedMonth, $currentYear) {
+    //             $join->on('a.EmployeeID', '=', 'e.EmployeeID')
+    //                 ->whereYear('a.AttDate', $currentYear)
+    //                 ->whereMonth('a.AttDate', $selectedMonth);
+    //         })
+    //         ->leftJoin('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear) {
+    //             $join->on('l.EmployeeID', '=', 'e.EmployeeID')
+    //                 ->where('l.Month', '=', $selectedMonth)
+    //                 ->where('l.Year', '=', $currentYear);
+    //         })
+    //         ->where('e.EmployeeID', $emploid)    // Filter employee ID from employee table
+    //         ->where('e.EmpStatus', 'A')
+    //         ->select(
+    //             'e.EmployeeID',
+    //             'e.Fname',
+    //             'e.Lname',
+    //             'e.Sname',
+    //             'e.empcode',
+    //             'l.OpeningCL',
+    //             'l.OpeningPL',
+    //             'l.OpeningEL',
+    //             'l.OpeningOL',
+    //             'l.OpeningSL',
+    //             'l.BalanceCL',
+    //             'l.BalancePL',
+    //             'l.BalanceEL',
+    //             'l.BalanceOL',
+    //             'l.BalanceSL'
+    //         );
+
+    //     // Your loop for days — same as before
+    //     for ($i = 1; $i <= $daysInMonth; $i++) {
+    //         $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
+    //         $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Inn END) AS Inn_$i"));
+    //         $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Outt END) AS Outt_$i"));
+    //     }
+
+    //     // Totals — unchanged
+    //     $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "OD" THEN 1 ELSE 0 END) AS total_OD'));
+    //     $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "A" THEN 1 ELSE 0 END) AS total_A'));
+    //     $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "P" THEN 1 ELSE 0 END) AS total_P'));
+
+    //     // Group by employee and leave balance fields — only change 'a.EmployeeID' to 'e.EmployeeID'
+    //     $query->groupBy(
+    //         'e.EmployeeID',
+    //         'e.Fname',
+    //         'e.Lname',
+    //         'e.Sname',
+    //         'e.empcode',
+    //         'l.OpeningCL',
+    //         'l.OpeningPL',
+    //         'l.OpeningEL',
+    //         'l.OpeningOL',
+    //         'l.OpeningSL',
+    //         'l.BalanceCL',
+    //         'l.BalancePL',
+    //         'l.BalanceEL',
+    //         'l.BalanceOL',
+    //         'l.BalanceSL'
+    //     );
+
+
+    //     // Execute the query
+    //     $empdataleaveattdata[] = $query->get();
+                    
+    //                 $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
+    //                         ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
+    //                         ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+    //                         ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
+    //                         ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
+    //                         ->select(
+    //                             'hrm_employee_monthlyleave_balance.EmployeeID',
+    //                             'hrm_employee_monthlyleave_balance.OpeningCL',
+    //                             'hrm_employee_monthlyleave_balance.AvailedCL',
+    //                             'hrm_employee_monthlyleave_balance.BalanceCL',
+    //                             'hrm_employee_monthlyleave_balance.OpeningSL',
+    //                             'hrm_employee_monthlyleave_balance.AvailedSL',
+    //                             'hrm_employee_monthlyleave_balance.BalanceSL',
+    //                             'hrm_employee_monthlyleave_balance.OpeningPL',
+    //                             'hrm_employee_monthlyleave_balance.AvailedPL',
+    //                             'hrm_employee_monthlyleave_balance.BalancePL',
+    //                             'hrm_employee_monthlyleave_balance.OpeningEL',
+    //                             'hrm_employee_monthlyleave_balance.AvailedEL',
+    //                             'hrm_employee_monthlyleave_balance.BalanceEL',
+    //                             'hrm_employee_monthlyleave_balance.OpeningOL',
+    //                             'hrm_employee_monthlyleave_balance.AvailedOL',
+    //                             'hrm_employee_monthlyleave_balance.BalanceOL',
+    //                             'hrm_employee_monthlyleave_balance.EC',
+    //                             'hrm_employee.Fname',
+    //                             'hrm_employee.Sname',
+    //                             'hrm_employee.EmpCode'
+    //                         )
+    //                         ->get();
+                           
+    //             $attendanceData[] = [
+    //                 'attendance' => $attendance,
+    //                 'attendanceSummary'=>$attendanceSummary,
+    //                 'leaveApplications'=>$leaveApplications,
+    //                 'leaveBalances'=>$leaveBalances,
+    //                 'attendnacerequest'=>$requestsAttendnace,
+    //                 'approved_attendnace_status'=>$requestsAttendnace_approved,
+    //                 'approved_leave_request'=>$leaveApplications_approval
+    //             ];
+    //         }
+            
+    //     return view('employee.teamleaveatt',compact('selectedMonth','attendanceData','empdataleaveattdata','daysInMonth','isReviewer','isHodView','dailyreports'));
     // }
+ 
     public function teamcost(Request $request)
     {
         $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
@@ -2680,7 +2507,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
                 ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
                 ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
-                ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+               // ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
                 ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
                 ->where(function($query) {
                     // Add condition to check if Rep_EmployeeID or HR_UserId matches the authenticated user's EmployeeID

@@ -244,7 +244,7 @@ class AttendanceController extends Controller
         // Calculate the difference in months between the selected month and the current month
         $monthsDifference = $currentMonth - $month;
 
-        // Check if the selected month is 2 months behind or older
+        // Check if the selected month is 5 months behind or older
         if ($monthsDifference >= 5) {
             // If 2 months back or beyond, select from the dynamic year-based table (e.g., hrm_attendance_2024)
             $attendanceData = \DB::table("hrm_employee_attendance_{$year}") // Dynamic table based on year

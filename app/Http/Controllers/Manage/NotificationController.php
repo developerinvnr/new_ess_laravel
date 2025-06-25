@@ -29,17 +29,11 @@ class NotificationController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'type' => 'required|string',
-            'status' => 'required|string',
-            'message' => 'required|string',
-        ]);
 
         $notification = NotificationMaster::findOrFail($id);
 
         $notification->name = $request->name;
-        $notification->type = $request->type;
+        $notification->notification_type = $request->noti;
         $notification->status = $request->status;
         $notification->message = $request->message;
         $notification->save();
@@ -47,7 +41,7 @@ class NotificationController extends Controller
         return response()->json([
             'id' => $notification->id,
             'name' => $notification->name,
-            'type' => $notification->type,
+            'notification_type' => $notification->notification_type,
             'status' => $notification->status,
             'message' => $notification->message,
         ]);

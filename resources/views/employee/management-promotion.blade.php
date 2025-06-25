@@ -178,20 +178,34 @@
 																		@endforeach
 																	</select>
 																
-																	<select id="state-filter">
+																	<select id="state-filter" style="display: none;">
 																		<option value="">All State</option>
 																		@foreach($employeeDetails->unique('city_village_name') as $hq)
 																		<option value="{{ $hq->city_village_name }}">{{ $hq->city_village_name }}</option>
 																		@endforeach
 																	</select>
+                                                                    <select id="BU-filter" style="display: none;">
+                                                                        <option value="">All BU</option>
+                                                                        @foreach ($businessUnits as $unit)
+                                                                            <option value="{{ $unit->id }}">{{ $unit->business_unit_name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+
+                                                                    <select id="Zone-filter" style="display: none;">
+                                                                        <option value="">Select Zone</option>
+                                                                    </select>
+
+                                                                    <select id="region-filter" style="display: none;">
+                                                                        <option value="">Select Region</option>
+                                                                    </select>
 															
-																	<select id="region-filter" style="display:none;">
+																	<!-- <select id="region-filter" style="display:none;">
 																			<option value="">All Region</option>
 																			@foreach($employeeDetails->unique('region_name') as $reg)
 																					<option value="{{ $reg->region_name }}">{{ $reg->region_name }}</option>
 																			@endforeach
-																	</select>
-																	<a href="{{ route('promotion.export', ['employee_id' => Auth::user()->EmployeeID, 'pms_year_id' => $PmsYId]) }}">
+																	</select> -->
+																	<a id="export-link"  href="{{ route('promotion.export', ['employee_id' => Auth::user()->EmployeeID, 'pms_year_id' => $PmsYId]) }}">
 																	<i class="fas fa-file-excel mr-2 ms-2"></i>
 																	</a>
 
@@ -228,7 +242,7 @@
 																		<th class="text-center" style="width:100px;">Designation</th>
 																		<th class="text-center" style="border-right: 1px solid #fff;">Grade</th>
 														
-																		<th class="text-center" style="border-right: 1px solid #fff;">Remaks</th>
+																		<th class="text-center" style="border-right: 1px solid #fff;">Remarks</th>
 																		
 																	</tr>
 																</thead>
@@ -399,6 +413,9 @@
                                                                                         <i class="fas fa-eye"></i>
                                                                                     </a>
                                                                         </td>
+                                                                        <td class="hidden-zone d-none">{{ $employeedetails->zone_id }}</td>
+                                                                        <td class="hidden-bu d-none">{{ $employeedetails->bu_id }}</td>
+
 																		
 																	</tr>
 																	@endforeach
@@ -588,6 +605,8 @@
         var state = $('#state-filter').val().toLowerCase();
         var grade = $('#grade-filter').val().toLowerCase();
         var region = $('#region-filter').val().toLowerCase();
+        var zone = $('#Zone-filter').val().toLowerCase();
+        var bu = $('#BU-filter').val().toLowerCase();
         console.log(department);
         var visibleIndex = 1; // Counter for S. No.
 
@@ -596,10 +615,14 @@
             var rowState = $(this).find('td:nth-child(10)').text().toLowerCase();
             var rowGrade = $(this).find('td:nth-child(9)').text().toLowerCase();
             var rowRegion = $(this).find('td:nth-child(11)').text().toLowerCase();
+            var rowZone = $(this).find('td:nth-child(21)').text().toLowerCase();
+            var rowBU = $(this).find('td:nth-child(22)').text().toLowerCase();
 
 			if ((department === "" || rowDepartment.localeCompare(department, undefined, { sensitivity: 'base' }) === 0) &&
             (state === "" || rowState.localeCompare(state, undefined, { sensitivity: 'base' }) === 0) &&
             (grade === "" || rowGrade.localeCompare(grade, undefined, { sensitivity: 'base' }) === 0) &&
+            (zone === "" || rowZone.localeCompare(zone, undefined, { sensitivity: 'base' }) === 0) &&
+            (bu === "" || rowBU.localeCompare(bu, undefined, { sensitivity: 'base' }) === 0) &&
             (region === "" || rowRegion.localeCompare(region, undefined, { sensitivity: 'base' }) === 0)) {
             $(this).show();
             $(this).find('td:nth-child(1)').text(visibleIndex); // Update S. No.
@@ -609,29 +632,113 @@
         }
         });
     }
+      function updateExportLink() {
+        var department = $('#department-filter').val();
+        var grade = $('#grade-filter').val();
+        var region = $('#region-filter').val();
+        var zone = $('#Zone-filter').val();
+        var bu = $('#BU-filter').val();
+
+
+        var baseUrl = "{!! route('promotion.export', ['employee_id' => Auth::user()->EmployeeID,'pms_year_id' => $PmsYId]) !!}";
+        var exportUrl = baseUrl +
+            '&department=' + encodeURIComponent(department) +
+            '&grade=' + encodeURIComponent(grade) +
+			'&bu=' + encodeURIComponent(bu) +
+			'&zone=' + encodeURIComponent(zone) +
+            '&region=' + encodeURIComponent(region);
+        $('#export-link').attr('href', exportUrl);
+    }
 
     // Show/hide the region filter based on department selection
     $('#department-filter').change(function () {
         var selectedDepartment = $(this).val();
         if (selectedDepartment === "Sales") {
-            $('#region-filter').show(); // Show region filter
+            $('#region-filter').show();
+            $('#Zone-filter').show();
+            $('#BU-filter').show();
+
         } else {
-            $('#region-filter').hide(); // Hide region filter
-            $('#region-filter').val(''); // Reset region selection
+            $('#region-filter').hide();
+            $('#Zone-filter').hide();
+            $('#BU-filter').hide();
+            $('#region-filter').val('');
+            $('#Zone-filter').val('');
+            $('#BU-filter').val('');
         }
         filterTable();
+        updateExportLink();
     });
-
-    // Trigger filtering when any dropdown changes
-    $('#department-filter, #state-filter, #grade-filter, #region-filter').change(function () {
+  
+     $('#department-filter, #grade-filter, #region-filter, #Zone-filter, #BU-filter').change(function () {
         filterTable();
+        updateExportLink();
+    });
+ // BU filter change: load zones or reset filters if "all" or empty
+    $('#BU-filter').on('change', function () {
+        let buId = $(this).val();
+
+        // Reset zone and region before loading new ones
+        $('#Zone-filter').html('<option value="">Select Zone</option>').val('');
+        $('#region-filter').html('<option value="">Select Region</option>').val('');
+
+        if (!buId || buId.toLowerCase() === 'all') {
+            // If no BU or 'all' selected, reset filters and show all data
+            filterTable();
+            updateExportLink();
+        } else {
+            $.ajax({
+                url: '{{ route("get_zone_by_bu") }}',
+                type: 'GET',
+                data: { bu: buId },
+                success: function (data) {
+                    $('#Zone-filter').empty().append('<option value="">Select Zone</option>');
+                    $.each(data.zoneList, function (index, zone) {
+                        $('#Zone-filter').append('<option value="' + zone.zone_id + '">' + zone.zone_name + '</option>');
+                    });
+                    filterTable();
+                    updateExportLink();
+
+                }
+            });
+        }
     });
 
+    // Zone filter change: load regions or reset
+    $('#Zone-filter').on('change', function () {
+        let zoneId = $(this).val();
+
+        if (!zoneId) {
+            $('#region-filter').html('<option value="">Select Region</option>').val('');
+            filterTable();
+            updateExportLink();
+            return;
+        }
+
+        $('#region-filter').html('<option value="">Loading...</option>').val('');
+
+        $.ajax({
+            url: '{{ route("get_region_by_zone") }}',
+            type: 'GET',
+            data: { zone: zoneId },
+            success: function (data) {
+                $('#region-filter').empty().append('<option value="">Select Region</option>');
+                $.each(data.regionList, function (index, region) {
+                    $('#region-filter').append('<option value="' + region.region_name + '">' + region.region_name + '</option>');
+                });
+                filterTable();
+                 updateExportLink();
+
+            }
+        });
+    });
     // Hide region filter initially
          $('#region-dropdown').hide();
 
          // Initial filter application
          filterTable();
+        updateExportLink();
+
       });
 	  document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("sortGrade").addEventListener("click", function() {

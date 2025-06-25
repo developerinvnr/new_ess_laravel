@@ -23,6 +23,8 @@ use App\Mail\Kra\HOD;
 use App\Mail\Kra\HODRevert;
 use App\Models\Employee;
 use App\Models\EmployeeGeneral;
+use Illuminate\Support\Facades\Cache;
+
 
 class PmsController extends Controller
 {
@@ -1511,25 +1513,53 @@ class PmsController extends Controller
         }
         $ratings = [0.00, 1.00, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9, 5.0];
 
-        $ratingDataappnew = DB::table('hrm_employee_pms')
-            ->join('hrm_employee', 'hrm_employee_pms.Appraiser_EmployeeID', '=', 'hrm_employee.EmployeeID')
+        // $ratingDataappnew = DB::table('hrm_employee_pms')
+        //     ->join('hrm_employee', 'hrm_employee_pms.Reviewer_EmployeeID', '=', 'hrm_employee.EmployeeID')
+        //     ->where('hrm_employee.EmpStatus', 'A')
+        //     ->where('hrm_employee.CompanyId', $CompanyId)
+        //     ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
+        //     ->where('hrm_employee_pms.Appraiser_EmployeeID', $EmployeeId)
+        //     ->whereIn('hrm_employee_pms.Appraiser_TotalFinalRating', $ratings)
+        //     ->selectRaw('ROUND(hrm_employee_pms.Appraiser_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
+        //     ->groupBy('rating')
+        //     ->orderBy('rating')
+        //     ->pluck('count', 'rating');
+        
+
+
+        // // Fetch rating data for Appraised Employees
+        // $ratingDataEmployeenew = DB::table('hrm_employee_pms')
+        //     ->join('hrm_employee', 'hrm_employee_pms.Reviewer_EmployeeID', '=', 'hrm_employee.EmployeeID')
+        //     ->where('hrm_employee.EmpStatus', 'A')
+        //     ->where('hrm_employee.CompanyId', $CompanyId)
+        //     ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
+        //     ->whereIn('hrm_employee_pms.Reviewer_EmployeeID', $appraisedEmployeesPms)
+        //     ->whereIn('hrm_employee_pms.Emp_TotalFinalRating', $ratings)
+        //     ->selectRaw('ROUND(hrm_employee_pms.Emp_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
+        //     ->groupBy('rating')
+        //     ->orderBy('rating')
+        //     ->pluck('count', 'rating');
+                $ratingDataappnew = DB::table('hrm_employee_pms')
+            ->join('hrm_employee', 'hrm_employee_pms.Reviewer_EmployeeID', '=', 'hrm_employee.EmployeeID')
             ->where('hrm_employee.EmpStatus', 'A')
             ->where('hrm_employee.CompanyId', $CompanyId)
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
-            ->where('hrm_employee_pms.Appraiser_EmployeeID', $EmployeeId)
+            ->where('hrm_employee_pms.Reviewer_EmployeeID', $EmployeeId)
             ->whereIn('hrm_employee_pms.Appraiser_TotalFinalRating', $ratings)
             ->selectRaw('ROUND(hrm_employee_pms.Appraiser_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
             ->groupBy('rating')
             ->orderBy('rating')
             ->pluck('count', 'rating');
+        
+
 
         // Fetch rating data for Appraised Employees
         $ratingDataEmployeenew = DB::table('hrm_employee_pms')
-            ->join('hrm_employee', 'hrm_employee_pms.Appraiser_EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->join('hrm_employee', 'hrm_employee_pms.Reviewer_EmployeeID', '=', 'hrm_employee.EmployeeID')
             ->where('hrm_employee.EmpStatus', 'A')
             ->where('hrm_employee.CompanyId', $CompanyId)
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
-            ->whereIn('hrm_employee_pms.EmployeeID', $appraisedEmployeesPms)
+            ->where('hrm_employee_pms.Reviewer_EmployeeID', $EmployeeId)
             ->whereIn('hrm_employee_pms.Emp_TotalFinalRating', $ratings)
             ->selectRaw('ROUND(hrm_employee_pms.Emp_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
             ->groupBy('rating')
@@ -1958,11 +1988,11 @@ class PmsController extends Controller
         $ratings = [0.00, 1.00, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9, 5.0];
 
         $ratingDataappnew = DB::table('hrm_employee_pms')
-            ->join('hrm_employee', 'hrm_employee_pms.Appraiser_EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->join('hrm_employee', 'hrm_employee_pms.Rev2_EmployeeID', '=', 'hrm_employee.EmployeeID')
             ->where('hrm_employee.EmpStatus', 'A')
             ->where('hrm_employee.CompanyId', $CompanyId)
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
-            ->where('hrm_employee_pms.Appraiser_EmployeeID', $EmployeeId)
+            ->where('hrm_employee_pms.Rev2_EmployeeID', $EmployeeId)
             ->whereIn('hrm_employee_pms.Appraiser_TotalFinalRating', $ratings)
             ->selectRaw('ROUND(hrm_employee_pms.Appraiser_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
             ->groupBy('rating')
@@ -1971,11 +2001,11 @@ class PmsController extends Controller
 
         // Fetch rating data for Appraised Employees
         $ratingDataEmployeenew = DB::table('hrm_employee_pms')
-            ->join('hrm_employee', 'hrm_employee_pms.Appraiser_EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->join('hrm_employee', 'hrm_employee_pms.EmployeeID', '=', 'hrm_employee.EmployeeID')
             ->where('hrm_employee.EmpStatus', 'A')
             ->where('hrm_employee.CompanyId', $CompanyId)
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
-            ->whereIn('hrm_employee_pms.EmployeeID', $appraisedEmployeesPms)
+            ->where('hrm_employee_pms.Rev2_EmployeeID', $EmployeeId)
             ->whereIn('hrm_employee_pms.Emp_TotalFinalRating', $ratings)
             ->selectRaw('ROUND(hrm_employee_pms.Emp_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
             ->groupBy('rating')
@@ -1984,20 +2014,7 @@ class PmsController extends Controller
 
 
         $ratingDataEmployeeReviewernew = DB::table('hrm_employee_pms')
-            ->join('hrm_employee', 'hrm_employee_pms.Reviewer_EmployeeID', '=', 'hrm_employee.EmployeeID')
-            ->where('hrm_employee.EmpStatus', 'A')
-            ->where('hrm_employee.CompanyId', $CompanyId)
-            ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
-            ->where('hrm_employee_pms.Reviewer_EmployeeID', $EmployeeId)
-            ->whereIn('hrm_employee_pms.Reviewer_TotalFinalRating', $ratings)
-            ->selectRaw('ROUND(hrm_employee_pms.Reviewer_TotalFinalRating, 1) as rating, COUNT(hrm_employee_pms.EmployeeID) as count')
-            ->groupBy('rating')
-            ->orderBy('rating')
-            ->pluck('count', 'rating');
-
-
-        $ratingDataEmployeeHodnew = DB::table('hrm_employee_pms')
-            ->join('hrm_employee', 'hrm_employee_pms.Rev2_EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->join('hrm_employee', 'hrm_employee_pms.EmployeeID', '=', 'hrm_employee.EmployeeID') // <-- Correct join
             ->where('hrm_employee.EmpStatus', 'A')
             ->where('hrm_employee.CompanyId', $CompanyId)
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
@@ -2009,13 +2026,27 @@ class PmsController extends Controller
             ->pluck('count', 'rating');
 
 
+        $ratingDataEmployeeHodnew = DB::table('hrm_employee_pms')
+            ->join('hrm_employee', 'hrm_employee_pms.EmployeeID', '=', 'hrm_employee.EmployeeID') // <-- Correct join
+            ->where('hrm_employee.EmpStatus', 'A')
+            ->where('hrm_employee.CompanyId', $CompanyId)
+            ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
+            ->where('hrm_employee_pms.Rev2_EmployeeID', $EmployeeId)
+            ->whereIn('hrm_employee_pms.Reviewer_TotalFinalRating', $ratings)
+            ->selectRaw('ROUND(hrm_employee_pms.Reviewer_TotalFinalRating, 1) as rating, COUNT(DISTINCT hrm_employee_pms.EmployeeID) as count')
+            ->groupBy('rating')
+            ->orderBy('rating')
+            ->pluck('count', 'rating');
+
+
         $totalemployee = DB::table('hrm_employee_pms')
             ->join('hrm_employee', 'hrm_employee_pms.EmployeeID', '=', 'hrm_employee.EmployeeID')
             ->where('hrm_employee.EmpStatus', 'A')
             ->where('hrm_employee.CompanyId', $CompanyId)
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
-            ->where('hrm_employee_pms.Reviewer_EmployeeID', $EmployeeId)
+            ->where('hrm_employee_pms.Rev2_EmployeeID', $EmployeeId)
             ->count();
+        
 
         $ratingData     = $this->scaleWithZeroCatch($ratingDataappnew, $totalemployee, "0.0");
         $ratingDataEmployee       = $this->scaleWithZeroCatch($ratingDataEmployeenew, $totalemployee, "0.0");
@@ -2113,6 +2144,7 @@ class PmsController extends Controller
         ));
     }
 
+
     public function management()
     {
         $CompanyId = Auth::user()->CompanyId;
@@ -2177,23 +2209,7 @@ class PmsController extends Controller
         $year_pms = DB::table('hrm_pms_setting')->where('CompanyId', $CompanyId)->where('Process', 'PMS')->first();
 
         $PmsYId = ($keys['emp']->AppraisalForm == 'Y') ? $year_pms->CurrY : (($year_pms->NewY_AllowEntry == 'Y') ? $year_pms->NewY : $year_pms->CurrY);
-        // $KraYId = ($keys['emp']->Schedule == 'Y') ? $year_kra->CurrY : (($year_kra->NewY_AllowEntry == 'Y') ? $year_kra->NewY : $year_kra->CurrY);
-        // if ($keys['emp']->Schedule == 'Y') {
-        //     // If Schedule is 'Y', check if NewY_AllowEntry is 'Y'
-        //     if ($year_kra->NewY_AllowEntry == 'Y') {
-        //         $KraYId = $year_kra->NewY;  // Set to NewY if NewY_AllowEntry is 'Y'
-        //     } else {
-        //         $KraYId = $year_kra->CurrY; // Otherwise, set to CurrY
-        //     }
-        // } else {
-        //     // If Schedule is not 'Y', set to CurrY
-        //     $KraYId = $year_kra->CurrY;
-        // }
 
-        // $KraYId = $year_kra->CurrY;
-        // // Fetch year details
-        // $year_kra_details = DB::table('hrm_year')->where('YearId', $KraYId)->first();
-        // $year_pms_details = DB::table('hrm_year')->where('YearId', $PmsYId)->first();
 
         if ($keys['emp']->Schedule == 'Y') {
             if ($year_kra->NewY_AllowEntry == 'Y') {
@@ -2561,6 +2577,8 @@ class PmsController extends Controller
             ->leftJoin('core_grades as grade', 'emp.GradeId', '=', 'grade.id')
             ->leftJoin('core_designation as desig', 'emp.DesigId', '=', 'desig.id')
             ->leftJoin('core_regions as region', 'emp.RegionId', '=', 'region.id')
+            ->leftJoin('core_zones as zones', 'emp.ZoneId', '=', 'zones.id')
+            ->leftJoin('core_business_unit as bu', 'emp.BUId', '=', 'bu.id')
             ->leftJoin('hrm_employee_pms as pms', function ($join) use ($EmployeeId, $PmsYId) {
                 $join->on('emp.EmployeeID', '=', 'pms.EmployeeID')
                     ->where('pms.HOD_EmployeeID', '=', $EmployeeId)
@@ -2587,6 +2605,8 @@ class PmsController extends Controller
                 'hq.city_village_name',
                 'hq.id',
                 'region.region_name',
+                'zones.id as zone_id',
+                'bu.id as bu_id',
                 'desig.designation_name',
                 'pms.Emp_TotalFinalScore',
                 'pms.Emp_TotalFinalRating',
@@ -2617,9 +2637,11 @@ class PmsController extends Controller
                 'rev2.Lname as Rev2_Lname'
             )
             ->get();
+
         // Fetch FirstRating for each employee
-        $employeeDetails->map(function ($employee) use ($DojY, $DojmY2) {
+        $employeeDetails = $employeeDetails->map(function ($employee) use ($DojY, $DojmY2, $PmsYId) {
             $employee->FirstRating = '';
+            $prevAssessmentYear = $PmsYId - 1;
 
             if ($employee->DateConfirmationYN == 'Y' && $employee->DateJoining > $DojY && $employee->DateJoining <= $DojmY2) {
                 $rating = DB::table('hrm_employee_confletter')
@@ -2627,6 +2649,15 @@ class PmsController extends Controller
                     ->where('Status', 'A')
                     ->orderBy('ConfLetterId', 'DESC')
                     ->value('Rating');
+
+                $employee->FirstRating = $rating ?? '';
+            }
+             else {
+                // Get rating from hrm_employee_pms for previous year
+                $rating = DB::table('hrm_employee_pms')
+                    ->where('EmployeeID', $employee->EmployeeID)
+                    ->where('AssessmentYear', $prevAssessmentYear)
+                    ->value('hr_rating');  // Adjust the column name if different
 
                 $employee->FirstRating = $rating ?? '';
             }
@@ -2645,7 +2676,14 @@ class PmsController extends Controller
             ->where('CompanyId', $CompanyId)
             ->first();
 
-        return view("employee.management-score", compact('appraisal_schedule', 'CuDate', 'year_kra', 'employeeDetails', 'ratings', 'PmsYId', 'KraYear', 'kfnew', 'ktnew', 'data'));
+        $businessUnits = DB::table('core_business_unit')
+            ->select('id', 'business_unit_name')
+            ->where('is_active', 1)
+            ->where('business_type', 1)
+            ->get();
+
+
+        return view("employee.management-score", compact('businessUnits', 'appraisal_schedule', 'CuDate', 'year_kra', 'employeeDetails', 'ratings', 'PmsYId', 'KraYear', 'kfnew', 'ktnew', 'data'));
     }
     public function managementPromotion(Request $request)
     {
@@ -2774,6 +2812,8 @@ class PmsController extends Controller
             ->leftJoin('core_grades as grade', 'emp.GradeId', '=', 'grade.id')
             ->leftJoin('core_designation as desig', 'emp.DesigId', '=', 'desig.id')
             ->leftJoin('core_regions as region', 'emp.RegionId', '=', 'region.id')
+            ->leftJoin('core_zones as zones', 'emp.ZoneId', '=', 'zones.id')
+            ->leftJoin('core_business_unit as bu', 'emp.BUId', '=', 'bu.id')
             ->leftJoin('hrm_employee_pms as pms', function ($join) use ($EmployeeId, $PmsYId) {
                 $join->on('emp.EmployeeID', '=', 'pms.EmployeeID')
                     ->where('pms.HOD_EmployeeID', '=', $EmployeeId)
@@ -2816,6 +2856,8 @@ class PmsController extends Controller
                 'dept.department_name',
                 'hq.city_village_name',
                 'hq.id',
+                'zones.id as zone_id',
+                'bu.id as bu_id',
                 'region.region_name',
                 'desig.designation_name',
                 'pms.AssessmentYear',
@@ -2941,7 +2983,13 @@ class PmsController extends Controller
             ->where('AssessmentYear', $PmsYId)
             ->where('CompanyId', $CompanyId)
             ->first();
-        return view("employee.management-promotion", compact('data', 'appraisal_schedule', 'CuDate', 'employeeDetails', 'year_kra', 'ratings', 'PmsYId', 'KraYear', 'kfnew', 'ktnew'));
+        $businessUnits = DB::table('core_business_unit')
+            ->select('id', 'business_unit_name')
+            ->where('is_active', 1)
+            ->where('business_type', 1)
+            ->get();
+
+        return view("employee.management-promotion", compact('businessUnits','data', 'appraisal_schedule', 'CuDate', 'employeeDetails', 'year_kra', 'ratings', 'PmsYId', 'KraYear', 'kfnew', 'ktnew'));
     }
     public function managementIncrement()
     {
@@ -3031,6 +3079,8 @@ class PmsController extends Controller
             ->leftJoin('core_regions as region', 'g.RegionId', '=', 'region.id')
             ->leftJoin('hrm_employee as hod', 'p.Rev2_EmployeeID', '=', 'hod.EmployeeID')
             ->leftJoin('hrm_employee as rev', 'p.Reviewer_EmployeeID', '=', 'rev.EmployeeID')
+            ->leftJoin('core_zones as zones', 'g.ZoneId', '=', 'zones.id')
+            ->leftJoin('core_business_unit as bu', 'g.BUId', '=', 'bu.id')
             ->where('e.EmpStatus', 'A')
             ->where('g.DateJoining', '<=', $allowDoj)
             ->where('p.AssessmentYear', $PmsYId)
@@ -3047,6 +3097,8 @@ class PmsController extends Controller
                 'designation_name',
                 'designation_code',
                 'd.department_code',
+                'zones.id as zone_id',
+                'bu.id as bu_id',
                 'grade_name',
                 'EmpCurrGrossPM',
                 'EmpCurrCtc',
@@ -3054,6 +3106,8 @@ class PmsController extends Controller
                 'Hod_TotalFinalScore',
                 'Hod_TotalFinalRating',
                 'EmpPmsId',
+                'utkarsh_scheme_10',
+                'utkarsh_scheme_18',
                 'Hod_EmpDesignation',
                 'Hod_EmpGrade',
                 'HodSubmit_IncStatus',
@@ -3071,7 +3125,6 @@ class PmsController extends Controller
             ])
             ->orderBy('e.ECode', 'asc')
             ->get();
-
 
         $employeeIds = $employees->pluck('EmployeeID')->toArray();
         $empCodes = $employees->pluck('EmpCode')->toArray();
@@ -3117,11 +3170,38 @@ class PmsController extends Controller
             ->keyBy(function ($item) {
                 return $item->empid . '_' . $item->CompanyId;
             });
+            
+            // ✅ Move this BEFORE the foreach loop
+        //   $employeesNewUtkarsh = $employees->filter(function ($emp) {
+        //             $department = trim($emp->department_name);
+        //             $designation = trim($emp->designation_name);
+        //             $experienceYears = Carbon::parse($emp->DateJoining)->diffInYears(now());
+
+        //             return strcasecmp($department, 'Breeding') === 0 &&
+        //                 in_array(strtolower($designation), ['breeder', 'senior breeder','assistant breeder','principal breeder']) &&
+        //                 $experienceYears >= 10;
+        //         })->pluck('EmployeeID')->toArray();
 
 
+              // ✅ Now fetch employees who have HR ratings ≥ 3.7 at least 7 times
+        //     $utkarshByRating = DB::table('hrm_employee_pms as p')
+        //     ->join('hrm_employee as e', 'e.EmployeeID', '=', 'p.EmployeeID')
+        //     ->where('e.EmpStatus', 'A')
+        //     ->where('p.HR_Rating', '>=', 3.7)
+        //     ->groupBy('p.EmployeeID')
+        //     ->havingRaw('COUNT(*) >= 7')
+        //     ->pluck('p.EmployeeID')
+        //     ->toArray();
+
+        // // ✅ Combine both conditions
+        // $finalUtkarshEligible = array_intersect($employeesNewUtkarsh, $utkarshByRating);
+        // dd($finalUtkarshEligible);
         $employeeTableData = [];
 
         foreach ($employees as $res) {
+            // $isUtkarsh = in_array($res->EmployeeID, $finalUtkarshEligible);
+            $isUtkarsh = ($res->utkarsh_scheme_10 === 'Y' || $res->utkarsh_scheme_18 === 'Y');
+
             $joining = Carbon::parse($res->DateJoining);
             $pPrv = Carbon::parse("$pY-$prvMD");
             $pExtraOne = Carbon::parse("$pY-$extraOneMD");
@@ -3257,11 +3337,19 @@ class PmsController extends Controller
                 'EmpCurrCommunicationAlw' => $res->EmpCurrCommunicationAlw,
                 'EmpCurrCarAlw' => $res->EmpCurrCarAlw,
                 'RevID' => $res->RevID,
-
+                'zone_id' => $res->zone_id,
+                'bu_id' => $res->bu_id,
+                'UtkarshScheme' => $isUtkarsh ? 'Yes' : 'No',
             ];
         }
 
-        return view("employee.management-increment", compact('employeeTableData', 'PmsYId'));
+         $businessUnits = DB::table('core_business_unit')
+            ->select('id', 'business_unit_name')
+            ->where('is_active', 1)
+            ->where('business_type', 1)
+            ->get();
+
+        return view("employee.management-increment", compact('employeeTableData', 'PmsYId','businessUnits'));
     }
     public function managementIncrementbck()
     {
@@ -4068,7 +4156,7 @@ class PmsController extends Controller
         $CuDate = now()->format('Y-m-d');
 
 
-        $ratings = [1.0, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9, 5.0];
+        $ratings = [0.00,1.0, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9, 5.0];
 
         $ratingDataappnew = DB::table('hrm_employee_pms')
             ->join('hrm_employee', 'hrm_employee_pms.HOD_EmployeeID', '=', 'hrm_employee.EmployeeID')
@@ -13616,20 +13704,14 @@ class PmsController extends Controller
             $nextYear = $currentYear;
         }
 
+        $threeMonthsLater = $currentDate->copy()->addMonths(3)->toDateString();
+        $sixMonthsLater = $currentDate->copy()->addMonths(6)->toDateString();
+
+
+        //old code for reference
+
         // $upcomingEntries = DB::table('hrm_pms_kra_tgtdefin as t')
         //     ->whereIn('t.TgtDefId', $TgtDefIds)
-        //     ->where(function ($query) use ($currentDate, $currentYear, $currentMonth, $nextYear, $nextMonth) {
-        //         $query->where(function ($q) use ($currentDate, $currentYear, $currentMonth) {
-        //             $q->whereYear('t.Ldate', $currentYear)
-        //             ->whereMonth('t.Ldate', $currentMonth)
-        //             ->whereDate('t.Ldate', '>=', $currentDate->toDateString());
-        //         })
-        //         ->orWhere(function ($q) use ($nextYear, $nextMonth) {
-        //             $q->whereYear('t.Ldate', $nextYear)
-        //             ->whereMonth('t.Ldate', $nextMonth)
-        //             ->whereDay('t.Ldate', '<=', 7);
-        //         });
-        //     })
         //     ->leftJoin('hrm_pms_krasub as s', function ($join) {
         //         $join->on('t.KRASubId', '=', 's.KRASubId')
         //             ->where('t.KRASubId', '!=', 0);
@@ -13639,7 +13721,36 @@ class PmsController extends Controller
         //             ->where('t.KRAId', '!=', 0);
         //     })
         //     ->leftJoin('hrm_employee as e', 't.EmployeeID', '=', 'e.EmployeeID')
+        //     ->where(function ($query) use ($currentDate, $threeMonthsLater, $sixMonthsLater, $currentYear, $currentMonth, $nextYear, $nextMonth) {
+
+        //         $query->where(function ($q) use ($currentDate, $threeMonthsLater, $sixMonthsLater) {
+        //             $q->where(function ($qq) use ($currentDate, $threeMonthsLater) {
+        //                 $qq->whereIn(DB::raw('COALESCE(k.Period, s.Period)'), ['Quarter'])
+        //                     ->whereBetween('t.Ldate', [$currentDate->toDateString(), $threeMonthsLater]);
+        //             })
+        //                 ->orWhere(function ($qq) use ($currentDate, $sixMonthsLater) {
+        //                     $qq->whereIn(DB::raw('COALESCE(k.Period, s.Period)'), ['1/2 Annual'])
+        //                         ->whereBetween('t.Ldate', [$currentDate->toDateString(), $sixMonthsLater]);
+        //                 });
+        //         })
+
+        //             // Fallback for current month and next 7 days of next month
+        //             ->orWhere(function ($q) use ($currentDate, $currentYear, $currentMonth, $nextYear, $nextMonth) {
+        //                 $q->where(function ($qq) use ($currentDate, $currentYear, $currentMonth) {
+        //                     $qq->whereYear('t.Ldate', $currentYear)
+        //                         ->whereMonth('t.Ldate', $currentMonth)
+        //                         ->whereDate('t.Ldate', '>=', $currentDate->toDateString());
+        //                 })
+        //                     ->orWhere(function ($qq) use ($nextYear, $nextMonth) {
+        //                         $qq->whereYear('t.Ldate', $nextYear)
+        //                             ->whereMonth('t.Ldate', $nextMonth)
+        //                             ->whereDay('t.Ldate', '<=', 7);
+        //                     });
+        //             });
+        //     })
+        //     ->orderBy(DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname)"))
         //     ->orderBy('t.NtgtN')
+
         //     ->select([
         //         't.NtgtN',
         //         DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as FullName"),
@@ -13668,12 +13779,14 @@ class PmsController extends Controller
         //         DB::raw('COALESCE(k.Measure, s.Measure) as Measure'),
         //         DB::raw('COALESCE(k.Logic, s.Logic) as Logic'),
         //         DB::raw('COALESCE(k.Target, s.Target) as Target'),
-
         //     ])
-        // ->get();
-
-        $threeMonthsLater = $currentDate->copy()->addMonths(3)->toDateString();
-        $sixMonthsLater = $currentDate->copy()->addMonths(6)->toDateString();
+        //     ->get();
+        // Step 1: Check if any entries exist for current month
+        $hasCurrentMonthEntries = DB::table('hrm_pms_kra_tgtdefin as t')
+            ->whereIn('t.TgtDefId', $TgtDefIds)
+            ->whereYear('t.Ldate', $currentYear)
+            ->whereMonth('t.Ldate', $currentMonth)
+            ->exists();
 
         $upcomingEntries = DB::table('hrm_pms_kra_tgtdefin as t')
             ->whereIn('t.TgtDefId', $TgtDefIds)
@@ -13685,9 +13798,15 @@ class PmsController extends Controller
                 $join->on('t.KRAId', '=', 'k.KRAId')
                     ->where('t.KRAId', '!=', 0);
             })
-            ->leftJoin('hrm_employee as e', 't.EmployeeID', '=', 'e.EmployeeID')
-            ->where(function ($query) use ($currentDate, $threeMonthsLater, $sixMonthsLater, $currentYear, $currentMonth, $nextYear, $nextMonth) {
+            ->leftJoin('hrm_employee as e', 't.EmployeeID', '=', 'e.EmployeeID');
 
+        if ($hasCurrentMonthEntries) {
+            // If current month entries exist, restrict to current month ONLY
+            $upcomingEntries->whereYear('t.Ldate', $currentYear)
+                ->whereMonth('t.Ldate', $currentMonth);
+        } else {
+            // Else apply your existing complex conditions
+            $upcomingEntries->where(function ($query) use ($currentDate, $threeMonthsLater, $sixMonthsLater, $currentYear, $currentMonth, $nextYear, $nextMonth) {
                 $query->where(function ($q) use ($currentDate, $threeMonthsLater, $sixMonthsLater) {
                     $q->where(function ($qq) use ($currentDate, $threeMonthsLater) {
                         $qq->whereIn(DB::raw('COALESCE(k.Period, s.Period)'), ['Quarter'])
@@ -13698,8 +13817,6 @@ class PmsController extends Controller
                                 ->whereBetween('t.Ldate', [$currentDate->toDateString(), $sixMonthsLater]);
                         });
                 })
-
-                    // Fallback for current month and next 7 days of next month
                     ->orWhere(function ($q) use ($currentDate, $currentYear, $currentMonth, $nextYear, $nextMonth) {
                         $q->where(function ($qq) use ($currentDate, $currentYear, $currentMonth) {
                             $qq->whereYear('t.Ldate', $currentYear)
@@ -13712,10 +13829,12 @@ class PmsController extends Controller
                                     ->whereDay('t.Ldate', '<=', 7);
                             });
                     });
-            })
+            });
+        }
+
+        $upcomingEntries = $upcomingEntries
             ->orderBy(DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname)"))
             ->orderBy('t.NtgtN')
-
             ->select([
                 't.NtgtN',
                 DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as FullName"),
@@ -13746,6 +13865,7 @@ class PmsController extends Controller
                 DB::raw('COALESCE(k.Target, s.Target) as Target'),
             ])
             ->get();
+
 
         // Format dates
         $upcomingEntries->transform(function ($item) {
@@ -13847,5 +13967,24 @@ class PmsController extends Controller
             ->first();
 
         return response()->json($data);
+    }
+
+    public function get_zone_by_bu(Request $request)
+    {
+        $bu_id = $request->bu;
+        $zoneList = DB::table('core_bu_zone_mapping')
+            ->leftJoin('core_zones', 'core_zones.id', '=', 'core_bu_zone_mapping.zone_id')
+            ->where('business_unit_id', $bu_id)
+            ->get();
+        return response()->json(array('zoneList' => $zoneList));
+    }
+
+    public function get_region_by_zone(Request $request)
+    {
+        $zone_id = $request->zone;
+        $regionList = DB::table('core_zone_region_mapping')
+            ->leftJoin('core_regions', 'core_regions.id', '=', 'core_zone_region_mapping.region_id')
+            ->where('zone_id', $zone_id)->select(['core_regions.id', 'core_regions.region_name'])->get();
+        return response()->json(array('regionList' => $regionList));
     }
 }

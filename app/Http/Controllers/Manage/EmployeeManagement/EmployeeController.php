@@ -288,6 +288,7 @@ public function assignRoleBulk(Request $request)
     public function editPermissions($id)
     {
         $user = Employee::findOrFail($id);
+        $user->getDirectPermissions();
 
         $allPermissions = Permission::all();
 

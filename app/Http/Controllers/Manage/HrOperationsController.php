@@ -11,7 +11,10 @@ use App\Models\Backend\MasterTransactionName;
 use App\Models\Backend\Activity;
 use App\Models\Backend\EventsMaster;
 use App\Models\Backend\NotificationMaster;
+use App\Models\Backend\Policy;
 use App\Models\Backend\ReasonMaster;
+use App\Models\Backend\Report;
+
 
 class HrOperationsController extends Controller
 {
@@ -59,8 +62,9 @@ class HrOperationsController extends Controller
         return view('manage.hroperations.hroperationview.notification',compact('notifications'));
     }
     public function policy()
-    {
-        return view('manage.hroperations.hroperationview.policy');
+    {        
+        $policies = Policy::all();
+        return view('manage.hroperations.hroperationview.policy',compact('policies'));
     }
     public function reason()
     {
@@ -69,7 +73,9 @@ class HrOperationsController extends Controller
     }
     public function reports()
     {
-        return view('manage.hroperations.hroperationview.report');
+        $reports = Report::all();
+
+        return view('manage.hroperations.hroperationview.report',compact('reports'));
     }
    public function store(Request $request)
     {

@@ -18,9 +18,9 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 
 class EmployeeScoreExport implements FromView, WithStyles, WithColumnFormatting, WithHeadings,ShouldAutoSize
 {
-    protected $employeeId, $pmsYId, $department, $grade, $state, $region;
+    protected $employeeId, $pmsYId, $department, $grade, $state, $region , $zone, $bu;
 
-    public function __construct($employeeId, $pmsYId, $department = null, $grade = null, $state = null, $region = null)
+    public function __construct($employeeId, $pmsYId, $department = null, $grade = null, $state = null, $region = null, $zone = null, $bu = null)
     {
         $this->employeeId = $employeeId;
         $this->pmsYId = $pmsYId;
@@ -28,6 +28,8 @@ class EmployeeScoreExport implements FromView, WithStyles, WithColumnFormatting,
         $this->grade = $grade;
         $this->state = $state;
         $this->region = $region;
+        $this->zone = $zone;
+        $this->bu = $bu;
     }
     public function view(): View
     {
@@ -42,7 +44,9 @@ class EmployeeScoreExport implements FromView, WithStyles, WithColumnFormatting,
             ->leftJoin('core_city_village_by_state as hq', 'emp.HqId', '=', 'hq.id')
             ->leftJoin('core_grades as grade', 'emp.GradeId', '=', 'grade.id')
             ->leftJoin('core_designation as desig', 'emp.DesigId', '=', 'desig.id')
-            ->leftJoin('core_regions as region', 'emp.TerrId', '=', 'region.id')
+            ->leftJoin('core_regions as region', 'emp.RegionId', '=', 'region.id')
+            ->leftJoin('core_zones as zones', 'emp.ZoneId', '=', 'zones.id')
+            ->leftJoin('core_business_unit as bu', 'emp.BUId', '=', 'bu.id')
             ->leftJoin('hrm_employee_pms as pms', function ($join) {
                 $join->on('emp.EmployeeID', '=', 'pms.EmployeeID')
                     ->where('pms.HOD_EmployeeID', '=', $this->employeeId)
@@ -68,6 +72,8 @@ class EmployeeScoreExport implements FromView, WithStyles, WithColumnFormatting,
                 'hq.city_village_name',
                 'hq.id',
                 'region.region_name',
+                'zones.id as zone_id',
+                'bu.id as bu_id',
                 'desig.designation_name',
                 'pms.Emp_TotalFinalScore',
                 'pms.Emp_TotalFinalRating',
@@ -106,9 +112,25 @@ class EmployeeScoreExport implements FromView, WithStyles, WithColumnFormatting,
                         if (!empty($this->grade)) {
                             $match = $match && (strcasecmp(trim($item->grade_name), trim($this->grade)) === 0);
                         }
+                       // REGION
+                        if (!empty($this->region) && strtolower($this->region) !== 'undefined' && strtolower($this->region) !== 'null') {
+                            $match = $match && (trim((string)$item->region_name) === trim((string)$this->region));
+                        }
+
+                        // ZONE
+                        if (!empty($this->zone) && strtolower($this->zone) !== 'undefined' && strtolower($this->zone) !== 'null') {
+                            $match = $match && (trim((string)$item->zone_id) === trim((string)$this->zone));
+                        }
+
+                        // BU
+                        if (!empty($this->bu) && strtolower($this->bu) !== 'undefined' && strtolower($this->bu) !== 'null') {
+                            $match = $match && (trim((string)$item->bu_id) === trim((string)$this->bu));
+                        }
+
         
                         return $match;
                     })->values(); // Reset keys
+
 
 
         return view('exports.employeescoremanagement', compact('details'));

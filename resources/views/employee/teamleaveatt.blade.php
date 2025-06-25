@@ -1523,7 +1523,7 @@
     //     $('#leaveStatusFilter').trigger('change'); // Trigger the change to apply default "Pending" filter
     // });
     function toggleLoader() {
-            document.getElementById('loader').style.display = 'block'; // Show the loader
+            document.getElementById('loader').style.display = ''; // Show the loader
         }
 
     // Optional: If you want to hide the loader after the page has loaded, 

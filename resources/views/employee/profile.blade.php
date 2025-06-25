@@ -45,10 +45,6 @@
                                         </div> -->
                                         @php
                                             $imagpath = Auth::user()->CompanyId;
-                                            $designationMenu = $essMenus->firstWhere('name', 'Navbar_Designation_Dropdown');
-                                            $profileblockMenu = $essMenus->firstWhere('name', 'Profile_Block');
-                                            $profileblockReportingMenu = $essMenus->firstWhere('name', 'Profile_Reporting_Section');
-
                                             @endphp
 
                                         <div class="profile-info">
@@ -64,32 +60,21 @@
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
                                             <br>
-                                            @if ($designationMenu && $designationMenu->is_visible)
-                                                <span>{{ Auth::user()->designation->designation_name ?? '' }}</span>
-                                            @else
-                                                <span>-</span>
-                                            @endif
+                                            <span>{{ Auth::user()->designation->designation_name ?? '' }}
+                                                <!-- /{{Auth::user()->grade->GradeValue ?? 'Not Assign'}} -->
+                                            </span>
                                             <h4 style="color:#000;"><b>EC-</b>{{ Auth::user()->EmpCode}}</h4>
                                         </div>
                                     </div>
                                     <div class="row mt-5">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                                             <div class="profile-details">
-                                                @if ($profileblockMenu && $profileblockMenu->is_visible)
-                                                    <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->vertical_name ?? '-'}}</span>
-                                                    </p>
-                                                    <p><strong>Department</strong><br><span>{{Auth::user()->department->department_name ?? 'Not Assign'}}</span>
-                                                    </p>
-                                                    <p><strong>Grade</strong><br><span>{{Auth::user()->grade->grade_name ?? 'Not Assign'}}</span>
-                                                    </p>
-                                                @else
-                                                    <p><strong>Vertical</strong><br><span>-</span>
-                                                    </p>
-                                                    <p><strong>Department</strong><br><span>-</span>
-                                                    </p>
-                                                    <p><strong>Grade</strong><br><span>-</span>
-                                                    </p>
-                                                @endif
+                                                <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->vertical_name ?? '-'}}</span>
+                                                </p>
+                                                <p><strong>Department</strong><br><span>{{Auth::user()->department->department_name ?? 'Not Assign'}}</span>
+                                                </p>
+                                                <p><strong>Grade</strong><br><span>{{Auth::user()->grade->grade_name ?? 'Not Assign'}}</span>
+                                                </p>
                                                 <p>
                                                     <strong>Date of Joining</strong><br>
                                                     <span>
@@ -105,52 +90,29 @@
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                                             <div class="profile-details">
-                                                @if ($profileblockMenu && $profileblockMenu->is_visible)
+                                                <p><strong>Function</strong><br>
+                                                    <span>
+                                                        {{ 
+                                                           $functionName
+                                                                ?? '' 
+                                                        }}
+                                                    </span>
+                                                </p>
+                                                @if($buData)
+                                                <p><strong>Bussiness Unit</strong><br><span>{{$buData->business_unit_name}}</span></p>
+                                                @endif
+                                                @if($zoneData)
+                                                <p><strong>Zone</strong><br><span>{{$zoneData->zone_name}}</span></p>
+                                                @endif
 
-                                                    <p><strong>Function</strong><br>
-                                                        <span>
-                                                            {{ 
-                                                            $functionName
-                                                                    ?? '' 
-                                                            }}
-                                                        </span>
-                                                    </p>
-                                                    @if($buData)
-                                                    <p><strong>Bussiness Unit</strong><br><span>{{$buData->business_unit_name}}</span></p>
-                                                    @endif
-                                                    @if($zoneData)
-                                                    <p><strong>Zone</strong><br><span>{{$zoneData->zone_name}}</span></p>
-                                                    @endif
+                                                @if($regionData)
+                                                <p><strong>Region</strong><br><span>{{$regionData->region_name}}</span></p>
+                                                @endif
 
-                                                    @if($regionData)
-                                                    <p><strong>Region</strong><br><span>{{$regionData->region_name}}</span></p>
-                                                    @endif
-
-                                                    @if($territoryData)
-                                                    <p><strong>Territory</strong><br><span>{{$territoryData->territory_name}}</span></p>
-                                                    @else
-                                                    <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
-                                                    @endif
-
-                                                    @else
-                                                    <p><strong>Function</strong><br><span>-</span></p>
-                                                    @if($buData)
-                                                    <p><strong>Bussiness Unit</strong><br><span>-</span></p>
-                                                    @endif
-                                                    @if($zoneData)
-                                                    <p><strong>Zone</strong><br><span>-</span></p>
-                                                    @endif
-
-                                                    @if($regionData)
-                                                    <p><strong>Region</strong><br><span>-</span></p>
-                                                    @endif
-
-                                                    @if($territoryData)
-                                                    <p><strong>Territory</strong><br><span>-</span></p>
-                                                    @else
-                                                    <p><strong>HQ</strong><br><span>-</span></p>
-                                                    @endif
-
+                                                @if($territoryData)
+                                                <p><strong>Territory</strong><br><span>{{$territoryData->territory_name}}</span></p>
+                                                @else
+                                                <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
                                                 @endif
                                             </div>
                                         </div>
@@ -353,41 +315,21 @@
                                                     <h5><b>Reporting</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                                    @if ($profileblockReportingMenu && $profileblockReportingMenu->is_visible)
-                                                        <p><strong>Name:</strong><br>
-                                                            <span>
-                                                                {{ ($repEmployeeDataprofile->fname ?? '-') .' '. ($repEmployeeDataprofile->sname ?? '-') .' '. ($repEmployeeDataprofile->lname ?? '-') }}
-                                                            </span>
-                                                        </p>
-                                                        <p><strong>Designation:</strong><br>
-                                                            <span>{{ $repEmployeeDataprofile->designation_name ?? '-' }}</span>
-                                                        </p>
-                                                        <p><strong>Contact No.:</strong><br>
-                                                            <span>{{ $repEmployeeDataprofile->MobileNo ?? '-' }}</span>
-                                                        </p>
-                                                        <p><strong>Email Id:</strong><br>
-                                                            <span>{{ $repEmployeeDataprofile->EmailId_Vnr ?? '-' }}</span>
-                                                        </p>
-                                                    @else
-                                                    <p><strong>Name:</strong><br>
-                                                            <span>
-                                                                -
-                                                            </span>
-                                                        </p>
-                                                        <p><strong>Designation:</strong><br>
-                                                            <span>-</span>
-                                                        </p>
-                                                        <p><strong>Contact No.:</strong><br>
-                                                            <span>-</span>
-                                                        </p>
-                                                        <p><strong>Email Id:</strong><br>
-                                                            <span>-</span>
-                                                        </p>
-                                                    @endif
-                                                
-                                                
-                                                </div>
-
+                                        <p><strong>Name:</strong><br>
+                                            <span>
+                                                {{ ($repEmployeeDataprofile->fname ?? '-') .' '. ($repEmployeeDataprofile->sname ?? '-') .' '. ($repEmployeeDataprofile->lname ?? '-') }}
+                                            </span>
+                                        </p>
+                                        <p><strong>Designation:</strong><br>
+                                            <span>{{ $repEmployeeDataprofile->designation_name ?? '-' }}</span>
+                                        </p>
+                                        <p><strong>Contact No.:</strong><br>
+                                            <span>{{ $repEmployeeDataprofile->MobileNo ?? '-' }}</span>
+                                        </p>
+                                        <p><strong>Email Id:</strong><br>
+                                            <span>{{ $repEmployeeDataprofile->EmailId_Vnr ?? '-' }}</span>
+                                        </p>
+                                    </div>
 
                                             </div>
                                         </div> 
@@ -519,10 +461,10 @@
                                                                 @endphp
                                                                     
                                                                     <tr>
-                                                                        <td><b>Group Health Insurance Policy No.</b></td><td>{{ $policyNumbers[$companyId]['health'] }}</td>
+                                                                        <td><b>Group Health Insurance Policy No.</b></td><td>{{ $policyNumbers[$companyId]['health'] ?? '' }}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><b>Group Term Insurance Policy No.</b></td><td>{{ $policyNumbers[$companyId]['term'] }}</td>
+                                                                        <td><b>Group Term Insurance Policy No.</b></td><td>{{ $policyNumbers[$companyId]['term'] ?? '' }}</td>
                                                                     </tr>
                                                                    <tr>
                                                                         <td><b>Mediclaim Policy No.</b></td>
@@ -1164,7 +1106,7 @@
                                                     @if($tdsAExists || $tdsBExists)
                                                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2" >
                                                             <div class="card-header" style="background-color: #ececec;">
-                                                                <h5><b>TDS Cert. 2024-25</b></h5>
+                                                                <h5><b>TDS Cert. 2023-24</b></h5>
                                                             </div>
                                                             <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
                                                                 <ul class="help-list" style="width:100%;">
@@ -1185,7 +1127,29 @@
                                                         </div>
                                                     @endif
                                                     
-                                                    @if($companyId == 1)
+                                                   
+                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2" >
+                                                            <div class="card-header" style="background-color: #ececec;">
+                                                                <h5><b>TDS Cert. 2024-25 <span class="blink text-danger">Latest</span></b></h5>
+                                                            </div>
+                                                            <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
+                                                                <ul class="help-list" style="width:100%;">
+                                                               
+                                                                    <li><b>Form-A</b>  <a style="float:right;" href="{{ url("Employee/ImgTds{$companyId}242025/" . Auth::user()->personaldetails->PanNo . "_2025-26.pdf") }}" target="_blank" >
+                                                                        <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                    </a></li>
+                                                             
+                                                                    <li><b>Form-B</b>  
+                                                                    <a  style="float: right;" href="{{ url("Employee/ImgTds{$companyId}242025/" . Auth::user()->personaldetails->PanNo . "_PARTB_2025-26.pdf") }}" target="_blank" >
+                                                                        <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                    </a>
+                                                               
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                   
+                                                    
+                                                    @if($companyId == 12)
                                                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>Ledger</b></h5>
@@ -1193,7 +1157,7 @@
                                                             <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
                                                                 <ul class="help-list" style="width:100%;">
                                                                     @if(isset($encryptedEmpCode))  <!-- Check if the encrypted code exists -->
-                                                                        <li><b>Ledger 2023-24</b> 
+                                                                        <li><b>Ledger 2024-25 <span class="blink text-danger">Latest</span></b></b> 
                                                                         <!-- Use the encrypted empCode in the URL -->
                                                                         <a style="float: right;" href="{{ url('Employee/Emp' . $companyId . 'Lgr/' . $encryptedEmpCode . '.pdf') }}" target="_blank">
                                                                             <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
@@ -1204,15 +1168,15 @@
                                                                     @endif
                                                                   
 
-                                                                     <li><b>Ledger 2024-25</b>
+                                                                    <!-- <li><b>Ledger 2024-25</b>-->
                                                                         <!-- Full link structure retained -->
-                                                                        <a style="float: right;" href="#">
+                                                                    <!--    <a style="float: right;" href="#">-->
                                                                             <!-- Eye icon triggers the modal -->
-                                                                            <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
-                                                                            | 
-                                                                            <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
-                                                                        </a>
-                                                                    </li>
+                                                                    <!--        <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> -->
+                                                                    <!--        | -->
+                                                                    <!--        <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> -->
+                                                                    <!--    </a>-->
+                                                                    <!--</li>-->
 
                                                                 </ul>
                                                             </div>

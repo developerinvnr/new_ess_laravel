@@ -349,6 +349,13 @@
                                              <option value="3">Closed</option>
                                              <option value="4">Forward</option>
                                           </select>
+                                          @if(Auth::user()->EmployeeID == 1707 || Auth::user()->EmployeeID == 1763 )
+                                          <select id="subjectFilter" style="float:right; margin-right: 10px;">
+                                             <option value="">Subjects</option>
+                                             <option value="Ledger Confirmation">Ledger Confirmation</option>
+                                          </select>
+                                          @endif
+
                                        </div>
                                     </div>
                                     <div class="card-body table-responsive">
@@ -361,7 +368,8 @@
                                                 <th>Query Requested At</th>
                                                 <th>Query Details</th>
                                                 <th>Employee Status</th>
-                                                <th>Level 1 Status</th>
+                                                <th>Level 1Status</th>
+                                                <th style="width: 150px;">Level 1 Ldate</th>
                                                 <th>Level 2 Status</th>
                                                 <th>Level 3 Status</th>
                                             
@@ -420,31 +428,8 @@
                                                       <td>
                                                             <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
                                                             <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
-                                                            <strong>Query to:</strong>
-                                                                     {{-- ✅ Loop through each level and print forwarded names --}}
-                                                                     @php
-                                                                        $forwardLevels = [1, 2, 3];
-                                                                     @endphp
-                                                                     @foreach($forwardLevels as $level)
-                                                                        @php
-                                                                           $names = collect([
-                                                                                 $query->{'Level_' . $level . 'QFwdEmpId_name'},
-                                                                                 $query->{'Level_' . $level . 'QFwdEmpId2_name'},
-                                                                                 $query->{'Level_' . $level . 'QFwdEmpId3_name'},
-                                                                           ])->filter();
-                                                                        @endphp
-                                                                        @if($names->isNotEmpty())
-                                                                           <div style="margin-top: 4px;">
-                                                                                 <span style="color:#f10519; font-weight:bold;">Level {{ $level }} forwarded to:</span>
-                                                                                 @foreach($names as $name)
-                                                                                    <span style="background:#e8f0fe; padding:2px 6px; border-radius:4px; margin-right:4px;">
-                                                                                       {{ $name }}
-                                                                                    </span>
-                                                                                 @endforeach
-                                                                           </div>
-                                                                        @endif
-                                                                     @endforeach
-                                                               </td>                                                            </td>
+                                                            <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->department_name ?? 'N/A' }} <br>
+                                                            </td>
                                                             <td>{{ \Carbon\Carbon::parse($query->QueryDT)->format('j F Y') }}</td>
                                                             @if($query->QueryStatus_Emp != "")
                                                                   <td>
@@ -627,6 +612,8 @@
                      <input type="text" id="querySubjectValue" class="form-control" name="querySubjectValue"
                         readonly>
                   </div>
+                 <div id="remarksDisplay" class="form-control-plaintext mb-1"></div>
+
                   
                   <!-- <div class="form-group mb-0">
                      <label for="queryDepartment"><b>Query Department</b></label>
@@ -638,7 +625,7 @@
 
                         <div class="status-dropdown-wrapper">
                            <select id="status" class="select2 form-control select-opt" name="status">
-                              <option value="" disabled selected>Select Status</option>
+                              <option value="0" disabled selected>Select Status</option>
                               <option value="1">In Progress</option>
                               <option value="2">Reply</option>
                               <option value="4">Forward</option>
@@ -873,7 +860,6 @@
                    <div class="form-group s-opt" id="ratingSection" style="display: none;">
                               <label for="rating">Rating (1 to 5)</label>
                               <select id="rating" class="select2 form-control select-opt">
-                                 <option value="" disabled selected>Select Rating</option>
                                  <option value="1">1</option>
                                  <option value="2">2</option>
                                  <option value="3">3</option>
@@ -1062,19 +1048,11 @@ $(document).ready(function () {
                   default:
                      statusClass = '';  // No class if status is unknown
                }
-             
+
                // Apply the class to the element
                document.getElementById('level1Status').className = statusClass;
                document.getElementById('level1Date').innerText = formatDateddmmyyyy(response.data.level1Date);
-               // Fallback logic for Level 1 Remarks
-               let level1Remark =
-                  response.data.level1Remarks?.trim() ||
-                  response.data.level1Remarks_for1?.trim() ||
-                  response.data.level1Remarks_for2?.trim() ||
-                  response.data.level1Remarks_for3?.trim() ||
-                  '';
-
-               document.getElementById('level1Remarks').innerText = level1Remark;
+               document.getElementById('level1Remarks').innerText = response.data.level1Remarks;
                document.getElementById('level2Status').innerText = response.data.level2Status;
 
                // Add corresponding class based on the level2Status value

@@ -676,3 +676,9 @@
     });
 
 </script>
+<style>
+    #companytable th, 
+    #companytable td {
+        text-align: center;
+    }
+</style>

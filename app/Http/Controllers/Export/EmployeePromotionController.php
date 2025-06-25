@@ -17,9 +17,11 @@ class EmployeePromotionController extends Controller // Extending the correct ba
         $grade = $request->input('grade');
         $state = $request->input('state');
         $region = $request->input('region');
+        $zone = $request->input('zone');
+        $bu = $request->input('bu');
     
         return Excel::download(
-            new EmployeePromotionExport($employeeId, $pmsYId, $department, $grade, $state, $region),
+            new EmployeePromotionExport($employeeId, $pmsYId, $department, $grade, $state, $region, $zone, $bu),
             'ExportPromotionData.xlsx'
         );
 }

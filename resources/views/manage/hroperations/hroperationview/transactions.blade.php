@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="modal-body">
-                    
+
                     <div id="errorMsg" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
                         <span class="message-text"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -164,7 +164,7 @@
                     // Hide error if previously shown
                     errorBox.classList.add('d-none');
 
-                                // Show success message above table
+                    // Show success message above table
                     const messageElement = msg.querySelector('.message-text');
                     console.log('messageElement:', messageElement); // Debug line
 
@@ -350,7 +350,7 @@
         });
     });
 
-    $(document).on('click', '.delete-btn', function () {
+    $(document).on('click', '.delete-btn', function() {
         const btn = $(this);
         const id = btn.data('id');
 
@@ -364,7 +364,7 @@
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            success: function (res) {
+            success: function(res) {
                 if (res.success) {
                     // Remove the deleted row
                     const row = btn.closest('tr');
@@ -372,7 +372,7 @@
                     row.remove();
 
                     // Remove any child rows
-                    $('#companytable tbody tr').each(function () {
+                    $('#companytable tbody tr').each(function() {
                         const childRow = $(this);
                         const parentId = childRow.find('td').eq(2).data('parentid');
                         if (parentId == id) {
@@ -384,7 +384,7 @@
                     $('select[name="parentid"] option[value="' + id + '"]').remove();
 
                     // ✅ Recalculate and update SR No. for all remaining rows
-                    $('#companytable tbody tr').each(function (index) {
+                    $('#companytable tbody tr').each(function(index) {
                         $(this).find('td').eq(0).text(index + 1);
                     });
 
@@ -392,52 +392,57 @@
                     $('#successMsg').text(res.success).removeClass('d-none');
 
                     setTimeout(() => {
-                    $('#successMsg').addClass('d-none');
+                        $('#successMsg').addClass('d-none');
                     }, 3000);
                 }
             },
-            error: function () {
+            error: function() {
                 alert('Failed to delete transaction.');
             }
         });
     });
 
-document.getElementById('AddTranModal').addEventListener('show.bs.modal', function () {
-    const form = document.getElementById('transactionForm');
-    const successMsg = document.getElementById('successMsg');
-    const errorMsg = document.getElementById('errorMsg');
-    const select = document.getElementById('parentidSelect');
+    document.getElementById('AddTranModal').addEventListener('show.bs.modal', function() {
+        const form = document.getElementById('transactionForm');
+        const successMsg = document.getElementById('successMsg');
+        const errorMsg = document.getElementById('errorMsg');
+        const select = document.getElementById('parentidSelect');
 
-    // Reset the form
-    form.reset();
+        // Reset the form
+        form.reset();
 
-    // Hide any messages
-    if (successMsg) successMsg.classList.add('d-none');
-    if (errorMsg) errorMsg.classList.add('d-none');
+        // Hide any messages
+        if (successMsg) successMsg.classList.add('d-none');
+        if (errorMsg) errorMsg.classList.add('d-none');
 
-    // Clear the message text inside if applicable
-    const successText = successMsg?.querySelector('.message-text');
-    if (successText) successText.textContent = '';
+        // Clear the message text inside if applicable
+        const successText = successMsg?.querySelector('.message-text');
+        if (successText) successText.textContent = '';
 
-    // Clear old select options and add default
-    select.innerHTML = '<option value="">Select</option>';
+        // Clear old select options and add default
+        select.innerHTML = '<option value="">Select</option>';
 
-    // Fetch new options
-    fetch("{{ route('parent.options.modal') }}")
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            data.forEach(function (transaction) {
-                const option = document.createElement('option');
-                option.value = transaction.id;
-                option.textContent = transaction.name;
-                select.appendChild(option);
+        // Fetch new options
+        fetch("{{ route('parent.options.modal') }}")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                data.forEach(function(transaction) {
+                    const option = document.createElement('option');
+                    option.value = transaction.id;
+                    option.textContent = transaction.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading parent options:", error);
             });
-        })
-        .catch(error => {
-            console.error("Error loading parent options:", error);
-        });
-});
-
-
+    });
 </script>
+
+<style>
+    #companytable th, 
+    #companytable td {
+        text-align: center;
+    }
+</style>

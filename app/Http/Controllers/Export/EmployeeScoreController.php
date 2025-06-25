@@ -11,14 +11,15 @@ class EmployeeScoreController extends Controller // Extending the correct base c
 {
     public function exportScoreData(Request $request)
     {
-
         $employeeId = $request->input('employee_id');
         $pmsYId = $request->input('pms_year_id');
         $department = $request->input('department');
         $grade = $request->input('grade');
         $state = $request->input('state');
         $region = $request->input('region');
+        $zone = $request->input('zone');
+        $bu = $request->input('bu');
     
-        return Excel::download(new EmployeeScoreExport($employeeId, $pmsYId, $department, $grade, $state, $region), 'ExportScoreData.xlsx');
+        return Excel::download(new EmployeeScoreExport($employeeId, $pmsYId, $department, $grade, $state, $region,$zone,$bu), 'ExportScoreData.xlsx');
     }
 }

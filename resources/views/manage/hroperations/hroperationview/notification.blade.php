@@ -22,8 +22,11 @@
 
             <div class="card-body table-responsive">
                 <div id="successMessage" class="alert alert-success d-none" role="alert"></div>
+                <div id="deleteMessageSuccess" class="alert alert-danger d-none" role="alert"></div>
+                <div id="deleteMessageError" class="alert alert-danger d-none" role="alert"></div>
 
-                <table id="companytable" class="table table-bordered table-striped align-middle" style="width:100%">
+
+                <table id="notificationtable" class="table table-bordered table-striped align-middle" style="width:100%">
                     <thead>
                         <tr>
                             <th>SR No.</th>
@@ -189,7 +192,14 @@
 <!-- CKEditor Modal Activation Script -->
 <script>
     const modal = document.getElementById('AddNotificationModal');
-    console.log(modal);
+
+    function showSuccessMessage(message) {
+        $('#successMessage').removeClass('d-none').html(`<div">${message}</div>`);
+        setTimeout(() => {
+            $('#successMessage').addClass('d-none').html('');
+        }, 2000);
+    }
+
 
     modal.addEventListener('shown.bs.modal', function() {
         if (CKEDITOR.instances['messageEditor']) {
@@ -227,7 +237,8 @@
                 $('#errorMessage').addClass('d-none').text('');
 
                 // Show success message above the table
-                $('#successMessage').removeClass('d-none').text('Notification added successfully.');
+                // $('#successMessage').removeClass('d-none').text('Notification added successfully.');
+                showSuccessMessage('Notification added successfully.');
 
                 // Hide modal
                 $('#AddNotificationModal').modal('hide');
@@ -235,7 +246,7 @@
                 // Append new row to the table
                 let newRow = `
                 <tr>
-                    <td>${$('#companytable tbody tr').length + 1}</td>
+                    <td>${$('#notificationtable tbody tr').length + 1}</td>
                     <td>${response.name}</td>
                     <td>${response.notification_type}</td>
                     <td>${response.message}</td>
@@ -258,7 +269,7 @@
                     </td>
                     </tr>`;
 
-                $('#companytable tbody').append(newRow);
+                $('#notificationtable tbody').append(newRow);
 
                 // Optional: Clear form
                 $('#notificationform')[0].reset();
@@ -302,7 +313,7 @@
     let editMessageTemp = ''; // Temporarily store message before CKEditor loads
 
     // When Edit button is clicked
-    $(document).on('click', '.edit-btn', function () {
+    $(document).on('click', '.edit-btn', function() {
         const id = $(this).data('id');
         const name = $(this).data('name');
         const message = $(this).data('message');
@@ -325,80 +336,86 @@
     });
 
     // Submit Edit Form via AJAX
-    $('#editNotificationForm').on('submit', function (e) {
-    e.preventDefault();
+    $('#editNotificationForm').on('submit', function(e) {
+        e.preventDefault();
 
-    // Sync CKEditor content
-    for (const instance in CKEDITOR.instances) {
-        CKEDITOR.instances[instance].updateElement();
-    }
+        // Sync CKEditor content
+        for (const instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
 
-    const formData = $(this).serialize();
-    const id = $('#edit_notification_id').val();
-    let updateUrlTemplate = '{{ route("notifications.update", ":id") }}';
+        const formData = $(this).serialize();
+        const id = $('#edit_notification_id').val();
+        let updateUrlTemplate = '{{ route("notifications.update", ":id") }}';
         let url = updateUrlTemplate.replace(':id', id);
-    $.ajax({
-        url: url,
-        method: 'POST',
-        data: formData,
-        headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (response) {
-        $('#EditNotificationModal').modal('hide');
-        $('#edit_error').html('');
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                $('#EditNotificationModal').modal('hide');
+                $('#edit_error').html('');
 
-        // ✅ Show success
-        $('#successMsg').html(`<div class="alert alert-success py-2 mb-2">Notification updated successfully.</div>`);
+                // ✅ Show success
+                showSuccessMessage('Notification updated successfully.');
+                const serialNo = $('#notificationtanlebody tr').length + 1;
 
-        // ✅ Optionally, update the table row (find by id or refresh table)
-        $(`button.edit-btn[data-id="${response.id}"]`).closest('tr').html(`
-            <td>${response.rownum}</td>
-            <td>${response.name}</td>
-            <td>${response.type}</td>
-            <td>${response.message}</td>
-            <td>
-            ${response.status === 'Active' 
-                ? '<span class="badge bg-success-subtle text-success">Active</span>' 
-                : '<span class="badge bg-danger-subtle text-danger">Deactive</span>'}
-            </td>
-            <td>
-            <button class="btn btn-sm btn-link text-primary edit-btn"
-                data-id="${response.id}"
-                data-name="${response.name}"
-                data-message="${response.message}"
-                data-notification_type="${response.type}"
-                data-status="${response.status}">
-                <i class="bx bx-pencil"></i>
-            </button>
-            </td>
-        `);
-        },
-        error: function (xhr) {
-        let errorMsg = 'An error occurred.';
-        if (xhr.responseJSON?.message) {
-            errorMsg = xhr.responseJSON.message;
-        }
-        $('#edit_error').html(`<div class="text-danger small">${errorMsg}</div>`);
-        }
-    });
+                // ✅ Optionally, update the table row (find by id or refresh table)
+                $(`button.edit-btn[data-id="${response.id}"]`).closest('tr').html(`
+                <td></td>
+                <td>${response.name}</td>
+                <td>${response.notification_type}</td>
+                <td>${response.message}</td>
+                <td>
+                ${response.status === 'Active' 
+                    ? '<span class="badge bg-success-subtle text-success">Active</span>' 
+                    : '<span class="badge bg-danger-subtle text-danger">Deactive</span>'}
+                </td>
+                <td>
+                <button class="btn btn-sm btn-link text-primary edit-btn"
+                    data-id="${response.id}"
+                    data-name="${response.name}"
+                    data-message="${response.message}"
+                    data-notification_type="${response.notification_type}"
+                    data-status="${response.status}">
+                    <i class="bx bx-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-link text-danger delete-btn" data-id="${response.id}" title="Delete"><i class="bx bx-trash"></i></button>
+                </td>
+            `);
+                // ✅ Fix SR No. after replacement
+                $('#notificationtanlebody tr').each(function(index) {
+                    $(this).find('td:first').text(index + 1);
+                });
+            },
+            error: function(xhr) {
+                let errorMsg = 'An error occurred.';
+                if (xhr.responseJSON?.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                $('#edit_error').html(`<div class="text-danger small">${errorMsg}</div>`);
+            }
+        });
     });
 
     // Update hidden name when type or input changes
-    $('#edit_notiType').on('change', function () {
+    $('#edit_notiType').on('change', function() {
         const type = $(this).val();
         $('#edit_notiPrefix').text(type);
         const name = $('#edit_notiNameInput').val();
         $('#edit_hiddenName').val(type + '_' + name);
     });
 
-    $('#edit_notiNameInput').on('input', function () {
+    $('#edit_notiNameInput').on('input', function() {
         const type = $('#edit_notiType').val();
         $('#edit_hiddenName').val(type + '_' + $(this).val());
     });
 
     // Initialize CKEditor and load message AFTER modal is fully shown
-    $('#EditNotificationModal').on('shown.bs.modal', function () {
+    $('#EditNotificationModal').on('shown.bs.modal', function() {
         if (CKEDITOR.instances['edit_messageEditor']) {
             CKEDITOR.instances['edit_messageEditor'].destroy(true);
         }
@@ -415,7 +432,7 @@
     });
 
     // Clean up CKEditor instance when modal is hidden
-    $('#EditNotificationModal').on('hidden.bs.modal', function () {
+    $('#EditNotificationModal').on('hidden.bs.modal', function() {
         if (CKEDITOR.instances['edit_messageEditor']) {
             CKEDITOR.instances['edit_messageEditor'].destroy(true);
         }
@@ -433,9 +450,40 @@
         const type = $('#edit_notiType').val();
         $('#edit_hiddenName').val(type + '_' + $(this).val());
     });
+
+    $(document).on('click', '.delete-btn', function() {
+        const eventsId = $(this).data('id');
+        const deleteUrl = '{{ route("notifications.destroy", ":id") }}'.replace(':id', eventsId);
+
+        if (confirm('Are you sure you want to delete this activity?')) {
+            $.ajax({
+                url: deleteUrl,
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $(`#notificationtanlebody tr[data-id="${eventsId}"]`).remove(); // Remove the row
+                        $('#deleteMessageSuccess').html(`<div class="alert alert-success py-2 mb-2">Notification deleted successfully.</div>`);
+                    } else {
+                        $('#deleteMessageError').html(`<div class="alert alert-success py-2 mb-2">Error occur unable to delete .</div>`);
+                    }
+                },
+                error: function() {
+                    $('#deleteMessageError').html(`<div class="alert alert-success py-2 mb-2">Error occur unable to delete .</div>`);
+
+                }
+            });
+        }
+    });
 </script>
 <style>
     #successMessage {
         transition: all 0.5s ease;
+    }
+      #notificationtable th, 
+    #notificationtable td {
+        text-align: center;
     }
 </style>

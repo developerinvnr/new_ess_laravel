@@ -177,9 +177,23 @@ $('.star').on('click', function() {
                         var day = ('0' + date.getDate()).slice(-2); // Pad day with leading zero if needed
                         var month = ('0' + (date.getMonth() + 1)).slice(-2); // Pad month with leading zero if needed
                         var year = date.getFullYear();
+
+                         var dateLevedl1 = new Date(query.Level_2QToDT);
+                    
+                        // Extract day, month, and year
+                        var dayLevel1 = ('0' + dateLevedl1.getDate()).slice(-2); // Pad day with leading zero if needed
+                        var monthLevel1= ('0' + (dateLevedl1.getMonth() + 1)).slice(-2); // Pad month with leading zero if needed
+                        var yearLevel1 = dateLevedl1.getFullYear();
                     
                         // Format as dd-mm-yyyy
                         var formattedDate = day + '-' + month + '-' + year;
+                       
+                    var dateObj = new Date(yearLevel1, parseInt(monthLevel1) - 1, parseInt(dayLevel1));
+                    dateObj.setDate(dateObj.getDate() - 1);
+
+                    var prevDayLevel1 = String(dateObj.getDate()).padStart(2, '0');
+                    var formattedDateLevel1 = prevDayLevel1 + '-' + monthLevel1 + '-' + yearLevel1;
+
                         let forwardedLevelsHtml = '';
 
                         ['1', '2', '3'].forEach(level => {
@@ -216,7 +230,8 @@ $('.star').on('click', function() {
                               '<strong>Query to:</strong> ' + query.department_name + '<br>' + forwardedLevelsHtml +
                             '</td>' +
                             '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
-                            '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +   // Concatenate the missing part here
+                            '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' + 
+                            '<td>' + (formattedDateLevel1|| 'N/A') + '</td>' + 
                             '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
                             '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
                             '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
@@ -331,94 +346,151 @@ $('.star').on('click', function() {
                                 '<button type="button" class="btn badge-primary btn-xs" onclick="showQueryDetails(\'' + query.QueryId + '\')">View</button>' +
                             '</td>';
 
-
-
-
-                            // '<td>' +
-                            // // Condition to hide Action button if employeeId is HodId or RepMgrId
-                            // // ((employeeId == query.HodId || employeeId == query.RepMgrId) ? '-' :
-                            //     // (query.QueryStatus_Emp == 3 ?
-                            //         '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
-                            //         '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
-                            //     // )
-                            // // ) 
-                            
-                            // '</td>' +
                             '</tr>';
                             table.row.add($(row)); // Add the row using DataTables API
 
-                        // $('#employeeQueryTableBody').append(row);
                     });
                     
-                    table.draw(); // Redraw the table with new data
-                    $('#statusFilter').on('change', function () {
-                        var selectedValue = $(this).val(); // Get the selected filter value
-                        var statusMapFilter = {
-                            '0': 'Open',
-                            '1': 'In Progress',
-                            '2': 'Reply',
-                            '3': 'Closed',
-                            '4': 'Forward'
-                        };
-                    
-                        // If no value is selected ("All"), reset the search on all rows
-                        if (selectedValue === "") {
-                            table.search('').draw(); // Reset the global search
-                        } else {
-                            var selectedStatus = statusMapFilter[selectedValue];
-                    
-                            // Add a custom search function for filtering rows globally
-                            $.fn.dataTable.ext.search.push(function (settings, rowData, rowIndex) {
-                                // Get column data for the current row
-                                var level1Status = rowData[6]; // Level 1 column
-                                var level2Status = rowData[7]; // Level 2 column
-                                var level3Status = rowData[8]; // Level 3 column
-                                var managementStatus = rowData[9]; // Management column
-                    
-                                // Check if the employeeId matches and the status in the column matches the selected filter
-                                var matchesLevel1 =
-                                    (employeeId == response[rowIndex].Level_1ID ||
-                                        employeeId == response[rowIndex].Level_1QFwdEmpId ||
-                                        employeeId == response[rowIndex].Level_1QFwdEmpId2 ||
-                                        employeeId == response[rowIndex].Level_1QFwdEmpId3) &&
-                                    level1Status.includes(selectedStatus);
-                    
-                                var matchesLevel2 =
-                                    (employeeId == response[rowIndex].Level_2ID ||
-                                        employeeId == response[rowIndex].Level_2QFwdEmpId ||
-                                        employeeId == response[rowIndex].Level_2QFwdEmpId2 ||
-                                        employeeId == response[rowIndex].Level_2QFwdEmpId3) &&
-                                    level2Status.includes(selectedStatus);
-                    
-                                var matchesLevel3 =
-                                    (employeeId == response[rowIndex].Level_3ID ||
-                                        employeeId == response[rowIndex].Level_3QFwdEmpId ||
-                                        employeeId == response[rowIndex].Level_3QFwdEmpId2 ||
-                                        employeeId == response[rowIndex].Level_3QFwdEmpId3) &&
-                                    level3Status.includes(selectedStatus);
-                    
-                                var matchesManagement =
-                                    (employeeId == response[rowIndex].Mngmt_ID ||
-                                        employeeId == response[rowIndex].Mngmt_QFwdEmpId ||
-                                        employeeId == response[rowIndex].Mngmt_QFwdEmpId2 ||
-                                        employeeId == response[rowIndex].Mngmt_QFwdEmpId3) &&
-                                    managementStatus.includes(selectedStatus);
-                    
-                                // Return true if any level matches
-                                return matchesLevel1 || matchesLevel2 || matchesLevel3 || matchesManagement;
-                            });
-                    
-                            // Redraw the table with the new global filter
-                            table.draw();
-                    
-                            // Remove the custom filter after applying it (optional, to avoid conflicts with future filters)
-                            $.fn.dataTable.ext.search.pop();
+                    table.draw();
+                    let selectedSubject = "";
+                    let selectedStatus = "";
+                    $.fn.dataTable.ext.search.push(function (settings, rowData, rowIndex) {
+                        // SUBJECT FILTER
+                        if (selectedSubject) {
+                            let subjectInRow = response[rowIndex].QuerySubject;
+                            if (subjectInRow !== selectedSubject) return false;
                         }
-                    });
-                    
-                    
 
-                
+                        // STATUS FILTER
+                        if (selectedStatus !== "") {
+                            var statusMapFilter = {
+                                '0': 'Open',
+                                '1': 'In Progress',
+                                '2': 'Reply',
+                                '3': 'Closed',
+                                '4': 'Forward'
+                            };
+
+                            let statusText = statusMapFilter[selectedStatus];
+
+                            var level1Status = rowData[6];
+                            var level2Status = rowData[7];
+                            var level3Status = rowData[8];
+                            var managementStatus = rowData[9];
+
+                            var matchesLevel1 =
+                                (employeeId == response[rowIndex].Level_1ID ||
+                                    employeeId == response[rowIndex].Level_1QFwdEmpId ||
+                                    employeeId == response[rowIndex].Level_1QFwdEmpId2 ||
+                                    employeeId == response[rowIndex].Level_1QFwdEmpId3) &&
+                                level1Status.includes(statusText);
+
+                            var matchesLevel2 =
+                                (employeeId == response[rowIndex].Level_2ID ||
+                                    employeeId == response[rowIndex].Level_2QFwdEmpId ||
+                                    employeeId == response[rowIndex].Level_2QFwdEmpId2 ||
+                                    employeeId == response[rowIndex].Level_2QFwdEmpId3) &&
+                                level2Status.includes(statusText);
+
+                            var matchesLevel3 =
+                                (employeeId == response[rowIndex].Level_3ID ||
+                                    employeeId == response[rowIndex].Level_3QFwdEmpId ||
+                                    employeeId == response[rowIndex].Level_3QFwdEmpId2 ||
+                                    employeeId == response[rowIndex].Level_3QFwdEmpId3) &&
+                                level3Status.includes(statusText);
+
+                            var matchesManagement =
+                                (employeeId == response[rowIndex].Mngmt_ID ||
+                                    employeeId == response[rowIndex].Mngmt_QFwdEmpId ||
+                                    employeeId == response[rowIndex].Mngmt_QFwdEmpId2 ||
+                                    employeeId == response[rowIndex].Mngmt_QFwdEmpId3) &&
+                                managementStatus.includes(statusText);
+
+                            // If none match, skip this row
+                            if (!(matchesLevel1 || matchesLevel2 || matchesLevel3 || matchesManagement)) {
+                                return false;
+                            }
+                        }
+
+                        return true; // Row passes all active filters
+                    });
+                    $('#subjectFilter').on('change', function () {
+                        selectedSubject = $(this).val();
+                        table.draw(); // Re-filter
+                    });
+
+                    $('#statusFilter').on('change', function () {
+                        selectedStatus = $(this).val();
+                        table.draw(); // Re-filter
+                    });
+
+
+                    // $('#statusFilter').on('change', function () {
+                    //     var selectedValue = $(this).val(); // Get the selected filter value
+                    //     var statusMapFilter = {
+                    //         '0': 'Open',
+                    //         '1': 'In Progress',
+                    //         '2': 'Reply',
+                    //         '3': 'Closed',
+                    //         '4': 'Forward'
+                    //     };
+                    
+                    //     // If no value is selected ("All"), reset the search on all rows
+                    //     if (selectedValue === "") {
+                    //         table.search('').draw(); // Reset the global search
+                    //     } else {
+                    //         var selectedStatus = statusMapFilter[selectedValue];
+                    
+                    //         // Add a custom search function for filtering rows globally
+                    //         $.fn.dataTable.ext.search.push(function (settings, rowData, rowIndex) {
+                    //             // Get column data for the current row
+                    //             var level1Status = rowData[6]; // Level 1 column
+                    //             var level2Status = rowData[7]; // Level 2 column
+                    //             var level3Status = rowData[8]; // Level 3 column
+                    //             var managementStatus = rowData[9]; // Management column
+                    
+                    //             // Check if the employeeId matches and the status in the column matches the selected filter
+                    //             var matchesLevel1 =
+                    //                 (employeeId == response[rowIndex].Level_1ID ||
+                    //                     employeeId == response[rowIndex].Level_1QFwdEmpId ||
+                    //                     employeeId == response[rowIndex].Level_1QFwdEmpId2 ||
+                    //                     employeeId == response[rowIndex].Level_1QFwdEmpId3) &&
+                    //                 level1Status.includes(selectedStatus);
+                    
+                    //             var matchesLevel2 =
+                    //                 (employeeId == response[rowIndex].Level_2ID ||
+                    //                     employeeId == response[rowIndex].Level_2QFwdEmpId ||
+                    //                     employeeId == response[rowIndex].Level_2QFwdEmpId2 ||
+                    //                     employeeId == response[rowIndex].Level_2QFwdEmpId3) &&
+                    //                 level2Status.includes(selectedStatus);
+                    
+                    //             var matchesLevel3 =
+                    //                 (employeeId == response[rowIndex].Level_3ID ||
+                    //                     employeeId == response[rowIndex].Level_3QFwdEmpId ||
+                    //                     employeeId == response[rowIndex].Level_3QFwdEmpId2 ||
+                    //                     employeeId == response[rowIndex].Level_3QFwdEmpId3) &&
+                    //                 level3Status.includes(selectedStatus);
+                    
+                    //             var matchesManagement =
+                    //                 (employeeId == response[rowIndex].Mngmt_ID ||
+                    //                     employeeId == response[rowIndex].Mngmt_QFwdEmpId ||
+                    //                     employeeId == response[rowIndex].Mngmt_QFwdEmpId2 ||
+                    //                     employeeId == response[rowIndex].Mngmt_QFwdEmpId3) &&
+                    //                 managementStatus.includes(selectedStatus);
+                    
+                    //             // Return true if any level matches
+                    //             return matchesLevel1 || matchesLevel2 || matchesLevel3 || matchesManagement;
+                    //         });
+                    
+                    //         // Redraw the table with the new global filter
+                    //         table.draw();
+                    
+                    //         // Remove the custom filter after applying it (optional, to avoid conflicts with future filters)
+                    //         $.fn.dataTable.ext.search.pop();
+                    //     }
+                    // });
+                    
+                    
                     $('#employeeQueryListTable').on('click', '.take-action-btn', function () {
                         console.log('take action clicked');
                         var queryId = $(this).data('query-id');
@@ -450,7 +522,35 @@ $('.star').on('click', function() {
                             $('#queryDepartment').prev('span').remove();
                         // Add values in front of labels
                         $('#querySubject').before('<span>: ' + query.QuerySubject + '</span>');
-                        $('#querySubjectValue').before('<span>: ' + query.QueryValue + '</span>');
+                        // $('#querySubjectValue').before('<span>: ' + query.QueryValue + '</span>');
+
+                        let remarksHtmlQuery = '';
+
+                        if (query.QueryValue) {
+                            remarksHtmlQuery += '<span>'+ query.QueryValue + '</span><br>';
+                        }
+
+                        if (query.Query2Value) {
+                            remarksHtmlQuery += '<strong>Subject Details 2(Reopen query subject details):</strong> ' + query.Query2Value + '<br>';
+                        }
+                        if (query.Query3Value) {
+                            remarksHtmlQuery += '<strong>Subject Details 3(Reopen query subject details):</strong> ' + query.Query3Value + '<br>';
+                        }
+
+                        $('#querySubjectValue').after(remarksHtmlQuery);
+
+                     let remarksHtml = '';
+
+                            if (query.QueryReply) {
+                                remarksHtml += '<strong>Remark 1 (First time query raised):</strong> ' + query.QueryReply + '<br>';
+                            }
+
+                            if (query.Query2Reply) {
+                                remarksHtml += '<strong>Remark 2 (Reopen Query):</strong> ' + query.Query2Reply;
+                            }
+
+                            $('#remarksDisplay').html(remarksHtml);
+
                         $('#queryName').before('<span>: ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '</span>');
                         $('#queryDepartment').before('<span>: ' + query.department_name + '</span>');
                         if (query.Level_1ReplyAns || query.Level_2ReplyAns || query.Level_3ReplyAns || query.Mngmt_ReplyAns) {
@@ -459,7 +559,7 @@ $('.star').on('click', function() {
                         
                             // Check which reply exists and display it
                             let replyText = query.Level_1ReplyAns || query.Level_2ReplyAns || query.Level_3ReplyAns || query.Mngmt_ReplyAns;
-                        
+                            document.getElementById('reply').value = replyText;
                             // $('#reply_span').before('<span>: ' + replyText + '</span>');
                         }
                         else{
@@ -525,10 +625,7 @@ $('.star').on('click', function() {
                         $('#forwardTo').append('<option value="0">Select a Forward To</option>'); // Reset dropdown to default
                         $('#reply_span').empty(); // Clear the reply span content
                     }
-   
                    } 
-                   
-                   
                    
                    else {
                        $('#noEmployeeQueriesMessage').show(); // If no queries are found

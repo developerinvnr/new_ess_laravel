@@ -38,7 +38,7 @@
                         <h5 class="float-start mt-1"><b>Team Daily Reports</b></h5>
                      </div>
                      <!-- Filter Form -->
-                     <div class="card-body">
+                     <div class="card-body pt-2 pb-0">
                            <!-- Month Filter -->
                         <form method="GET" action="{{ url()->current() }}" class="d-flex justify-content-between">
                            <!-- Month Filter -->
@@ -83,16 +83,16 @@
                         <table id="dailyReportsTable" class="table text-center" style="width:100%; table-layout: auto;">
                            <thead>
                               <tr>
-                                 <td class="th" style="width:30px;">Sn</td>
-                                 <td class="th" style="width:50px;">EC</td>
-                                 <td class="th" style="width:200px;">Name</td>
-                                 <td class="th" style="width:100px;">Location</td>
-                                 <td class="th" style="width:100px;">Date</td>
-                                 <td class="th" style="width:250px;">Reports</td>
-                                 <td class="th" style="width:100px;">SignIn Time</td>
-                                 <td class="th" style="width:350px;">SignIn Location</td>
-                                 <td class="th" style="width:100px;">SignOut Time</td>
-                                 <td class="th" style="width:350px;">SignOut Location</td>
+                                 <th class="th" style="width:30px;">Sn</th>
+                                 <th class="th" style="width:50px;">EC</th>
+                                 <th class="th" style="width:200px;">Name</th>
+                                 <th class="th" style="width:100px;">Location</th>
+                                 <th class="th" style="width:100px;">Date</th>
+                                 <th class="th" style="width:250px;">Reports</th>
+                                 <th class="th" style="width:100px;">SignIn Time</th>
+                                 <th class="th" style="width:350px;">SignIn Location</th>
+                                 <th class="th" style="width:100px;">SignOut Time</th>
+                                 <th class="th" style="width:350px;">SignOut Location</th>
                               </tr>
                            </thead>
                            <tbody>

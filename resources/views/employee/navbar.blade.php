@@ -39,16 +39,13 @@
                 @foreach($wishes as $wish)
                     <li>
                         <a href="javascript:void(0);">
-                            <h5>
-                                <i class="far fa-envelope mr-2"></i>
-                                @if($wish->wishes_type == 'birthday')
-                                    Birthday Wish from {{$wish->from_wishes_name}} - <p>{{ $wish->wishes_message }}</p>
-                                @elseif($wish->wishes_type == 'joining')
-                                    Corporate Anniversary {{$wish->from_wishes_name}} - <p>{{ $wish->wishes_message }}</p>
-                                @elseif($wish->wishes_type == 'marriage')
-                                    Marriage Anniversary {{$wish->from_wishes_name}} - <p>{{ $wish->wishes_message }}</p>
-                                @endif
-                            </h5>
+                            @if($wish->wishes_type == 'birthday')
+                                <i class="fas fa-birthday-cake mr-2"></i> Birthday Wish from <b>{{$wish->from_wishes_name}}</b> - <p>{{ $wish->wishes_message }}</p>
+                            @elseif($wish->wishes_type == 'joining')
+                                <i class="fas fa-birthday-cake mr-2"></i> Corporate Anniversary from <b>{{$wish->from_wishes_name}}</b> - <p>{{ $wish->wishes_message }}</p>
+                            @elseif($wish->wishes_type == 'marriage')
+                                <i class="fas fa-birthday-cake mr-2"></i> Marriage Anniversary from <b>{{$wish->from_wishes_name}}</b> - <p>{{ $wish->wishes_message }}</p>
+                            @endif
                         </a>
                     </li>
                 @endforeach
@@ -74,10 +71,7 @@
                 @foreach($notifications as $notification)
                     <li>
                         <a href="{{ route('notification.read', ['id' => $notification->id]) }}">
-                            <h5>
-                                <i class="far fa-envelope mr-2"></i>
-                                <p>{{ $notification->description }}</p>
-                            </h5>
+                            <p><i class="far fa-envelope mr-2"></i> {{ $notification->description }}</p>
                         </a>
                     </li>
                 @endforeach

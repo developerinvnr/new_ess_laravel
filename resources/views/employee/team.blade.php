@@ -387,7 +387,6 @@
                                     @if(count($employeeData) > 0)
                                     @php
                                         $indexX =1;
-                                        $Team_Details_BlockMenu = $essMenus->firstWhere('name', 'Team_Details_Block');
                                         @endphp
                                      @foreach($employeeData as $index => $employeeE)
                                      @foreach($employeeE as  $employee)
@@ -401,7 +400,6 @@
                                                 <td style="text-align:left;">{{ ($employee->Fname ?? 'N/A') . ' ' . ($employee->Sname ?? 'N/A') . ' ' . ($employee->Lname ?? 'N/A') }}</td>
 
                                                 
-                                                @if ($Team_Details_BlockMenu && $Team_Details_BlockMenu->is_visible)
 
                                                 <!-- Designation -->
                                                 <td style="text-align:left;">{{ $employee->designation_name ?? 'N/A' }}</td>
@@ -410,7 +408,8 @@
                                                 <td>{{ $employee->grade_name ?? 'N/A' }}</td>
 
                                                 <!-- Function (could be another field, or leave it blank) -->
-                                                <td>{{$functionName}}</td>
+                                               <td>{{ $employee->function_name ?? 'N/A' }}</td>
+                                                <!-- <td>{{$functionName}}</td> -->
 
                                                 <!-- Vertical -->
                                                 <td>{{ $employee->vertical_name ?? 'N/A' }}</td>
@@ -418,22 +417,10 @@
                                                 <!-- Departments -->
                                                 <td>{{ $employee->department_code ?? 'N/A' }}</td>
 
-                                                @else
-                                                 <!-- Designation -->
-                                                <td style="text-align:left;">-</td>
+                                                <!-- Sub Departments (you might need to fetch or display another field here) -->
+                                                <!-- <td>-</td> -->
 
-                                                <!-- Grade -->
-                                                <td>-</td>
 
-                                                <!-- Function (could be another field, or leave it blank) -->
-                                                <td>-</td>
-
-                                                <!-- Vertical -->
-                                                <td>-</td>
-
-                                                <!-- Departments -->
-                                                <td>-</td>
-                                                @endif
                                                 <!-- History (Example: could be a date or status change) -->
                                                 <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $employee->EmployeeID }})" style="color: #007bff; text-decoration: underline; cursor: pointer;"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
 
@@ -806,19 +793,11 @@
                     </div>
                     <div class="modal-body">
                         <div class="row emp-details-sep">
-                            @php 
-                              $Team_Details_Block_HistoryMenu = $essMenus->firstWhere('name', 'Team_Details_Block_History');
-                            @endphp
                             <div class="col-md-6">
                                 <ul>
                                     <li><b>Name:</b> <span id="employeeName"></span></li>
-                                    @if ($Team_Details_Block_HistoryMenu && $Team_Details_Block_HistoryMenu->is_visible)
                                     <li><b>Designation:</b> <span id="designation"></span></li>
                                     <li><b>Department:</b> <span id="department"></span></li>
-                                    @else
-                                    <li><b>Designation:</b> <span>-</span></li>
-                                    <li><b>Department:</b> <span>-</span></li>
-                                    @endif
                                     <li><b>Qualification:</b> <span id="qualification"></span></li>
                                     <li><b>HQ Name:</b> <span id="hqName"></span></li>
                                 </ul>
@@ -827,12 +806,7 @@
                                 <ul>
                                     <li><b>Employee Code:</b> <span id="employeeCode"></span></li>
                                     <li><b>Date of Joining:</b> <span id="dateJoining"></span></li>
-                                    @if ($Team_Details_Block_HistoryMenu && $Team_Details_Block_HistoryMenu->is_visible)
                                     <li><b>Reporting Name:</b> <span id="reportingName"></span></li>
-                                    @else
-                                    <li><b>Reporting Name:</b> <span>-</span></li>
-                                    @endif
-
                                     <li><b>Reviewer:</b> <span id="reviewerName"></span></li>
                                     <li><b>Total VNR Experience:</b> <span id="totalExperienceYears"></span></li>
                                 </ul>

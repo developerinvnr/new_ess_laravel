@@ -32,7 +32,7 @@
 
                 <div class="row justify-content-center">
                    
-                    <div class="card col-md-4 shadow">
+                    <div class="card col-md-4 p-0 shadow">
                                     <div class="card-header bg-primary">
                                         <h4 class="mb-0 text-white">Verify Password</h4>
                                     </div>
@@ -41,9 +41,9 @@
                                 @csrf
                                 <div class="form-group">
                                     <label for="password">Enter your login password:</label>
-                                    <input type="password" name="password" id="password" class="form-control" required>
+                                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
                                 </div>
-                                <button type="button" class="btn btn-primary" id="submitPassword">Submit</button>
+                                <button type="button" class="btn btn-primary float-end" id="submitPassword">Submit</button>
                             </form>
                             </div>
                     </div>

@@ -67,7 +67,7 @@ document.getElementById("task").style.display = "block";
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
   
     <!-- Include jQuery and DataTables JS -->
     <!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>-->
@@ -149,9 +149,9 @@ document.getElementById("task").style.display = "block";
             });
         });
 // Disable right-click (context menu)
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();  // Prevent the context menu from appearing
-});
+// document.addEventListener('contextmenu', function(e) {
+//     e.preventDefault();  // Prevent the context menu from appearing
+// });
 
 // Disable certain keyboard shortcuts (F12, Ctrl+Shift+I, Ctrl+U)
 document.addEventListener('keydown', function(e) {

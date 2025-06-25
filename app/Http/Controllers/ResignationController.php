@@ -24,7 +24,10 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\Backend\CommControl;
+use Illuminate\Support\Facades\File;
+
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Collection;
 
 
 class ResignationController extends Controller
@@ -167,6 +170,10 @@ class ResignationController extends Controller
                 'site_link' => "https://vnrseeds.co.in"  // Assuming the site link is fixed
             ];
 
+            // Send the email to HR
+
+            // Optionally, send the email to the Reporting Manager as well
+            //Mail::to([$ReportingEmailId, 'vspl.hr@vnrseeds.com'])->send(new SeparationMail($details));
             $emails = [
                 $ReportingEmailId,
                 $ReportingEmailIdapp,
@@ -183,39 +190,27 @@ class ResignationController extends Controller
                 // Always send only **one mail per unique email**
                 foreach ($uniqueEmails as $email) {
                     if (!empty($email)) {
-                        $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-                        if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                            Mail::to($email)->send(new SeparationMail($details));
-                        }
+                        Mail::to($email)->send(new SeparationMail($details));
                     }
                 }
                 // Always send to these fixed HR emails separately
                 $hrEmails = ['fd@vnrseeds.com', 'vspl.hr@vnrseeds.com'];
-                $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-                if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                    Mail::to($hrEmails)->send(new SeparationMail($details));
-                }
+                Mail::to($hrEmails)->send(new SeparationMail($details));
             } else {
                 $uniqueEmails = array_values(array_filter(array_unique($emails)));
                 // Always send only **one mail per unique email**
                 foreach ($uniqueEmails as $email) {
                     if (!empty($email)) {
-                        $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-                        if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                            Mail::to($email)->send(new SeparationMail($details));
-                        }
+                        Mail::to($email)->send(new SeparationMail($details));
                     }
                 }
                 // Always send to these fixed HR emails separately
                 $hrEmails = ['vspl.hr@vnrseeds.com'];
-                $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-                if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                    Mail::to($hrEmails)->send(new SeparationMail($details));
-                }
+                Mail::to($hrEmails)->send(new SeparationMail($details));
             }
 
 
@@ -245,11 +240,10 @@ class ResignationController extends Controller
             'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
 
         ];
-        $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-        if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-            $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
-        }
+        $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
+
+        //$mail =  Mail::to('preetinanda.vspl@gmail.com')->send(new RevertBackMail($details));
 
         if ($mail) {
             return response()->json(['success' => true, 'message' => 'Mail sent '], 200);
@@ -387,14 +381,32 @@ class ResignationController extends Controller
                 'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
 
             ];
-            $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-            if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
-            }
+            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
+
+            //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailRepo($details));
+
+
 
             return response()->json(['success' => true, 'message' => 'Reporting status has been updated'], 200);
         }
+        // if ($request->has('HR_Approved') && $request->HR_Approved) {
+        //     $separation->HR_Approved = $request->HR_Approved;
+        // }
+        // if ($request->has('HR_RelievingDate') && $request->HR_RelievingDate) {
+        //     $separation->HR_RelievingDate = $request->HR_RelievingDate;
+        // }
+
+        // Conditionally update the Approval Status if it's provided
+        // if ($request->has('Rep_Approved') && $request->Rep_Approved) {
+        //     $separation->Rep_Approved = $request->Rep_Approved;
+        //     $separation->Rep_Remark = $request->Rep_Remark;
+
+        //     $separation->save();
+        //     return response()->json(['success' => true, 'message' => 'Reporting Approval has been updated'], 200);
+
+        // }
+
         return response()->json(['success' => false, 'message' => 'No separation data found'], 404);
     }
     public function submitNocClearanceit(Request $request)
@@ -845,11 +857,11 @@ class ResignationController extends Controller
                         'DesigName' => $employeeDetailsdep->designation_name,
                         'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
                     ];
-                    $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-                    if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                        Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
-                    }
+                    Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
+
+                    //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailLog($details));
+
                     // Return success response
                     return response()->json([
                         'success' => true,
@@ -879,6 +891,53 @@ class ResignationController extends Controller
                 $partyCount = 1;
                 $errors = []; // To collect any errors for missing fields
                 $totalRecoveryAmount = 0;
+
+                // while ($request->has("Parties_{$partyCount}")) {
+                //     // Party Name
+                //     $partyName = $request->input("Parties_{$partyCount}");
+
+                //     // Document Data (Y or N)
+                //     $partyDocData = $request->input("Parties_{$partyCount}_docdata");
+                //     $partyDocDataValue = null;
+                //     if ($partyDocData == 'Yes') {
+                //         $partyDocDataValue = 'Y';
+                //     } elseif ($partyDocData == 'No') {
+                //         $partyDocDataValue = 'N';
+                //     }
+                //     elseif ($partyDocData === 'NA') {
+
+                //         $partyDocDataValue = '';
+                //     }
+
+                //     // Recovery Amount
+                //     $partyAmount = $request->input("Parties_{$partyCount}_Amt");
+                //     $totalRecoveryAmount += $partyAmount; // Summing up the amounts correctly
+
+                //     // Remarks (optional)
+                //     $partyRemark = $request->input("Parties_{$partyCount}_Remark");
+
+                //     // Check if the party is present and if the required fields for that party are filled
+                //     if (empty($partyName) || empty($partyDocDataValue) || empty($partyAmount)) {
+                //         // If any required field is missing, add a single error message for this party
+                //         $errors[] = "All fields for Party {$partyCount} (Name, Document Data, and Recovery Amount) must be filled.";
+                //     } else {
+                //         // All required fields are provided, add to nocClearanceData array
+                //         $nocClearanceData["Prtis{$partyCount}"] = $partyName;
+                //         $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
+                //         $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
+                //         $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark; // Remarks is optional, so include even if empty
+                //     }
+
+                //     $partyCount++;
+                // }
+
+                // // If there are any errors, return them as a response
+                // if (count($errors) > 0) {
+                //     return response()->json([
+                //         'success' => false,
+                //         'message' => implode(' ', $errors) // Combine error messages into one string
+                //     ]);
+                // }
 
                 $existingRecordsep = \DB::table('hrm_employee_separation')
                     ->where('EmpSepId', $request->EmpSepId)
@@ -1108,11 +1167,11 @@ class ResignationController extends Controller
                     'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
 
                 ];
-                $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-                if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                    Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
-                }
+                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
+
+                //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailClearRepo($details));
+
             } elseif ($buttonId == "save-draft-btn") {
                 $draftSubmit = 'Y';
                 // Prepare the data for insertion or update
@@ -1186,6 +1245,11 @@ class ResignationController extends Controller
 
     public function getNocData($empSepId, $employeeid)
     {
+        // $nocData = \DB::table('hrm_employee_separation')
+        //             ->leftjoin('hrm_employee_separation_nocrep', 'hrm_employee_separation.EmpSepId', '=', 'hrm_employee_separation_nocrep.EmpSepId')
+        //             ->select('hrm_employee_separation.*', 'hrm_employee_separation_nocrep.*')
+        //             ->where('hrm_employee_separation.EmpSepId', $empSepId)
+        //             ->get();
 
         $nocData = \DB::table('hrm_employee_separation_nocrep as nocrep')
             ->leftJoin('hrm_employee_separation as sep', 'nocrep.EmpSepId', '=', 'sep.EmpSepId')
@@ -1496,12 +1560,10 @@ class ResignationController extends Controller
                 'DesigName' => $employeeDetailsdep->designation_name,
                 'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
             ];
-            $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-            if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
-            }
+            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
 
+            //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailAccountClr($details));
 
             // Return a success response
             return response()->json([
@@ -2206,11 +2268,8 @@ class ResignationController extends Controller
                 'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
 
             ];
-            $regiModule = CommControl::where('module_name', 'Resignation_module_mail')->first();
 
-            if ($regiModule && $regiModule->status == 1 && config('mail.mail_log_enabled')) {
-                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
-            }
+            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
         } elseif ($buttonId == "save-draft-exit-repo") {
             // Set draft_submit to 'Y' if save draft was clicked
             $draftSubmit = 'Y';
@@ -2275,5 +2334,268 @@ class ResignationController extends Controller
             'success' => true,
             'message' => 'Exit form data processed successfully',
         ]);
+    }
+    public function expensesLedger()
+    {
+        $path = base_path('/Employee/Emp1Lgr/2024-25');
+
+        // Count only .pdf files in that folder
+        $pdfCount = 0;
+
+        if (File::exists($path)) {
+            $allFiles = File::files($path);
+            $pdfCount = collect($allFiles)->filter(function ($file) {
+                return strtolower($file->getExtension()) === 'pdf';
+            })->count();
+        }
+        $employeescode = [];
+
+        if (File::exists($path)) {
+            $files = File::files($path);
+
+            foreach ($files as $file) {
+                $filename = $file->getFilename();
+
+                // Match E1234.pdf or V5678.pdf
+                if (preg_match('/^([EV])(\d+)\.pdf$/i', $filename, $matches)) {
+                    $employeescode[] = [
+                        'vcode' => strtoupper($matches[1]), // 'E' or 'V'
+                        'empCode' => $matches[2],          // numeric part only
+                    ];
+                }
+            }
+        }
+     
+
+        // Existing code here for active/inactive count
+        $activeCount = 0;
+        $inactiveCount = 0;
+
+        $uniqueEmployeesCode = collect($employeescode)->unique(function ($item) {
+            return $item['vcode'] . '-' . $item['empCode'];
+        })->values();
+
+        if (!empty($employeescode)) {
+
+            $statusCounts = DB::table('hrm_employee')
+                ->where('CompanyId', 1)
+                ->where(function ($query) use ($uniqueEmployeesCode) {
+                    foreach ($uniqueEmployeesCode as $emp) {
+                        $empCodeInDB = ($emp['vcode'] === 'V')
+                            ? 'V' . ltrim($emp['empCode'], '0')  // add V prefix for VCode='V'
+                            : ltrim($emp['empCode'], '0');        // numeric only for others
+
+                        $query->orWhere('EmpCode', $empCodeInDB);
+                    }
+                })
+                ->select('EmpStatus', DB::raw('count(*) as total'))
+                ->groupBy('EmpStatus')
+                ->pluck('total', 'EmpStatus');
+
+            $activeCount = $statusCounts['A'] ?? 0;
+            $inactiveCount = $statusCounts['D'] ?? 0;
+
+
+            $employeeIds = DB::table('hrm_employee')
+                ->where('CompanyId', 1)
+                ->where('EmpStatus', 'A') // ✅ Only active employees
+
+                ->where(function ($query) use ($uniqueEmployeesCode) {
+                    foreach ($uniqueEmployeesCode as $emp) {
+                        $empCodeInDB = ($emp['vcode'] === 'V')
+                            ? 'V' . ltrim($emp['empCode'], '0')  // add V prefix for VCode='V'
+                            : ltrim($emp['empCode'], '0');        // numeric only for others
+
+                        $query->orWhere('EmpCode', $empCodeInDB);
+                    }
+                })
+                ->pluck('EmployeeID')->toArray();
+
+
+            // 🟩 Filter active employee IDs only
+            $activeEmployeeIds = DB::table('hrm_employee')
+                ->where('CompanyId', 1)
+                ->where('EmpStatus', 'A')
+                ->whereIn('EmployeeID', $employeeIds)
+                ->pluck('EmployeeID')
+                ->toArray();
+
+            // ✅ Count confirmations only for active employees
+            $confirmedCount = DB::table('hrm_employee_ledger_confirmation')
+                ->whereIn('EmployeeId', $activeEmployeeIds)
+                ->distinct('EmployeeId')
+                ->count('EmployeeId');
+
+            $ledgerQueryCount = 0;
+
+            if (!empty($activeEmployeeIds)) {
+                $ledgerQueryCount = DB::table('hrm_employee_queryemp')
+                    ->whereIn('EmployeeID', $activeEmployeeIds)
+                    ->where('QuerySubject', 'like', '%Ledger Confirmation%')
+                    ->count();
+
+                $ledgerQueryEmployeeIds = DB::table('hrm_employee_queryemp')
+                    ->whereIn('EmployeeID', $activeEmployeeIds)
+                    ->where('QuerySubject', 'like', '%Ledger Confirmation%')
+                    ->distinct()
+                    ->pluck('EmployeeID')
+                    ->toArray();
+
+                $confirmedEmployeeIds = DB::table('hrm_employee_ledger_confirmation')
+                    ->whereIn('EmployeeId', $activeEmployeeIds)
+                    ->pluck('EmployeeId')
+                    ->toArray();
+
+
+                $separationCount = DB::table('hrm_employee_separation as sep')
+                        ->join('hrm_employee as emp', 'sep.EmployeeID', '=', 'emp.EmployeeID')
+                        ->whereIn('sep.EmployeeID', $activeEmployeeIds)
+                        ->where('emp.EmpStatus', 'A')
+                        ->where(function ($query) {
+                            $query->where('Hod_Approved', '!=', 'C')
+                                ->where('Rep_Approved', '!=', 'C')
+                                ->where('HR_Approved', '!=', 'C');
+                        })
+                        ->count();
+
+                $notConfirmedEmployeeIds = array_diff($activeEmployeeIds, $confirmedEmployeeIds);
+
+                // Fetch not confirmed active employee details
+                $notConfirmedEmployees = collect();
+                if (!empty($notConfirmedEmployeeIds)) {
+                    $notConfirmedEmployees = DB::table('hrm_employee as e')
+                        ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+                        ->join('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+                        ->select(
+                            'e.EmployeeID',
+                            'e.EmpCode',
+                            DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as full_name"),
+                            'g.DepartmentId',
+                            'd.department_name',
+                            'g.EmailId_Vnr'
+                        )
+                        ->whereIn('e.EmployeeID', $notConfirmedEmployeeIds)
+                        ->where('e.CompanyId', 1)
+                        ->orderByRaw('CAST(e.EmpCode AS UNSIGNED) ASC')
+                        ->get();
+                }
+
+                // Fetch confirmed active employee details
+                $ConfirmedEmployees = collect();
+                if (!empty($confirmedEmployeeIds)) {
+                    $ConfirmedEmployees = DB::table('hrm_employee as e')
+                        ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+                        ->join('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+                        ->select(
+                            'e.EmployeeID',
+                            'e.EmpCode',
+                            DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as full_name"),
+                            'g.DepartmentId',
+                            'd.department_name',
+                            'g.EmailId_Vnr'
+                        )
+                        ->whereIn('e.EmployeeID', $confirmedEmployeeIds)
+                        ->where('e.CompanyId', 1)
+                        ->orderByRaw('CAST(e.EmpCode AS UNSIGNED) ASC')
+                        ->get();
+                }
+
+                // Fetch query raised employees (active only)
+                $QueryRaisedEmployees = collect();
+                if (!empty($ledgerQueryEmployeeIds)) {
+                    $QueryRaisedEmployees = DB::table('hrm_employee as e')
+                        ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+                        ->join('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+                        ->join('hrm_employee_queryemp as q', 'e.EmployeeID', '=', 'q.EmployeeID')
+                        ->select(
+                            'e.EmployeeID',
+                            'e.EmpCode',
+                            DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as full_name"),
+                            'g.DepartmentId',
+                            'd.department_name',
+                            'g.EmailId_Vnr',
+                            'q.QueryDT as QueryRaisedAt',
+                            'q.Level_1QStatus as status'
+                        )
+                        ->whereIn('e.EmployeeID', $ledgerQueryEmployeeIds)
+                        ->where('q.QuerySubject', 'like', '%Ledger Confirmation%')
+                        ->where('e.CompanyId', 1)
+                        ->orderByRaw('CAST(e.EmpCode AS UNSIGNED) ASC')
+                        ->get();
+                }
+            }
+
+            // ✅ Not confirmed count = total active - confirmed
+            $notConfirmedCount = count($activeEmployeeIds) - $confirmedCount;
+        } else {
+            $confirmedCount = 0;
+            $notConfirmedCount = 0;
+        }
+        $departments = $notConfirmedEmployees
+            ->pluck('department_name', 'DepartmentId')
+            ->unique()
+            ->sortBy(function ($name, $id) {
+                return strtolower($name);
+            });
+        $departmentsConfirm = $ConfirmedEmployees
+            ->pluck('department_name', 'DepartmentId')
+            ->unique()
+            ->sortBy(function ($name, $id) {
+                return strtolower($name);
+            });
+        $departmentsQueryraised = $QueryRaisedEmployees
+            ->pluck('department_name', 'DepartmentId')
+            ->unique()
+            ->sortBy(function ($name, $id) {
+                return strtolower($name);
+            });
+            $statusRows = DB::table('hrm_employee')
+                ->where('CompanyId', 1)
+                ->where(function ($query) use ($uniqueEmployeesCode) {
+                    foreach ($uniqueEmployeesCode as $emp) {
+                        $empCodeInDB = ($emp['vcode'] === 'V')
+                            ? 'V' . ltrim($emp['empCode'], '0')
+                            : ltrim($emp['empCode'], '0');
+
+                        $query->orWhere('EmpCode', $empCodeInDB);
+                    }
+                })
+                ->select('EmpCode', 'EmpStatus')
+                ->get();
+
+            $statusMap = $statusRows->pluck('EmpStatus', 'EmpCode')->map(function ($status) {
+                return $status === 'A' ? 'Active' : ($status === 'D' ? 'Inactive' : 'Other');
+            });
+
+            $employeeStatuses = $uniqueEmployeesCode->map(function ($emp) use ($statusMap) {
+                $empCode = ($emp['vcode'] === 'V')
+                    ? 'V' . ltrim($emp['empCode'], '0')
+                    : ltrim($emp['empCode'], '0');
+
+                return [
+                    'vcode' => $emp['vcode'],
+                    'empCode' => $emp['empCode'],
+                    'status' => $statusMap[$empCode] ?? 'Not Found',
+                ];
+            });
+            //             return Excel::download(new class(collect($employeeStatuses)) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
+            //     protected $collection;
+
+            //     public function __construct($collection) {
+            //         $this->collection = $collection;
+            //     }
+
+            //     public function collection(): \Illuminate\Support\Collection {
+            //         return $this->collection;
+            //     }
+
+            //     public function headings(): array {
+            //         return ['vcode', 'empCode', 'status'];
+            //     }
+            // }, 'Uploaded_Ledger_Emp_Status.xlsx');
+
+
+
+        return view("employee.expensesledgerlist", compact('separationCount','departmentsQueryraised', 'QueryRaisedEmployees', 'departmentsConfirm', 'departments', 'ConfirmedEmployees', 'notConfirmedEmployees', 'ledgerQueryCount', 'pdfCount', 'activeCount', 'inactiveCount', 'confirmedCount', 'notConfirmedCount'));
     }
 }

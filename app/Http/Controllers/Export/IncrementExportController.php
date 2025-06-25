@@ -20,11 +20,13 @@ class IncrementExportController extends Controller
         $region = $request->input('region');
         $hod = $request->input('hod');
         $rev = $request->input('rev');
+        $zone = $request->input('zone');
+        $bu = $request->input('bu');
 
     
         // Dynamically choose file name based on type
         $fileName = ($type === 'data') ? 'Increment_WithData.xlsx' : 'Increment_Blank.xlsx';
 
-        return Excel::download(new IncrementExport($type, $employeeId, $pmsYId, $department, $grade,$region,$hod,$rev), $fileName);
+        return Excel::download(new IncrementExport($type, $employeeId, $pmsYId, $department, $grade,$region,$hod,$rev,$zone, $bu), $fileName);
     }
 }

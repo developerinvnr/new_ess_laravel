@@ -28,6 +28,10 @@ use App\Http\Controllers\Manage\ActivityController;
 use App\Http\Controllers\Manage\EventController;
 use App\Http\Controllers\Manage\ReasonController;
 use App\Http\Controllers\Manage\NotificationController;
+use App\Http\Controllers\Manage\PolicyController;
+use App\Http\Controllers\Manage\ReportController;
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', function () {
@@ -154,6 +158,22 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/store', [NotificationController::class, 'store'])->name('notifications.store');
     Route::post('/notifications/update/{id}', [NotificationController::class, 'update'])->name('notifications.update');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    //=================================Policy Master (HR Operation)==============================
+    
+    Route::post('/policy', [PolicyController::class, 'store'])->name('policy.store');
+    Route::put('/policy/{event}', [PolicyController::class, 'update'])->name('policy.update');
+    Route::get('/policy/{id}', [PolicyController::class, 'show'])->name('policy.show');
+    Route::delete('/policy/{id}', [PolicyController::class, 'destroy'])->name('policy.destroy');
+
+
+    //=================================Report Master (HR Operation)==============================
+    
+    Route::post('/report', [ReportController::class, 'store'])->name('report.store');
+    Route::put('/report/{event}', [ReportController::class, 'update'])->name('report.update');
+    Route::get('/report/{id}', [ReportController::class, 'show'])->name('report.show');
+    Route::delete('/report/{id}', [ReportController::class, 'destroy'])->name('report.destroy');
 
 
 });

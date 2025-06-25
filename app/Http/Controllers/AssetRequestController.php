@@ -22,24 +22,16 @@ use App\Models\HrmAssetDeptAccess;
 use App\Models\HrmEmployeeVehicle;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use App\Models\Backend\CommControl;
-
+use PDF;
+use Illuminate\Support\Facades\File;
 
 class AssetRequestController extends Controller
 {
     public function store(Request $request)
     {
-        // Define validation rules
-
         $requestAmount = $request->request_amount;
         $maximumLimit = $request->maximum_limit;
 
-        // Check if the requested amount exceeds the maximum limit
-        // if ($requestAmount > $maximumLimit) {
-
-        //     return response()->json(['error' => 'Requested amount cannot exceed the maximum limit.'], 200);
-
-        // } 
         // Step 5: Fetch ExpiryM from hrm_asset_name based on the asset ID from the request
         $assetId = $request->asset; // Asset ID from the request
         $asset = AssetName::where('AssetNId', $assetId)->first();
@@ -132,8 +124,6 @@ class AssetRequestController extends Controller
                 // Save the filename to use in the database
                 $filenameassest = $fileName;
             }
-
-
 
             if ($request->hasFile('vehicle_photo')) {
                 // Store the uploaded asset copy in the public folder
@@ -245,8 +235,6 @@ class AssetRequestController extends Controller
                 $odometer_readingPath = $fileName;
             }
 
-
-
             // Get the ExpiryM value from the asset
             $expiryMonths = $asset->ExpiryM;
 
@@ -291,7 +279,6 @@ class AssetRequestController extends Controller
             $departmentIds = $departments->pluck('id'); // This will return a collection of DepartmentID(s)
             $departmentNames = $departments->pluck('department_name', 'id'); // This will map DepartmentID to DepartmentName
 
-
             // Step 2: Fetch EmployeeIDs for those DepartmentIDs from the hrm_asset_dept_access table
             $employeeIds = HrmAssetDeptAccess::whereIn('DepartmentID', $departmentIds)
                 ->pluck('EmployeeID');  // This will return a collection of EmployeeIDs
@@ -318,6 +305,9 @@ class AssetRequestController extends Controller
 
             $comName = $request->vehicle_brand ?? $request->company_name ?? 'null'; // Fallback to 'Unknown' if neither exists
             $price = $request->maximum_limit ?? $request->vehcile_price ?? 'null'; // Fallback to 'Unknown' if neither exists
+            $ipAddress = $request->ip();
+
+
             $assetRequestData = [
                 'EmployeeID' => $employee_id, // Specify Employee ID
                 'AssetNId' => $request->asset, // From "asset"
@@ -362,14 +352,10 @@ class AssetRequestController extends Controller
                 'ApprovalStatus' => 0, // Draft status or change based on approval
                 'ApprovalDate' => empty($request->ApprovalDate) ? null : $request->ApprovalDate,
                 'MaxLimitAmt' => $price, // From "maximum_limit"
-                // For the other database columns
-                // For the other database columns
                 'ReqAssestImgExtName' => $filenameassest ?? '', // Check if file is uploaded
                 'ReqAssestImgExt' => $request->hasFile('asset_copy') ? $request->file('asset_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
                 'ReqBillImgExtName' => $filenamebill ?? '',
                 'ReqBillImgExt' => $request->hasFile('bill_copy') ? $request->file('bill_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
-
-
                 'DealeName' => $request->dealer_name, // From "dealer_name"
                 'DealerContNo' => $request->dealer_contact, // From "dealer_contact"
                 'DealerAdd' => '', // Set to '' or specify if available
@@ -406,11 +392,65 @@ class AssetRequestController extends Controller
                 'rc_copy' => $rc_copyPath ?? 'null', // Store the path of asset copy file
                 'dl_copy' => $dl_copyPath ?? 'null', // Store the path of asset copy file
                 'ins_copy' => $insurance_copyPath ?? 'null', // Store the path of asset copy file
-                'odo_copy' => $odometer_readingPath ?? 'null'
+                'odo_copy' => $odometer_readingPath ?? 'null',
+                'declared_status' => $request->has('declaration_agreed') ? 'Y' : 'N',
+                'ip_address' => $ipAddress ?? 'null',
             ];
+            
+            $assetId = $request->asset;
+
+            $assetName = DB::table('hrm_asset_name')
+                ->where('AssetNId', $assetId)
+                ->value('AssetName');
+            $empCode = DB::table('hrm_employee')
+                ->where('EmployeeID', $employee_id)
+                ->value('EmpCode');
+
+            $employee = DB::table('hrm_employee')
+            ->where('EmployeeID', $employee_id)
+            ->select('EmpCode', 'Fname', 'Sname', 'Lname')
+            ->first();
+
+            $pdfPath = base_path("Finance/Asset_Reimbursement_Declarations/FY_2025/{$empCode}_{$assetName}.pdf");
+
+            $assetRequestData['DeclarationPdfPath'] = $pdfPath;
 
             // Insert the data into the database
-            \DB::table('hrm_asset_employee_request')->insert($assetRequestData);
+            // \DB::table('hrm_asset_employee_request')->insert($assetRequestData);
+            $assetId = \DB::table('hrm_asset_employee_request')->insertGetId($assetRequestData);
+
+            $pdf = PDF::loadView('pdf.asset_declaration', [
+                'employee_id' => $employee_id,
+                'fullName' => trim("{$employee->Fname} {$employee->Sname} {$employee->Lname}"),
+                'empCode' => $employee->EmpCode,
+                'comName' => $comName ?? '',
+                'asset_name' => $assetName,
+                'purchase_date' => $request->purchase_date,
+                'model_no' => $request->model_no,
+                'model_name' => $request->model_name,
+                'price' => $request->price,
+                'remarks' => $request->remarks,
+                'declared_status' => $request->has('declaration_agreed') ? 'Y' : 'N',
+                'ip_address' => $ipAddress ?? request()->ip(),
+                'ReqAmt' => $RequestedAmt,
+
+                'dealer_name' => $request->dealer_name,
+                'dealer_number' => $request->dealer_contact,
+                'bill_number' => $request->bill_number,
+                'assetId'=>$assetId
+
+            ])
+            ->setPaper('a4', 'portrait');
+
+            // Make directory if it doesn't exist
+            $dir = base_path('Finance/Asset_Reimbursement_Declarations/FY_2025/');
+            if (!File::exists($dir)) {
+                File::makeDirectory($dir, 0755, true);
+            }
+
+            // Save PDF
+            $pdf->save($pdfPath);
+
 
             $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employee_id)->first();
             $employeedetails = Employee::where('EmployeeID', $employee_id)->first();
@@ -425,11 +465,8 @@ class AssetRequestController extends Controller
                 'EmpName' => $Empname,
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
             ];
-            $assetsModule = CommControl::where('module_name', 'Assests_module_mail')->first();
 
-            if ($assetsModule && $assetsModule->status == 1 && config('mail.mail_log_enabled')) {
-                Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
-            }
+            // Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
 
 
             return response()->json(['success' => true, 'message' => 'Asset request submitted successfully']);
@@ -471,11 +508,8 @@ class AssetRequestController extends Controller
                 'EmpName' => $Empname,
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
             ];
-            $assetsModule = CommControl::where('module_name', 'Assests_module_mail')->first();
 
-            if ($assetsModule && $assetsModule->status == 1 && config('mail.mail_log_enabled')) {
-                Mail::to($ITEmailId)->send(new AssestsIt($details));
-            }
+            // Mail::to($ITEmailId)->send(new AssestsIt($details));
 
             $updateFields = [
                 'ITApprovalStatus' => $request->approval_status,

@@ -136,7 +136,7 @@
                      <div class="tab-pane fade active show" id="teamappraisal" role="tabpanel">
                         <div class="row">
                            <div class="mfh-machine-profile">
-						   <div style="margin-top:-40px;float:left;margin-left:600px;">
+						   <div style="margin-top:-40px;float:left;margin-left:660px;">
 												<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist">
 													<li class="mt-1"><a class="active" id="home-tab1"
 														href="{{route('managementAppraisal')}}" role="tab"
@@ -151,7 +151,7 @@
 													<li class="mt-1"><a class="" id="Increment-tab21"
 														href="{{route('managementIncrement')}}" role="tab"
 														aria-controls="Increment" aria-selected="false">Increment <i class="fas fa-file-invoice mr-2"></i></a></li>
-													<!-- <li class="mt-1"><a class="" data-bs-toggle="modal" data-bs-target="#managementhelpvideo"><b>Help Video</b></a></li> -->
+												
                                                     </ul>
 											</div>
                               <div class="tab-content splash-content2" id="myTabContent2">
@@ -175,19 +175,34 @@
                                                 @endforeach
                                              </select>
                                           
-                                             <select id="state-filter">
+                                             <!-- <select id="state-filter">
                                                 <option value="">All State</option>
                                                 @foreach($employeeDetails->unique('city_village_name') as $hq)
                                                 <option value="{{ $hq->city_village_name }}">{{ $hq->city_village_name }}</option>
                                                 @endforeach
-                                             </select>
-                                     
-                                             <select id="region-filter" style="display:none;">
+                                             </select> -->
+											<select id="BU-filter" style="display: none;">
+												<option value="">All BU</option>
+												@foreach ($businessUnits as $unit)
+													<option value="{{ $unit->id }}">{{ $unit->business_unit_name }}</option>
+												@endforeach
+											</select>
+
+											<select id="Zone-filter" style="display: none;">
+												<option value="">Select Zone</option>
+											</select>
+
+											<select id="region-filter" style="display: none;">
+												<option value="">Select Region</option>
+											</select>
+
+											                                 
+                                             <!-- <select id="region-filter">
                                                       <option value="">All Region</option>
                                                       @foreach($employeeDetails->unique('region_name') as $reg)
                                                             <option value="{{ $reg->region_name }}">{{ $reg->region_name }}</option>
                                                       @endforeach
-                                             </select>
+                                             </select> -->
                                             
                                              <a title="Logic" data-bs-toggle="modal"
                                                     data-bs-target="#logicpopup">Logic <i
@@ -319,6 +334,10 @@
                                                         </a>
                                 
                                                     </td>
+												  <td class="hidden-zone d-none">{{ $employeedetails->zone_id }}</td>
+                                                   <td class="hidden-bu d-none">{{ $employeedetails->bu_id }}</td>
+
+
                                                 </tr>
                                                 @endforeach
                                              </tbody>
@@ -1489,24 +1508,6 @@
 			</div>
 		</div>
     </div>
-	<!-- managementhelpvideo popup -->
-<div class="modal fade show" id="managementhelpvideo" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-       <div class="modal-content">
-           <div class="modal-header">
-               <h5 class="modal-title"><b>Score Help Video</b></h5>
-               <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                   <span aria-hidden="true">×</span>
-                 </button>
-           </div>
-           <div class="modal-body table-responsive p-0 text-center">
-               <video width="auto" height="500" controls>
-                   <source src="./public/video/ess-managements-score-help.mp4" type="video/mp4">
-               </video>
-           </div>
-       </div>
-   </div>
-</div>
 	   <!-- Revert KRA -->
 	   <div class="modal fade show" id="resubmitKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
       <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
@@ -1630,38 +1631,40 @@
 		});
 
       });
-      $(document).ready(function () {
-        $(".score-input").on("input", function () {
-            let employeeId = $(this).data("employeeid");  
-            let enteredScore = parseFloat($(this).val()) || 0;  // Default to 0 if empty
-            let reviewerScore = parseFloat($(this).data("reviewerscore")) || 0;
+//       $(document).ready(function () {
+//         $(".score-input").on("input", function () {
+//             let employeeId = $(this).data("employeeid");  
+//             let enteredScore = parseFloat($(this).val()) || 0;  // Default to 0 if empty
+//             let reviewerScore = parseFloat($(this).data("reviewerscore")) || 0;
 
-            console.log(reviewerScore);
+//             console.log(reviewerScore);
 
-            let inputField = $(this);
+//             let inputField = $(this);
       
-            let minAllowed = reviewerScore - 10;  
-            let maxAllowed = reviewerScore + 10;
+//             let minAllowed = reviewerScore - 10;  
+//             let maxAllowed = reviewerScore + 10;
       
-            // Find the error message block or create it
-            let errorBlock = $(this).closest("td").find(".error-message");
-			let saveBtn = $('.save-btn[data-employeeid="' + employeeId + '"]');
+//             // Find the error message block or create it
+//             let errorBlock = $(this).closest("td").find(".error-message");
+// 			let saveBtn = $('.save-btn[data-employeeid="' + employeeId + '"]');
 
-            if (enteredScore < minAllowed || enteredScore > maxAllowed) {
-                // Show error message if not already present
-                if (errorBlock.length === 0) {
-					saveBtn.addClass('disabled').css('pointer-events', 'none').css('opacity', '0.5');
+//             if (enteredScore < minAllowed || enteredScore > maxAllowed) {
+//                 // Show error message if not already present
+//                 if (errorBlock.length === 0) {
+// 					saveBtn.addClass('disabled').css('pointer-events', 'none').css('opacity', '0.5');
 
-                    $(this).closest("td").append('<div class="error-message text-danger">Score must be within ±10 of Reviewer Score! Resetting to 0.00.</div>');
-                }
+//                     $(this).closest("td").append('<div class="error-message text-danger">Score must be within ±10 of Reviewer Score! Resetting to 0.00.</div>');
+//                 }
            
-            } else {
-                errorBlock.remove(); // Remove the error if within range
-				saveBtn.removeClass('disabled').css('pointer-events', '').css('opacity', '');
+//             } else {
+//                 errorBlock.remove(); // Remove the error if within range
+// 				saveBtn.removeClass('disabled').css('pointer-events', '').css('opacity', '');
 
-            }
-        });
-      });
+//             }
+//         });
+//       });
+     
+     
       function showEmployeeDetails(employeeId) {
              var companyId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-companyid');
              var PmsYId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-PmsYId');
@@ -1881,26 +1884,29 @@
         });
     });
 });
-
-    $(document).ready(function () {
+$(document).ready(function () {
     function filterTable() {
         var department = $('#department-filter').val().toLowerCase();
-        var state = $('#state-filter').val().toLowerCase();
         var grade = $('#grade-filter').val().toLowerCase();
         var region = $('#region-filter').val().toLowerCase();
+        var zone = $('#Zone-filter').val().toLowerCase();
+        var bu = $('#BU-filter').val().toLowerCase();
 
         var visibleIndex = 1; // Counter for S. No.
 
         $('#employeetablemang tbody tr').each(function () {
             var rowDepartment = $(this).find('td:nth-child(4)').text().toLowerCase();
-            var rowState = $(this).find('td:nth-child(6)').text().toLowerCase();
             var rowGrade = $(this).find('td:nth-child(5)').text().toLowerCase();
             var rowRegion = $(this).find('td:nth-child(7)').text().toLowerCase();
+            var rowZone = $(this).find('td:nth-child(19)').text().toLowerCase();
+            var rowBU = $(this).find('td:nth-child(20)').text().toLowerCase();
 
             if ((department === "" || rowDepartment === department) &&
-                (state === "" || rowState === state) &&
                 (grade === "" || rowGrade === grade) &&
-                (region === "" || rowRegion === region)) {
+                (region === "" || rowRegion === region) &&
+                (zone === "" || rowZone === zone) &&
+                (bu === "" || rowBU === bu)
+            ) {
                 $(this).show();
                 $(this).find('td:nth-child(1)').text(visibleIndex); // Update S. No.
                 visibleIndex++;
@@ -1909,174 +1915,376 @@
             }
         });
     }
-	function updateExportLink() {
+
+    function updateExportLink() {
         var department = $('#department-filter').val();
-        var state = $('#state-filter').val();
         var grade = $('#grade-filter').val();
         var region = $('#region-filter').val();
-        console.log(department);
+        var zone = $('#Zone-filter').val();
+        var bu = $('#BU-filter').val();
 
-		var baseUrl = "{!! route('score.export', ['employee_id' => Auth::user()->EmployeeID,'pms_year_id' => $PmsYId]) !!}";
+
+        var baseUrl = "{!! route('score.export', ['employee_id' => Auth::user()->EmployeeID,'pms_year_id' => $PmsYId]) !!}";
         var exportUrl = baseUrl +
             '&department=' + encodeURIComponent(department) +
-            '&state=' + encodeURIComponent(state) +
             '&grade=' + encodeURIComponent(grade) +
+			'&bu=' + encodeURIComponent(bu) +
+			'&zone=' + encodeURIComponent(zone) +
             '&region=' + encodeURIComponent(region);
-            console.log(exportUrl);
         $('#export-link').attr('href', exportUrl);
     }
+
     // Show/hide the region filter based on department selection
     $('#department-filter').change(function () {
         var selectedDepartment = $(this).val();
         if (selectedDepartment === "Sales") {
-            $('#region-filter').show(); // Show region filter
+            $('#region-filter').show();
+            $('#Zone-filter').show();
+            $('#BU-filter').show();
         } else {
-            $('#region-filter').hide(); // Hide region filter
-            $('#region-filter').val(''); // Reset region selection
+            $('#region-filter').hide();
+            $('#region-filter').val('');
+            $('#Zone-filter').hide();
+            $('#BU-filter').hide();
+            $('#Zone-filter').val('');
+            $('#BU-filter').val('');
         }
         filterTable();
     });
 
-    // Trigger filtering when any dropdown changes
-    $('#department-filter, #state-filter, #grade-filter, #region-filter').change(function () {
+    // Filter when these filters change
+    $('#department-filter, #grade-filter, #region-filter, #Zone-filter, #BU-filter').change(function () {
         filterTable();
-		updateExportLink();
-
+        updateExportLink();
     });
 
-    // Hide region filter initially
-         $('#region-dropdown').hide();
+    // BU filter change: load zones or reset filters if "all" or empty
+    $('#BU-filter').on('change', function () {
+        let buId = $(this).val();
 
-         // Initial filter application
-         filterTable();
-      });
+        // Reset zone and region before loading new ones
+        $('#Zone-filter').html('<option value="">Select Zone</option>').val('');
+        $('#region-filter').html('<option value="">Select Region</option>').val('');
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('.edit-score').forEach(editBtn => {
-        editBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            let employeeId = this.getAttribute("data-employeeid");
-
-            let saveBtn = document.querySelector(`.save-btn[data-employeeid='${employeeId}']`);
-            let scoreInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='score']`);
-            let remarkInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='remark']`);
-
-            if (scoreInput) {
-                scoreInput.removeAttribute("readonly");
-                scoreInput.removeAttribute("disabled");
-                scoreInput.classList.remove("no-border");
-            }
-
-            if (remarkInput) {
-                remarkInput.removeAttribute("readonly");
-                remarkInput.removeAttribute("disabled");
-                remarkInput.classList.remove("no-border");
-            }
-
-            if (saveBtn) {
-                saveBtn.style.display = "inline-block";
-				saveBtn.classList.remove("d-none");  
-            }
-        });
-    });
-});
-
-function inpNum(e) {
-  e = e || window.event;
-  let input = e.target;
-  let char = String.fromCharCode(e.which || e.keyCode);
-
-  // Allow control keys (like backspace)
-  if (e.keyCode === 8 || e.keyCode === 46 || e.keyCode === 37 || e.keyCode === 39) return;
-
-  // Allow digits and only one decimal point
-  if (!char.match(/[0-9.]/)) {
-    e.preventDefault();
-  } else if (char === '.' && input.value.includes('.')) {
-    e.preventDefault(); // prevent second decimal
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    let revertModal = document.getElementById("resubmitKRA");
-
-    revertModal.addEventListener("show.bs.modal", function (event) {
-        let button = event.relatedTarget; // Button that triggered the modal
-        let empPmsId = button.getAttribute("data-emppmsid");
-
-        // Store the EmpPmsId in the send button for later use
-        document.getElementById("submitRevert").setAttribute("data-emppmsid", empPmsId);
+        if (!buId || buId.toLowerCase() === 'all') {
+            // If no BU or 'all' selected, reset filters and show all data
+            filterTable();
+        } else {
+            $.ajax({
+                url: '{{ route("get_zone_by_bu") }}',
+                type: 'GET',
+                data: { bu: buId },
+                success: function (data) {
+                    $('#Zone-filter').empty().append('<option value="">Select Zone</option>');
+                    $.each(data.zoneList, function (index, zone) {
+                        $('#Zone-filter').append('<option value="' + zone.zone_id + '">' + zone.zone_name + '</option>');
+                    });
+                    filterTable();
+                }
+            });
+        }
     });
 
-    document.getElementById("submitRevert").addEventListener("click", function () {
-        $('#loader').show(); // Show loader
+    // Zone filter change: load regions or reset
+    $('#Zone-filter').on('change', function () {
+        let zoneId = $(this).val();
 
-        let revertNote = document.getElementById("revertNote").value;
-        let empPmsId = this.getAttribute("data-emppmsid");
-
-        if (revertNote.trim() === "") {
-            alert("Please enter a revert note before submitting.");
-            $('#loader').hide();
+        if (!zoneId) {
+            $('#region-filter').html('<option value="">Select Region</option>').val('');
+            filterTable();
             return;
         }
 
-        fetch("/revert-pms-mang", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-            },
-            body: JSON.stringify({
-                empPmsId: empPmsId,
-                revertNote: revertNote
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            $('#loader').hide(); // Hide loader after request completion
+        $('#region-filter').html('<option value="">Loading...</option>').val('');
 
-            if (data.error) {
-                // Display error toast
-                toastr.error(data.error, 'Error', {
-                    "positionClass": "toast-top-right",
-                    "timeOut": 3000
+        $.ajax({
+            url: '{{ route("get_region_by_zone") }}',
+            type: 'GET',
+            data: { zone: zoneId },
+            success: function (data) {
+                $('#region-filter').empty().append('<option value="">Select Region</option>');
+                $.each(data.regionList, function (index, region) {
+                    $('#region-filter').append('<option value="' + region.region_name + '">' + region.region_name + '</option>');
                 });
-            } else {
-                // Display success toast
-                toastr.success(data.message, 'Success', {
-                    "positionClass": "toast-top-right",
-                    "timeOut": 3000
-                });
-
-                // Reload the page after a short delay
-                setTimeout(function() {
-                    location.reload();
-                }, 3000);
+                filterTable();
             }
-        })
-        .catch(error => {
-            $('#loader').hide();
-
-            let errorMessage = "An error occurred.";
-            if (error.response && error.response.data && error.response.data.message) {
-                errorMessage = error.response.data.message;
-            }
-
-            toastr.error(errorMessage, 'Error', {
-                "positionClass": "toast-top-right",
-                "timeOut": 5000
-            });
-
-            // Re-enable the button in case of error
-            document.getElementById("submitRevert").disabled = false;
         });
     });
+
+    // Hide region filter initially (you can adjust this as needed)
+    $('#region-filter').hide();
+
+    // Initial filter call
+    filterTable();
 });
-function OpenViewWindow(encryptedEmpPmsId) {
-		let url = `/view-reviewer/${encryptedEmpPmsId}`;
-			window.open(url, '_blank', 'width=1350,height=600,scrollbars=yes');
+
+//old code
+
+    // $(document).ready(function () {
+	// 	function filterTable() {
+	// 		var department = $('#department-filter').val().toLowerCase();
+	// 		// var state = $('#state-filter').val().toLowerCase();
+	// 		var grade = $('#grade-filter').val().toLowerCase();
+	// 		var region = $('#region-filter').val().toLowerCase();
+	// 		var zone = $('#Zone-filter').val().toLowerCase();
+	// 		var bu = $('#BU-filter').val().toLowerCase();
+	// 		console.log(region);
+
+
+	// 		var visibleIndex = 1; // Counter for S. No.
+
+	// 		$('#employeetablemang tbody tr').each(function () {
+	// 			var rowDepartment = $(this).find('td:nth-child(4)').text().toLowerCase();
+	// 			var rowState = $(this).find('td:nth-child(6)').text().toLowerCase();
+	// 			var rowGrade = $(this).find('td:nth-child(5)').text().toLowerCase();
+	// 			var rowRegion = $(this).find('td:nth-child(7)').text().toLowerCase();
+	// 			var rowZone = $(this).find('td:nth-child(19)').text().toLowerCase();
+	// 			var rowBU = $(this).find('td:nth-child(20)').text().toLowerCase();
+
+
+	// 			if ((department === "" || rowDepartment === department) &&
+	// 				(grade === "" || rowGrade === grade) &&
+	// 				(region === "" || rowRegion === region)&&
+	// 				(zone === "" || rowZone === zone) &&
+	// 				(bu === "" || rowBU === bu)
+	// 			) {
+	// 				$(this).show();
+	// 				$(this).find('td:nth-child(1)').text(visibleIndex); // Update S. No.
+	// 				visibleIndex++;
+	// 			} else {
+	// 				$(this).hide();
+	// 			}
+	// 		});
+	// 	}
+	// 	function updateExportLink() {
+	// 		var department = $('#department-filter').val();
+	// 		// var state = $('#state-filter').val();
+	// 		var grade = $('#grade-filter').val();
+	// 		var region = $('#region-filter').val();
+	// 		console.log(department);
+
+	// 		var baseUrl = "{!! route('score.export', ['employee_id' => Auth::user()->EmployeeID,'pms_year_id' => $PmsYId]) !!}";
+	// 		var exportUrl = baseUrl +
+	// 			'&department=' + encodeURIComponent(department) +
+	// 			// '&state=' + encodeURIComponent(state) +
+	// 			'&grade=' + encodeURIComponent(grade) +
+	// 			'&region=' + encodeURIComponent(region);
+	// 			console.log(exportUrl);
+	// 		$('#export-link').attr('href', exportUrl);
+	// 	}
+	// 	// Show/hide the region filter based on department selection
+	// 	$('#department-filter').change(function () {
+	// 		var selectedDepartment = $(this).val();
+	// 		if (selectedDepartment === "Sales") {
+	// 			$('#region-filter').show();
+	// 			$('#Zone-filter').show();
+	// 			$('#BU-filter').show();
+
+	// 		} else {
+	// 			$('#region-filter').hide(); 
+	// 			$('#region-filter').val('');
+	// 			$('#Zone-filter').show();
+	// 			$('#BU-filter').show(); 
+	// 			$('#Zone-filter').val('');
+	// 			$('#BU-filter').val('');
+	// 		}
+	// 		filterTable();
+	// 	});
+
+	// 	// Trigger filtering when any dropdown changes
+	// 	$('#department-filter, #grade-filter, #region-filter,#Zone-filter,#BU-filter').change(function () {
+	// 		filterTable();
+	// 		updateExportLink();
+
+	// 	});
+	// 	$('#BU-filter').on('change', function () {
+	// 		let buId = $(this).val();
+
+	// 		// Reset zone and region values before loading new ones
+	// 		$('#Zone-filter').html('<option value="">Select Zone</option>').val('');
+	// 		$('#region-filter').html('<option value="">Select Region</option>').val('');
+
+	// 		if (buId) {
+	// 			$.ajax({
+	// 				url: '{{ route("get_zone_by_bu") }}',
+	// 				type: 'GET',
+	// 				data: { bu: buId },
+	// 				success: function (data) {
+	// 					$('#Zone-filter').empty().append('<option value="">Select Zone</option>');
+	// 					$.each(data.zoneList, function (index, zone) {
+	// 						$('#Zone-filter').append('<option value="' + zone.zone_id + '">' + zone.zone_name + '</option>');
+	// 					});
+
+	// 					// Optional: if you want to auto-filter when zones are loaded
+	// 					filterTable();
+	// 				}
+	// 			});
+	// 		} else {
+	// 			$('#Zone-filter').html('<option value="">Select Zone</option>');
+	// 		}
+
+	// 	});
+
+	// 	$('#Zone-filter').on('change', function () {
+	// 		let zoneId = $(this).val();
+	// 		$('#region-filter').html('<option value="">Loading...</option>').val('');
+
+	// 		if (zoneId) {
+	// 			$.ajax({
+	// 				url: '{{ route("get_region_by_zone") }}',
+	// 				type: 'GET',
+	// 				data: { zone: zoneId },
+	// 				success: function (data) {
+	// 					$('#region-filter').empty().append('<option value="">Select Region</option>');
+	// 					$.each(data.regionList, function (index, region) {
+	// 						$('#region-filter').append('<option value="' + region.region_name + '">' + region.region_name + '</option>');
+	// 					});
+
+	// 					filterTable(); // Filter after loading regions
+	// 				}
+	// 			});
+	// 		} else {
+	// 			$('#region-filter').html('<option value="">Select Region</option>');
+	// 		}
+
+	// 	});
+
+   	//  	// Hide region filter initially
+    //      $('#region-dropdown').hide();
+
+    //      // Initial filter application
+    //      filterTable();
+    // });
+
+		document.addEventListener("DOMContentLoaded", function () {
+			document.querySelectorAll('.edit-score').forEach(editBtn => {
+				editBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					
+					let employeeId = this.getAttribute("data-employeeid");
+
+					let saveBtn = document.querySelector(`.save-btn[data-employeeid='${employeeId}']`);
+					let scoreInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='score']`);
+					let remarkInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='remark']`);
+
+					if (scoreInput) {
+						scoreInput.removeAttribute("readonly");
+						scoreInput.removeAttribute("disabled");
+						scoreInput.classList.remove("no-border");
+					}
+
+					if (remarkInput) {
+						remarkInput.removeAttribute("readonly");
+						remarkInput.removeAttribute("disabled");
+						remarkInput.classList.remove("no-border");
+					}
+
+					if (saveBtn) {
+						saveBtn.style.display = "inline-block";
+						saveBtn.classList.remove("d-none");  
+					}
+				});
+			});
+		});
+
+		function inpNum(e) {
+		e = e || window.event;
+		let input = e.target;
+		let char = String.fromCharCode(e.which || e.keyCode);
+
+		// Allow control keys (like backspace)
+		if (e.keyCode === 8 || e.keyCode === 46 || e.keyCode === 37 || e.keyCode === 39) return;
+
+		// Allow digits and only one decimal point
+		if (!char.match(/[0-9.]/)) {
+			e.preventDefault();
+		} else if (char === '.' && input.value.includes('.')) {
+			e.preventDefault(); // prevent second decimal
 		}
+		}
+
+		document.addEventListener("DOMContentLoaded", function () {
+			let revertModal = document.getElementById("resubmitKRA");
+
+			revertModal.addEventListener("show.bs.modal", function (event) {
+				let button = event.relatedTarget; // Button that triggered the modal
+				let empPmsId = button.getAttribute("data-emppmsid");
+
+				// Store the EmpPmsId in the send button for later use
+				document.getElementById("submitRevert").setAttribute("data-emppmsid", empPmsId);
+			});
+
+			document.getElementById("submitRevert").addEventListener("click", function () {
+				$('#loader').show(); // Show loader
+
+				let revertNote = document.getElementById("revertNote").value;
+				let empPmsId = this.getAttribute("data-emppmsid");
+
+				if (revertNote.trim() === "") {
+					alert("Please enter a revert note before submitting.");
+					$('#loader').hide();
+					return;
+				}
+
+				fetch("/revert-pms-mang", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+					},
+					body: JSON.stringify({
+						empPmsId: empPmsId,
+						revertNote: revertNote
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					$('#loader').hide(); // Hide loader after request completion
+
+					if (data.error) {
+						// Display error toast
+						toastr.error(data.error, 'Error', {
+							"positionClass": "toast-top-right",
+							"timeOut": 3000
+						});
+					} else {
+						// Display success toast
+						toastr.success(data.message, 'Success', {
+							"positionClass": "toast-top-right",
+							"timeOut": 3000
+						});
+
+						// Reload the page after a short delay
+						setTimeout(function() {
+							location.reload();
+						}, 3000);
+					}
+				})
+				.catch(error => {
+					$('#loader').hide();
+
+					let errorMessage = "An error occurred.";
+					if (error.response && error.response.data && error.response.data.message) {
+						errorMessage = error.response.data.message;
+					}
+
+					toastr.error(errorMessage, 'Error', {
+						"positionClass": "toast-top-right",
+						"timeOut": 5000
+					});
+
+					// Re-enable the button in case of error
+					document.getElementById("submitRevert").disabled = false;
+				});
+			});
+		});
+		function OpenViewWindow(encryptedEmpPmsId) {
+				let url = `/view-reviewer/${encryptedEmpPmsId}`;
+					window.open(url, '_blank', 'width=1350,height=600,scrollbars=yes');
+		}
+
+
+
    </script>
 
       <style>

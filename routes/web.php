@@ -25,12 +25,17 @@ use App\Http\Controllers\ResignationController;
 use App\Http\Controllers\ConfirmationController;
 use App\Http\Controllers\DailyreportsController;
 use App\Http\Controllers\LoggingReportsController;
+use App\Http\Controllers\LedgerConfirmationController;
 use App\Http\Controllers\Export\LogisticsExportController;
 use App\Http\Controllers\Export\AccountExportController;
 use App\Http\Controllers\Export\ITExportController;
 use App\Http\Controllers\Export\EmployeePromotionController;
 use App\Http\Controllers\Export\EmployeeScoreController;
 use App\Http\Controllers\Export\IncrementExportController;
+use App\Http\Controllers\Export\LedgerExportController;
+use App\Http\Controllers\Export\AssetRequestControllerAll;
+
+
 use App\Http\Middleware\PreventBackHistory;
 
 use App\Http\Controllers\NotificationController;
@@ -52,7 +57,7 @@ Route::get('/forgot-password', [AuthController::class, 'showforgotpasscode'])->n
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 
 
-Route::middleware('auth')->get('/dashboard',[AuthController::class, 'dashboard'])->name('dashboard');
+Route::middleware('auth')->get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 Route::get('/seperation', [AuthController::class, 'seperation'])->name('seperation');
 
 Route::middleware('auth')->get('/profile', [ProfileController::class, 'profile'])->name('profile');
@@ -202,6 +207,7 @@ Route::middleware('auth')->get('/it-clearance', [ResignationController::class, '
 Route::middleware('auth')->get('/logistics-clearance', [ResignationController::class, 'logisticsClearance'])->name('logistics.clearance');
 Route::middleware('auth')->get('/hr-clearance', [ResignationController::class, 'hrClearance'])->name('hr.clearance');
 Route::middleware('auth')->get('/account-clearance', [ResignationController::class, 'accountClearance'])->name('account.clearance');
+Route::middleware('auth')->get('/expenses-ledger', [ResignationController::class, 'expensesLedger'])->name('expenses.ledger');
 Route::middleware('auth')->get('/get-noc-data-acct/{empSepId}', [ResignationController::class, 'getNocDataAcct']);
 
 Route::get('/employee-eligibility/{employee_id}', [SalaryController::class, 'getEligibilityData']);
@@ -259,6 +265,7 @@ Route::get('/kra/details/formb/employee', [PmsController::class, 'getDetailsform
 
 
 Route::get('Employee/Emp{companyId}Lgr/{encryptedEmpCode}.pdf', [ProfileController::class, 'viewLedger']);
+Route::get('/downloadledger', [ProfileController::class, 'downloadLedger'])->name('downloadLedger');
 
 Route::post('/kra/save', [PmsController::class, 'save'])->name('kra.save');
 
@@ -380,3 +387,27 @@ Route::post('/submit-self-rating-app', [PmsController::class, 'submitRatingApp']
 Route::get('/fetch-rating-status/{tgtdefid}', [PmsController::class, 'fetchRatingStatus']);
 Route::get('/fetch-rating-status-app/{tgtdefid}', [PmsController::class, 'fetchRatingStatusApp']);
 
+
+Route::middleware('auth')->group(function () {
+    Route::post('/ledger/get-employee-data', [EmployeeController::class, 'getEmployeeData'])->name('ledger.getEmployeeData');
+    Route::get('/ledger/view/{companyId}/{year}/{empCode}', [EmployeeController::class, 'viewLedger'])->name('ledger.view');
+    Route::get('/ledger/download/{companyId}/{year}/{empCode}', [EmployeeController::class, 'downloadLedger'])->name('ledger.download');
+    Route::get('/downloadledger/{employeeId}', [EmployeeController::class, 'showDownloadPage'])->name('ledger.downloadpage');
+    Route::post('/ledger/check-confirmation', [EmployeeController::class, 'checkConfirmation'])
+        ->name('ledger.checkConfirmation');
+    // For submitting confirmation (changed to not require parameters)
+    Route::post('/ledger/submit-confirmation', [EmployeeController::class, 'submitConfirmation'])
+        ->name('ledger.submitConfirmation');
+    Route::post('/ledger/submitQueryFollowup', [EmployeeController::class, 'submitQueryFollowup'])
+        ->name('ledger.submitQueryFollowup');
+});
+Route::get('/get-zone-by-bu', [PmsController::class, 'get_zone_by_bu'])->name('get_zone_by_bu');
+Route::get('/get-region-by-zone', [PmsController::class, 'get_region_by_zone'])->name('get_region_by_zone');
+Route::get('/ledger-confirmation/export/{type}/{format}', [LedgerExportController::class, 'export'])->name('ledger.confirmation.export');
+Route::get('/ledger-confirmation/details/{id}', [LedgerConfirmationController::class, 'show'])->name('ledger.confirmation.details');
+Route::get('/ledger-confirmation/print/{id}', [LedgerConfirmationController::class, 'printConfirmation'])->name('ledger.confirmation.print');
+
+Route::get('/asset/requests/export', [AssetRequestControllerAll::class, 'export'])->name('asset.requests.export');
+Route::post('/ledger/check-confirmation/new', [LedgerConfirmationController::class, 'checkConfirmation'])->name('check.confirmation');
+
+Route::get('/ledger-confirmation/view/{id}', [LedgerConfirmationController::class, 'viewConfirmation'])->name('ledger.confirmation.view');

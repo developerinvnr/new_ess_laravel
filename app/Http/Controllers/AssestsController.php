@@ -59,7 +59,23 @@ class AssestsController extends Controller
     
     ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname','hrm_employee.EmpCode')
     ->orderBy('hrm_asset_employee_request.ReqDate', 'desc') // Sort by ReqDate in descending order to get the most recent request
+    ->get(); 
+    
+$assets_requestss_all = \DB::table('hrm_asset_employee_request')
+    ->leftJoin('hrm_asset_name', 'hrm_asset_employee_request.AssetNId', '=', 'hrm_asset_name.AssetNId')
+    ->leftJoin('hrm_employee', 'hrm_asset_employee_request.EmployeeID', '=', 'hrm_employee.EmployeeID')
+    ->where('hrm_employee.EmpStatus', 'A')
+    ->select(
+        'hrm_asset_employee_request.*',
+        'hrm_asset_name.AssetName',
+        'hrm_employee.Fname',
+        'hrm_employee.Sname',
+        'hrm_employee.Lname',
+        'hrm_employee.EmpCode'
+    )
+    ->orderBy('hrm_asset_employee_request.ReqDate', 'desc')
     ->get();
+
 
     // Fetch the most recent request for the employee with AssetNId in [11, 12, 18]
     $assets_request_mobile = \DB::table('hrm_asset_employee_request')
@@ -126,7 +142,7 @@ class AssestsController extends Controller
             ->exists();  // Check if such a record exists
     // Pass assets_request and assets to the view
 
-    return view('employee.assests', compact('assets', 'assets_requestss','AssetRequest','exists','mobileeligibility','mobileeliprice'));
+    return view('employee.assests', compact('assets_requestss_all','assets', 'assets_requestss','AssetRequest','exists','mobileeligibility','mobileeliprice'));
     }
         public function fetchAssetsHistory($employeeId)
             {

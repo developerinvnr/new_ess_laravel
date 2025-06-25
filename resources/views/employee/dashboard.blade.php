@@ -128,13 +128,19 @@
                                                     </li>
                                                 @endif
 
-                                        <li id="warmWelcomeLink" >
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#WarmWelcomePopup">
-                                                <p class="float-start" style="color:red;">Warm Welcome</p>
-                                                <img class="new-img-pop" src="{{ asset('images/new.png') }}">
-                                            </a>
+                                       @php
+                                            $currentDay = now()->day;
+                                        @endphp
 
-                                        </li>
+                                        @if($currentDay >= 15)
+                                            <li id="warmWelcomeLink">
+                                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#WarmWelcomePopup">
+                                                    <p class="float-start" style="color:red;">Warm Welcome</p>
+                                                    <img class="new-img-pop" src="{{ asset('images/new.png') }}">
+                                                </a>
+                                            </li>
+                                        @endif
+
 
                                         @php
                                         $investmentDeclarationsetting = \DB::table('hrm_employee_key')
@@ -166,16 +172,85 @@
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
                                         </li>
+
+                                        @php 
+
+                                        $companyId = Auth::user()->CompanyId;
+                                        $panNo = Auth::user()->personaldetails->PanNo;
                                         
-                                        <li><b class="blink" style="color:red;">Ledger 2024-25</b>
-                                            <!-- Full link structure retained -->
-                                            <a style="float: right;" href="#">
-                                                <!-- Eye icon triggers the modal -->
-                                                <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
-                                                | 
-                                                <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                        // File paths
+                                        $tdsFileA = base_path("/Employee/ImgTds{$companyId}242025/{$panNo}_2025-26.pdf");
+                                        $tdsFileB = base_path("/Employee/ImgTds{$companyId}242025/{$panNo}_PARTB_2025-26.pdf");
+                                            $tdsAExists = file_exists($tdsFileA);
+                                            $tdsBExists = file_exists($tdsFileB);
+                                        @endphp
+                                         @if($tdsAExists || $tdsBExists)
+                                        <li style="display: flex; justify-content: space-between; align-items: center;">
+                                            <a href="https://vnrseeds.co.in/profile#Documents" class="blink" style="color: green;">
+                                                <b>Form 16 (FY 2024-25)</b>
                                             </a>
+                                            <span>
+                                                @if($tdsAExists)
+                                                <a href="{{ url("Employee/ImgTds{$companyId}242025/" . Auth::user()->personaldetails->PanNo . "_2025-26.pdf") }}" class="blink" target="_blank" style="color: #007bff;margin-right: 10px;"><b>Form A | </b></a>
+                                                @endif
+                                                @if($tdsBExists)
+                                                <a href="{{ url("Employee/ImgTds{$companyId}242025/" . Auth::user()->personaldetails->PanNo . "_PARTB_2025-26.pdf") }}" class="blink" target="_blank" style="color: #ff6600;"><b>Form B</b></a>
+                                                @endif
+                                            </span>
                                         </li>
+                                        @endif
+                                        @if(Auth::user()->CompanyId == '1')
+
+                                        <li>
+                                            <b class="blink" style="color:red;">Ledger 2024-25</b>
+                                            @php
+                                                $employee = auth()->user();
+                                                $prefix = $employee->VCode === 'V' ? '' : 'E';
+                                                $empCode = $prefix . $employee->EmpCode;
+                                                $filePath = base_path("Employee/Emp1Lgr/2024-25/{$empCode}.pdf");
+                                                $ledgerExists = File::exists($filePath);
+
+                                                $hasConfirmed = DB::table('hrm_employee_ledger_confirmation')
+                                                    ->where('EmployeeId', auth()->user()->EmployeeID)
+                                                    ->where('Year', '2024-25')
+                                                    ->exists();
+                                            
+                                                
+                                                
+                                            @endphp
+                                            @if($ledgerExists)
+                                            <!-- Download link -->
+                                            <a style="float: right;" 
+                                                href="{{ $hasConfirmed 
+                                                            ? route('ledger.confirmation.print', ['id' => auth()->user()->EmployeeID]) 
+                                                            : route('ledger.downloadpage', ['employeeId' => auth()->user()->EmployeeID]) }}"
+                                                @if($hasConfirmed) download @endif
+                                                title="Download Ledger">
+                                                    <i class="fas fa-download ms-2 {{ $hasConfirmed ? 'text-primary' : 'text-muted' }}" style="cursor: pointer;"></i>
+                                                </a>
+
+                                            <a style="float: right;" href="#" data-bs-toggle="modal" data-bs-target="#ledgerViewModal" title="View Ledger">
+                                                <i class="fas fa-eye mr-2 {{ $hasConfirmed ? 'text-primary' : 'text-muted' }}" style="cursor: pointer;"></i> | 
+                                            </a>
+
+                                            @else
+                                            <a style="float: right;" href="#">
+                                                    <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModalNo" style="cursor: pointer;"></i> 
+                                                    | 
+                                                    <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModalNo" style="cursor: pointer;"></i> 
+                                                </a>
+                                            @endif
+
+                                        </li>
+                                        @else
+                                        <li><b class="blink" style="color:red;">Ledger 2024-25</b>
+                                                <a style="float: right;" href="#">
+                                                    <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                    | 
+                                                    <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                </a>
+                                            </li>
+                                        @endif
                                        
 
                                     @php
@@ -351,7 +426,7 @@
                                                     </a>
                                                 </li>
                                             @endif
-                                            @if(count($flattenedEntriesAppraiser) > 0 && now()->day >= 7 && now()->day <= 14)
+                                            @if(count($flattenedEntriesAppraiser) > 0 && now()->day > 7 && now()->day <= 14)
                                             <li>
                                                 <a href="#"
                                                 class="open-kra-modal-appraiser"
@@ -751,11 +826,11 @@
                                  <h4 class="d-flex justify-content-between align-items-center">
                                 <b>Policy Number</b>
                                 
-                                <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="manualDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:12px;" title="View Help File">
+                                <div class="dropdown" id="customDropdown">
+                                    <a href="#" role="button" id="manualDropdown" style="font-size:12px;" title="View Help File">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i> <b>Help File</b>
                                     </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="manualDropdown">
+                                    <ul class="dropdown-menu dropdown-menu-end" style="display: none; position: absolute; z-index: 1000;">
                                         <li>
                                             <a class="dropdown-item" href="{{ asset('helpfiles/helpfile.pdf') }}" target="_blank" style="font-size: 12px;color: black;">
                                                 <i class="fa fa-question-circle" aria-hidden="true"></i> English 
@@ -768,6 +843,7 @@
                                         </li>
                                     </ul>
                                 </div>
+
                             </h4>
                                 </div>
                                 <div class="card-body">
@@ -1108,14 +1184,20 @@
                             </div>
                         </div>
                         <!-- current opening block to be added  -->
+                        @php
+                            $job_opening = [];
+                            try {
+                                $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
 
-@php
-                            $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
-                            
-                            $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-                            if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
-                                echo "Error decoding JSON: " . json_last_error_msg();
-                                return; // Stop further processing if there's an error
+                                if ($job_opening_json !== false) {
+                                    $decoded = json_decode($job_opening_json, true);
+
+                                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                        $job_opening = $decoded;
+                                    }
+                                }
+                            } catch (Exception $e) {
+                                // Optionally log error or show fallback message
                             }
                         @endphp
 
@@ -1123,39 +1205,43 @@
                             <div class="card-header">
                                 <h5><b>Current Openings</b></h5>
                             </div>
+
                             <div class="card-body" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
-                                @foreach($job_opening['regular_job'] as $index => $job)
-                                                                <div class="card p-3 mb-3 current-opening">
-                                                                    <div>
-                                                                        <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
-                                                                                    {{ $job['title'] }}</small></b></span>
-                                                                        <a href="#" style="border-radius:3px;" class="link btn-link p-0"
-                                                                                    data-bs-toggle="modal" data-bs-target="#currentOpening"
-                                                                                    data-jpid="{{ $job['jpid'] }}">View</a>
-                                                                        <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
-                                                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
-                                                                            <small><b>Apply</b></small>
-                                                                        </a>
-                                                                    </div>
-                                                                    <p><small class="d-none"> {{ strip_tags($job['description']) }}
-                                                                        </small></p>
-                                                                    <div>
-                                                                        <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
+                                @if(!empty($job_opening['regular_job']) && is_array($job_opening['regular_job']))
+                                    @foreach($job_opening['regular_job'] as $index => $job)
+                                        <div class="card p-3 mb-3 current-opening">
+                                            <div>
+                                                <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}. {{ $job['title'] }}</small></b></span>
 
-                                                                        @php
-                                                                            $locations = $job['location'] ?? 'NULL'; // Get the location string
-                                                                            $locationsArray = explode(',', $locations); // Split into an array
-                                                                            $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
-                                                                        @endphp
+                                                <a href="#" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#currentOpening"
+                                                data-jpid="{{ $job['jpid'] ?? '' }}">View</a>
 
-                                                                        <span class='me-3 float-end'><b><small><i
-                                                                                        class='fas fa-map-marker-alt me-2'></i>
-                                                                                    {{ $firstLocation }}</small></b></span>
-                                                                    </div>
-                                                                </div>
-                                @endforeach
+                                                <a target="_blank" href="{{ $job['link'] ?? '#' }}" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
+                                                    <small><b>Apply</b></small>
+                                                </a>
+                                            </div>
+
+                                            <p><small class="d-none">{{ strip_tags($job['description'] ?? '') }}</small></p>
+
+                                            <div>
+                                                <span class="me-3"><b><small>Dept.- {{ $job['department'] ?? 'N/A' }}</small></b></span>
+
+                                                @php
+                                                    $locations = $job['location'] ?? 'N/A';
+                                                    $locationsArray = explode(',', $locations);
+                                                    $firstLocation = trim($locationsArray[0]) ?? 'N/A';
+                                                @endphp
+
+                                                <span class='me-3 float-end'><b><small><i class='fas fa-map-marker-alt me-2'></i>{{ $firstLocation }}</small></b></span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <p class="text-muted">No current openings available.</p>
+                                @endif
                             </div>
                         </div>
+
                         <!-- current opening end  -->
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
@@ -1488,7 +1574,7 @@
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -2474,7 +2560,62 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
         </div>
         </div>
 <!------------------>
+ <!-- missiing leadger -->
+        <div class="modal fade" id="ledgerMissingModalNo" tabindex="-1" aria-labelledby="ledgerMissingModalNoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="ledgerMissingModalNoLabel">Ledger Not Available</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             Ledger Not Available
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>
+<!------------------>
+
+
+<!-- Modal for displaying the ledger PDF -->
+<div class="modal fade" id="ledgerViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Employee Ledger 2024-25</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=location.reload();></button>
+            </div>
+            <div class="modal-body">
+                <div id="ledgerError" class="alert alert-danger d-none"></div>
+                <div id="ledgerLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary"></div>
+                    <p>Loading ledger...</p>
+                </div>
+                <div id="pdfContainer" class="d-none">
+                    <div id="viewer" class="pdfViewer"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- end ledger display modal -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- JavaScript Implementation -->
+    <script src="{{ asset('pdfjs/pdf.min.js') }}"></script>
+    <script src="{{ asset('pdfjs/pdf_viewer.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('pdfjs/pdf_viewer.min.css') }}">
+
     <script>
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -8289,7 +8430,255 @@ document.addEventListener('keypress', function (e) {
         }, 50); // Adjust speed if needed
     });
 
+    // Trigger PDF load when modal is shown
+    document.addEventListener('DOMContentLoaded', function() {
+    console.log('PDF viewer script started at:', new Date().toISOString());
+
+    // Check if pdfjsLib is available
+    if (typeof pdfjsLib === 'undefined') {
+        console.error('pdfjsLib is not defined. Ensure pdf.min.js is loaded.');
+        alert('PDF library failed to load. Please refresh the page.');
+        return;
+    }
+
+    // Set PDF.js worker source
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ asset('pdfjs/pdf.worker.min.js') }}";
+
+    // DOM elements
+    const pdfContainer = document.getElementById('pdfContainer');
+    const viewer = document.getElementById('viewer');
+    const errorDiv = document.getElementById('ledgerError');
+    const loadingDiv = document.getElementById('ledgerLoading');
+    const modalElement = document.getElementById('ledgerViewModal');
+    const eyeIcon = document.querySelector('[data-bs-target="#ledgerViewModal"]');
+
+    // Initialize PDF.js viewer
+    let pdfViewer = null;
+    let modalInstance = null;
+    let currentPdfUrl = null;
+
+    // Initialize modal and PDF viewer when eye icon is clicked
+    eyeIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Show loading states
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-spinner', 'fa-spin');
+        loadingDiv.classList.remove('d-none');
+        errorDiv.classList.add('d-none');
+        pdfContainer.classList.add('d-none');
+
+        // Initialize modal if not already done
+        if (!modalInstance) {
+            modalInstance = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+
+        // Fetch employee data
+        fetch('{{ route("ledger.getEmployeeData") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                employeeId: '{{ $employeeId }}'
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Initialize PDF viewer if not already done
+                if (!pdfViewer) {
+                    const EventBus = window.pdfjsViewer.EventBus;
+                    const eventBus = new EventBus();
+                    
+                    pdfViewer = new pdfjsViewer.PDFViewer({
+                        container: pdfContainer,
+                        viewer: viewer,
+                        eventBus: eventBus,
+                        textLayerMode: 0,
+                        annotationLayerMode: 0
+                    });
+                }
+                // Load the PDF
+                loadPdf(data);
+            } else {
+                throw new Error(data.message || 'Ledger not available');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError(error.message);
+        })
+        .finally(() => {
+            // Restore the eye icon
+            eyeIcon.classList.remove('fa-spinner', 'fa-spin');
+            eyeIcon.classList.add('fa-eye');
+        });
+    });
+
+    // Load pdf function new
+    async function loadPdf(data) {
+    console.log('data new', data);
+    try {
+        const year = '2024-25';
+        const prefix = data.vCode === 'V' ? '' : 'E';
+        let currentPdfUrl = '';
+        const currentUserEmployeeId = {{ auth()->user()->EmployeeID }};
+
+        if (data.hasConfirmedEmployee) {
+            // Load merged ledger confirmation PDF URL
+            currentPdfUrl = `/ledger-confirmation/view/${currentUserEmployeeId}`;
+        } else {
+            // Load default ledger PDF URL
+            currentPdfUrl = `/ledger/view/${data.companyId}/${year}/${prefix}${data.empCode}?employeeId=${currentUserEmployeeId}&t=${Date.now()}`;
+        }
+
+        // Load PDF document with pdf.js
+        const loadingTask = pdfjsLib.getDocument({
+            url: currentPdfUrl,
+            disableAutoFetch: true,
+            disableStream: true
+        });
+
+        const pdfDocument = await loadingTask.promise;
+
+        // Set up viewer with the loaded document
+        pdfViewer.setDocument(pdfDocument);
+        pdfViewer.currentScaleValue = '1.0'; // you can change scale as needed
+
+        // Show content
+        loadingDiv.classList.add('d-none');
+        errorDiv.classList.add('d-none');
+        pdfContainer.classList.remove('d-none');
+
+        // Show modal (if using bootstrap modal instance)
+        modalInstance.show();
+
+        // Hide toolbar or customize as needed
+        customizeToolbar();
+
+    } catch (error) {
+        console.error('PDF loading error:', error);
+        showError(error.message.includes('CORS') 
+            ? 'Failed to load PDF due to security restrictions' 
+            : error.message || 'Failed to load ledger');
+    }
+}
+
+
+    // Load PDF function old
+    // async function loadPdf(data) {
+    //     console.log('data new',data);
+    //     try {
+    //         // Build PDF URL
+    //         const year = '2024-25';
+    //         const prefix = data.vCode === 'V' ? '' : 'E';
+    //         currentPdfUrl = `/ledger/view/${data.companyId}/${year}/${prefix}${data.empCode}?employeeId={{ $employeeId }}&t=${Date.now()}`;
+            
+    //         // Load PDF document
+    //         const loadingTask = pdfjsLib.getDocument({
+    //             url: currentPdfUrl,
+    //             disableAutoFetch: true,
+    //             disableStream: true
+    //         });
+            
+    //         const pdfDocument = await loadingTask.promise;
+            
+    //         // Set up viewer
+    //         pdfViewer.setDocument(pdfDocument);
+    //         pdfViewer.currentScaleValue = '1.0'; // 50% scale
+            
+            
+    //         // Show content
+    //         loadingDiv.classList.add('d-none');
+    //         errorDiv.classList.add('d-none');
+    //         pdfContainer.classList.remove('d-none');
+            
+    //         // Show modal
+    //         modalInstance.show();
+            
+    //         // Hide toolbar
+    //         customizeToolbar();
+            
+    //     } catch (error) {
+    //         console.error('PDF loading error:', error);
+    //         showError(error.message.includes('CORS') 
+    //             ? 'Failed to load PDF due to security restrictions' 
+    //             : error.message || 'Failed to load ledger');
+    //     }
+    // }
+
+    // Hide PDF.js toolbar
+    function customizeToolbar() {
+        const toolbar = document.querySelector('#viewer .toolbar');
+        if (toolbar) {
+            toolbar.style.display = 'none';
+        } else {
+            // Use MutationObserver if toolbar isn't immediately available
+            const observer = new MutationObserver(() => {
+                const toolbar = document.querySelector('#viewer .toolbar');
+                if (toolbar) {
+                    toolbar.style.display = 'none';
+                    observer.disconnect();
+                }
+            });
+            observer.observe(viewer, { childList: true, subtree: true });
+            setTimeout(() => observer.disconnect(), 3000);
+        }
+    }
+
+    // Show error message
+    function showError(message) {
+        loadingDiv.classList.add('d-none');
+        pdfContainer.classList.add('d-none');
+        
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('d-none');
+        
+        if (modalInstance) {
+            modalInstance.show();
+        }
+    }
+
+    // Clean up when modal is closed
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        if (pdfViewer) {
+            pdfViewer.setDocument(null);
+        }
+    });
+});
+ document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && ['s', 'p', 'c'].includes(e.key.toLowerCase())) e.preventDefault();
+        });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggle = document.getElementById('manualDropdown');
+        const menu = toggle.nextElementSibling;
+
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        });
+
+        // Optional: Hide dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!document.getElementById('customDropdown').contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+    });
+
     </script>
+
+
     <style>
     #loader {
     position: fixed;
@@ -8317,4 +8706,50 @@ document.addEventListener('keypress', function (e) {
   transition: filter 0.3s ease;
 }
 
+#pdfContainer {
+    width: 100%;
+    height: 70vh;
+    overflow: auto;
+    background: #525659;
+    position: relative;
+}
+
+.pdfViewer .page {
+    margin: 1rem auto;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    background: white;
+}
+
+/* .modal-body {
+    padding: 0;
+    position: relative;
+    min-height: 500px;
+} */
+
+#ledgerLoading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+#pdfControls {
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+#pageNum {
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+/* Disable text selection in PDF viewer */
+.pdfViewer .textLayer {
+    user-select: none;
+    -webkit-user-select: none;
+}
 

@@ -41,119 +41,113 @@
                 <div class="card ad-info-card-">
                     <div class="card-header">
                         <h5 class="float-start mt-1"><b>Team Location Tracking</b></h5>
-                     
                     </div>
-                </div>
-
+                
                 <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
                 <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center" id="filterForm">
-    <!-- Start Date -->
-    <div class="col-auto">
-        <input type="date" name="start_date" class="form-control form-control-sm" style="margin-left: 15px;"
-               value="{{ request('start_date', \Carbon\Carbon::now()->startOfMonth()->toDateString()) }}" 
-               onchange="this.form.submit()">
-    </div>
+                <!-- Start Date -->
+                <div class="col-auto">
+                    <input type="date" name="start_date" class="form-control form-control-sm"
+                        value="{{ request('start_date', \Carbon\Carbon::now()->startOfMonth()->toDateString()) }}" 
+                        onchange="this.form.submit()">
+                </div>
 
-    <!-- End Date -->
-    <div class="col-auto">
-        <input type="date" name="end_date" class="form-control form-control-sm" 
-               value="{{ request('end_date', \Carbon\Carbon::now()->endOfMonth()->toDateString()) }}" 
-               onchange="this.form.submit()">
-    </div>
+                <!-- End Date -->
+                <div class="col-auto">
+                    <input type="date" name="end_date" class="form-control form-control-sm" 
+                        value="{{ request('end_date', \Carbon\Carbon::now()->endOfMonth()->toDateString()) }}" 
+                        onchange="this.form.submit()">
+                </div>
 
-    <!-- Status Dropdown -->
-    <div class="col-auto">
-        <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
-            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All</option>
-            <option value="A" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-            <option value="D" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-        </select>
-    </div>
+                <!-- Status Dropdown -->
+                <div class="col-auto">
+                    <select name="status" class="form-control form-select form-control-sm" onchange="this.form.submit()">
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All</option>
+                        <option value="A" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="D" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
 
-    @php
-    // Decrypt the employee_id from the request if available
-    $selectedEmployeeId = request('employee_id') ? Crypt::decrypt(request('employee_id')) : null;
-@endphp
+                @php
+                    // Decrypt the employee_id from the request if available
+                    $selectedEmployeeId = request('employee_id') ? Crypt::decrypt(request('employee_id')) : null;
+                @endphp
 
-<?php
-    // Fetch employees reporting to the logged-in user
-    $employeesReportingTo = DB::table('hrm_employee')
-        ->select('EmployeeID', 'fname', 'sname', 'lname')
-        ->whereIn('EmployeeID', function ($query) {
-            $query->select('EmployeeID')
-                ->from('hrm_employee_general')
-                ->where('RepEmployeeID', Auth::user()->EmployeeID);
-        })
-        ->where('hrm_employee.EmpStatus', '=', 'A')
-        ->get();  
-?>
+                <?php
+                    // Fetch employees reporting to the logged-in user
+                    $employeesReportingTo = DB::table('hrm_employee')
+                        ->select('EmployeeID', 'fname', 'sname', 'lname')
+                        ->whereIn('EmployeeID', function ($query) {
+                            $query->select('EmployeeID')
+                                ->from('hrm_employee_general')
+                                ->where('RepEmployeeID', Auth::user()->EmployeeID);
+                        })
+                        ->where('hrm_employee.EmpStatus', '=', 'A')
+                        ->get();  
+                ?>
 
-<!-- Employee Dropdown -->
-<div class="col-auto">
-    <select name="employee_id" class="form-control form-control-sm" onchange="this.form.submit()">
-        <option value="">Select Employee</option>
-        @foreach($employeesReportingTo as $employee)
-            <option value="{{ Crypt::encrypt($employee->EmployeeID) }}" 
-                {{ ($selectedEmployeeId == $employee->EmployeeID) ? 'selected' : '' }}>
-                {{ $employee->fname }} {{ $employee->sname }} {{ $employee->lname }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-</form>
-
-
-<div class="container" style="max-width:1220px;">
-    <div class="row">
-        <!-- Table displaying location tracking data (on the left) -->
-        <div class="col-md-6">
-            <table class="table table-bordered mt-3" id="locationtrackingtable">
-                <thead>
-                    <tr>
-                        <th>Employee Name</th>
-                        <th>Latitude</th>
-                        <th>Running Km</th>
-                        <th>Date Time</th>
-                        <th>Address</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($allLocationTracking as $employeeID => $locationTrackings)
-                        @foreach ($locationTrackings as $location)
-                            <tr>
-                                <td>{{ $location->Fname }} {{ $location->Sname }} {{ $location->Lname }}</td>
-                                <td>{{ $location->DLat }}</td>
-                                <td>{{ isset($location->distance) ? $location->distance : 0 }} Km</td>
-                                <td>{{ \Carbon\Carbon::parse($location->DTime)->format('d-m-Y') }}</td>
-                                <td>{{ $location->address }}</td>
-                            </tr>
+                <!-- Employee Dropdown -->
+                <div class="col-auto">
+                    <select name="employee_id" class="form-control form-select form-control-sm" onchange="this.form.submit()">
+                        <option value="">Select Employee</option>
+                        @foreach($employeesReportingTo as $employee)
+                            <option value="{{ Crypt::encrypt($employee->EmployeeID) }}" 
+                                {{ ($selectedEmployeeId == $employee->EmployeeID) ? 'selected' : '' }}>
+                                {{ $employee->fname }} {{ $employee->sname }} {{ $employee->lname }}
+                            </option>
                         @endforeach
-                        <!-- Total distance row -->
-                        @if (isset($totalDistances[$employeeID]))
-                            <tr>
-                                <td colspan="3"><strong>Total Running Km</strong></td>
-                                <td>{{ $totalDistances[$employeeID] }} Km</td>
-                                <td></td>
-                            </tr>
-                        @endif
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </select>
+                </div>
 
-        <!-- Map Container (on the right) -->
-        <div class="col-md-6">
-            <div id="map" style="height: 450px;"></div>
-        </div>
-    </div>
-</div>
+            </form>
 
+                    <div class="row">
+                        <!-- Table displaying location tracking data (on the left) -->
+                        <div class="col-md-6">
+                            <table class="table table-bordered mt-3" id="locationtrackingtable">
+                                <thead>
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Latitude</th>
+                                        <th>Running Km</th>
+                                        <th>Date Time</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($allLocationTracking as $employeeID => $locationTrackings)
+                                        @foreach ($locationTrackings as $location)
+                                            <tr>
+                                                <td>{{ $location->Fname }} {{ $location->Sname }} {{ $location->Lname }}</td>
+                                                <td>{{ $location->DLat }}</td>
+                                                <td>{{ isset($location->distance) ? $location->distance : 0 }} Km</td>
+                                                <td>{{ \Carbon\Carbon::parse($location->DTime)->format('d-m-Y') }}</td>
+                                                <td>{{ $location->address }}</td>
+                                            </tr>
+                                        @endforeach
+                                        <!-- Total distance row -->
+                                        @if (isset($totalDistances[$employeeID]))
+                                            <tr>
+                                                <td colspan="3"><strong>Total Running Km</strong></td>
+                                                <td>{{ $totalDistances[$employeeID] }} Km</td>
+                                                <td></td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Map Container (on the right) -->
+                        <div class="col-md-6">
+                            <div id="map" style="height: 450px;"></div>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
     </div> <!-- End of main-content -->
-
 
     <!-- Footer -->
     <!-- @include('employee.footerbottom') -->
@@ -213,18 +207,17 @@
     // Load the API once the window has fully loaded.
     window.addEventListener("load", loadGoogleMaps);
 </script>
+<style>
 
-
-    <style>
- 
 #dailyReportsTable {
-        width: 100%; 
-        table-layout: auto; /* Automatically adjust column widths */
-    }
+width: 100%; 
+table-layout: auto; /* Automatically adjust column widths */
+}
 
-    #dailyReportsTable th, #dailyReportsTable td {
-        white-space: normal; /* Allow text to wrap */
-        word-wrap: break-word; /* Force word wrapping for long words */
-        padding: 8px; /* Add padding for readability */
-        text-align: left; /* Align text to the left */
-    }
+#dailyReportsTable th, #dailyReportsTable td {
+white-space: normal; /* Allow text to wrap */
+word-wrap: break-word; /* Force word wrapping for long words */
+padding: 8px; /* Add padding for readability */
+text-align: left; /* Align text to the left */
+}
+</style>

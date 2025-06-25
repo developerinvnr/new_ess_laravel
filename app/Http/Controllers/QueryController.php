@@ -71,44 +71,7 @@ class QueryController extends Controller
             })
             ->orderBy('QueryDT', 'desc')  // Sort by QueryDT descending
             ->get();  // Fetch the result
-        foreach ($queries_frwrd as $query) {
-            $forwardFields = [
-                'Level_1QFwdEmpId',
-                'Level_1QFwdEmpId2',
-                'Level_1QFwdEmpId3',
-                'Level_2QFwdEmpId',
-                'Level_2QFwdEmpId2',
-                'Level_2QFwdEmpId3',
-                'Level_3QFwdEmpId',
-                'Level_3QFwdEmpId2',
-                'Level_3QFwdEmpId3',
-            ];
 
-            $allForwardIds = collect($forwardFields)->map(fn($f) => $query->$f)->filter()->unique();
-
-            $forwardedEmpMap = \DB::table('hrm_employee as e')
-                ->leftJoin('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-                ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-                ->whereIn('e.EmployeeID', $allForwardIds)
-                ->select(
-                    'e.EmployeeID',
-                    'e.Fname',
-                    'e.Sname',
-                    'e.Lname',
-                    'd.department_name'
-                )
-                ->get()
-                ->mapWithKeys(function ($emp) {
-                    $fullName = trim("{$emp->Fname} {$emp->Sname} {$emp->Lname}");
-                    $dept = $emp->department_name ?: 'N/A';
-                    return [$emp->EmployeeID => $fullName . ' (' . $dept . ')'];
-                });
-
-            foreach ($forwardFields as $field) {
-                $empId = $query->$field;
-                $query->{$field . '_name'} = $empId && isset($forwardedEmpMap[$empId]) ? $forwardedEmpMap[$empId] : null;
-            }
-        }
         $employeeIDs = $queries_frwrd->pluck('EmployeeID')
             ->unique();
         // Step 3: Fetch employee details (Fname, Sname, Lname) from hrm_employee table for these EmployeeIDs
@@ -553,45 +516,6 @@ class QueryController extends Controller
                     $query->Lname = $employeeDetails->Lname;
                     $query->EmpCode = $employeeDetails->EmpCode;
                 }
-                $forwardFields = [
-                    'Level_1QFwdEmpId',
-                    'Level_1QFwdEmpId2',
-                    'Level_1QFwdEmpId3',
-                    'Level_2QFwdEmpId',
-                    'Level_2QFwdEmpId2',
-                    'Level_2QFwdEmpId3',
-                    'Level_3QFwdEmpId',
-                    'Level_3QFwdEmpId2',
-                    'Level_3QFwdEmpId3',
-                ];
-
-                // Build a map of EmployeeID => full name for all forward IDs
-                $allForwardIds = collect($forwardFields)->map(fn($f) => $query->$f)->filter()->unique();
-
-                $forwardedEmpMap = \DB::table('hrm_employee as e')
-                    ->leftJoin('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-                    ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-                    ->whereIn('e.EmployeeID', $allForwardIds)
-                    ->select(
-                        'e.EmployeeID',
-                        'e.Fname',
-                        'e.Sname',
-                        'e.Lname',
-                        'd.department_name'
-                    )
-                    ->get()
-                    ->mapWithKeys(function ($emp) {
-                        $fullName = trim("{$emp->Fname} {$emp->Sname} {$emp->Lname}");
-                        $dept = $emp->department_name ?: 'N/A';
-                        return [$emp->EmployeeID => $fullName . ' (' . $dept . ')'];
-                    });
-
-
-                // Now attach each forward name back to the query object in order
-                foreach ($forwardFields as $field) {
-                    $empId = $query->$field;
-                    $query->{$field . '_name'} = $empId && isset($forwardedEmpMap[$empId]) ? $forwardedEmpMap[$empId] : null;
-                }
             }
         }
 
@@ -714,9 +638,6 @@ class QueryController extends Controller
 
         if ($forwardto == "Y") {
             if ($level == 'Level_1ID') {
-                if($request->forwardReason == null || $request->forwardReason == ''){
-                    return response()->json(['success' =>false, 'message' => 'Please provide a reason for forwarding the query,']);
-                }
                 // Check if Level 1 Forward Employee ID is "0"
                 if ($query->Level_1QFwdEmpId == "0" || $query->Level_1QFwdEmpId == null || $query->Level_1QFwdEmpId == '') {
                     $Level_1QFwdEmpId = $request->assignEmpId;
@@ -920,10 +841,6 @@ class QueryController extends Controller
                 // Check if Level 1 Forward Employee ID is "0"
                 if ($query->Level_2QFwdEmpId == "0" || $query->Level_2QFwdEmpId == null || $query->Level_2QFwdEmpId == '') {
                     $Level_2QFwdEmpId = $request->assignEmpId;
-
-                     if($request->forwardReason == null || $request->forwardReason == ''){
-                        return response()->json(['success' =>false, 'message' => 'Please provide a reason for forwarding the query,']);
-                    }
                     $Level_2QFwdReason = $request->forwardReason;
                     $Level_2QFwdDT = now();  // Use current date and time
                     $Level_2QFwdNoOfTime = 1;
@@ -1113,9 +1030,6 @@ class QueryController extends Controller
                 // Check if Level 1 Forward Employee ID is "0"
                 if ($query->Level_3QFwdEmpId == "0" || $query->Level_3QFwdEmpId == null || $query->Level_3QFwdEmpId == '') {
                     $Level_3QFwdEmpId = $request->assignEmpId;
-                    if($request->forwardReason == null || $request->forwardReason == ''){
-                        return response()->json(['success' =>false, 'message' => 'Please provide a reason for forwarding the query,']);
-                    }
                     $Level_3QFwdReason = $request->forwardReason;
                     $Level_3QFwdDT = now();  // Use current date and time
                     $Level_3QFwdNoOfTime = 1;
@@ -1299,9 +1213,6 @@ class QueryController extends Controller
                 // Check if Level 1 Forward Employee ID is "0"
                 if ($query->Mngmt_QFwdEmpId == "0" || $query->Mngmt_QFwdEmpId == null || $query->Mngmt_QFwdEmpId == '') {
                     $Mngmt_QFwdEmpId = $request->assignEmpId;
-                    if($request->forwardReason == null || $request->forwardReason == ''){
-                        return response()->json(['success' =>false, 'message' => 'Please provide a reason for forwarding the query,']);
-                    }
                     $Mngmt_QFwdReason = $request->forwardReason;
                     $Mngmt_QFwdDT = now();  // Use current date and time
                     $Mngmt_QFwdNoOfTime = 1;
@@ -1478,25 +1389,57 @@ class QueryController extends Controller
         }
 
         if ($forwardto == "N") {
+
             // $assign_emp_id = $query->AssignEmpId;
 
+            // if ($level == 'Level_1ID') {
+            //     // Update the query status, reply, and forward_to fields
+            //     \DB::table('hrm_employee_queryemp')
+            //         ->where('QueryID', $request->query_id)
+            //         ->update([
+            //             'Level_1QStatus' => $request->status,
+            //             'Level_1ReplyAns' => $request->reply,
+            //             'Level_1QToDT' => now(), // Current datetime
+            //             'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+            //             'QueryStatus_Emp' =>'0',
+            //             'QueryReply' => '',
+            //             // 'AssignEmpId' => $assign_emp_id,
+            //             'QStatus'=>$request->status
+
+
+            //         ]);
+            //     }
             if ($level == 'Level_1ID') {
-                // Update the query status, reply, and forward_to fields
-                \DB::table('hrm_employee_queryemp')
-                    ->where('QueryID', $request->query_id)
-                    ->update([
+                    $updateData = [
                         'Level_1QStatus' => $request->status,
-                        'Level_1ReplyAns' => $request->reply,
-                        'Level_1QToDT' => now(), // Current datetime
-                        'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                        'Level_1QToDT' => now(),
+                        'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'),
                         'QueryStatus_Emp' => '0',
-                        'QueryReply' => '',
-                        // 'AssignEmpId' => $assign_emp_id,
-                        'QStatus' => $request->status
+                        'QStatus' => $request->status,
+                    ];
+
+                    if (!empty($request->reply)) {
+                        // Fetch the existing query data
+                        $existing = \DB::table('hrm_employee_queryemp')
+                            ->where('QueryID', $request->query_id)
+                            ->first();
+
+                        if (!empty($existing->QueryReply)) {
+                            // If QueryReply already exists, update into Query2Reply
+                            $updateData['Query2Reply'] = $request->reply;
+                        } else {
+                            // If QueryReply is empty, update normally
+                            $updateData['Level_1ReplyAns'] = $request->reply;
+                            $updateData['QueryReply'] = $request->reply;
+                        }
+                    }
+
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update($updateData);
+                }
 
 
-                    ]);
-            }
             if ($level == 'Level_2ID') {
                 \DB::table('hrm_employee_queryemp')
                     ->where('QueryID', $request->query_id)
@@ -1712,39 +1655,25 @@ class QueryController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'dept' => $query->department_name,   
-                'subject' => $query->subject_name,       
-                'details' => $query->QueryValue,       
-                'raiseDate' => $query->QueryDT,  
-                'level1Status' => $level1Status, 
-                'level1Date' => $query->Level_1QToDT,     
-                'level1Remarks' => $query->Level_1ReplyAns, 
-                'level2Status' => $level2Status, 
-                'level2Date' => $query->Level_2QToDT,     
-                'level2Remarks' => $query->Level_2ReplyAns, 
-                'level3Status' => $level3Status, 
-                'level3Date' => $query->Level_3QToDT,     
-                'level3Remarks' => $query->Level_3ReplyAns, 
-                'mangStatus' => $Mngmt_QStatus, 
-                'mangDate' => $query->Mngmt_QToDT,     
-                'mangRemarks' => $query->Mngmt_ReplyAns, 
+                'dept' => $query->department_name,   // Replace with your column name
+                'subject' => $query->subject_name,       // Replace with your column name
+                'details' => $query->QueryValue,       // Replace with your column name
+                'raiseDate' => $query->QueryDT,  // Replace with your column name
+                'level1Status' => $level1Status, // Replace with your column name
+                'level1Date' => $query->Level_1QToDT,     // Replace with your column name
+                'level1Remarks' => $query->Level_1ReplyAns, // Replace with your column name
+                'level2Status' => $level2Status, // Replace with your column name
+                'level2Date' => $query->Level_2QToDT,     // Replace with your column name
+                'level2Remarks' => $query->Level_2ReplyAns, // Replace with your column name
+                'level3Status' => $level3Status, // Replace with your column name
+                'level3Date' => $query->Level_3QToDT,     // Replace with your column name
+                'level3Remarks' => $query->Level_3ReplyAns, // Replace with your column name
+                'mangStatus' => $Mngmt_QStatus, // Replace with your column name
+                'mangDate' => $query->Mngmt_QToDT,     // Replace with your column name
+                'mangRemarks' => $query->Mngmt_ReplyAns, // Replace with your column name
                 'Rating' => $query->EmpQRating,
                 'EmpStatus' => $QueryStatus_Emp,
                 'EmpRemarks' => $query->EmpQRating,
-
-
-                'level1Remarks_for1' => $query->Level_1QFwdReason, 
-                'level1Remarks_for2' => $query->Level_1QFwdReason2, 
-                'level1Remarks_for3' => $query->Level_1QFwdReason3, 
-
-                'level2Remarks_for1' => $query->Level_2QFwdReason, 
-                'level2Remarks_for2' => $query->Level_2QFwdReason2, 
-                'level2Remarks_for3' => $query->Level_2QFwdReason3, 
-
-                'level3Remarks_for1' => $query->Level_3QFwdReason, 
-                'level3Remarks_for2' => $query->Level_3QFwdReason2, 
-                'level3Remarks_for3' => $query->Level_3QFwdReason3, 
-
 
             ],
         ]);

@@ -302,7 +302,7 @@
                                     <span class="leave-availabel float-start me-4"><span class="teken-leave">&nbsp;</span>Opening Leave</span>
                                     <span class="leave-availabel float-start me-4"><span class="upcoming-leave">&nbsp;</span>Availed Leave</span>
                                     <span class="leave-availabel float-start"><span class="availabel-leave">&nbsp;</span>Balance Leave</span>
-                                    <span class="leave-availabel float-end"> <a href="https://vnrdev.in/HR_Mannual/7-leave-policy/" target="_blank" class="btn btn-link">Leave Policy</a></span>
+                                    <span class="leave-availabel float-end"> <a title="Leave Policy Information" href="https://vnrdev.in/HR_Mannual/7-leave-policy/" target="_blank" class="btn-link"><b><i class=" ri-information-line"></i> Leave Policy</b></a></span>
 
                                 </div>
                             </div>
@@ -317,18 +317,18 @@
                         <div class="mfh-machine-profile">
                             <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;">   
                                 <li class="nav-item">
-                                    <a style="color: #0e0e0e;" class="nav-link active" data-bs-toggle="tab"
+                                    <a title="Attendance" style="color: #0e0e0e;" class="nav-link active" data-bs-toggle="tab"
                                         href="#LeaveStatistics" role="tab" aria-controls="LeaveStatistics"
                                         aria-selected="true">Attendance</a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#ApplyLeave"
+                                    <a title="Apply Leave" style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#ApplyLeave"
                                         role="tab" aria-controls="ApplyLeave" aria-selected="false">Apply Leave</a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#LeaveBalance"
+                                    <a title="Leave Balance" style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#LeaveBalance"
                                         role="tab" aria-controls="LeaveBalance" aria-selected="false"> Leave Balance</a>
                                 </li>
                             </ul>
@@ -337,8 +337,8 @@
                                     <div class="card chart-card">
                                         <div class="card-header">
                                             <h4 class="has-btn float-start mt-2"></H4>
-                                            <div class="float-end form-group s-opt">
-                                                <select class="select2 form-control select-opt" id="monthname" fdprocessedid="7n33b9">
+                                            <div class="float-end form-group mb-0 s-opt">
+                                                <select class="select2 form-control select-opt" id="monthname" fdprocessedid="7n33b9" style="width:150px;">
                                                     <option value="select">Select Month </option>
                                                 </select>
                                                 <span class="sel_arrow">
@@ -547,7 +547,7 @@
                                                     <!-- Contact No -->
                                                     <div class="col-xl-4">
                                                             <div class="form-group s-opt">
-                                                                <label for="contactNo" class="col-form-label">Contact No.</label>
+                                                                <label for="contactNo" class="col-form-label">Contact Number</label>
                                                                 <input class="form-control" type="tel" id="contactNo" name="contactNo" 
                                                                     placeholder="Enter contact number" maxlength="10" 
                                                                     oninput="validatePhoneNumber(this)" required>
@@ -568,11 +568,11 @@
                                                         <label for="reason" class="col-form-label">Reason for
                                                             Leave</label>
                                                         <textarea class="form-control" id="reason" name="reason" maxlength="250"
-                                                            placeholder="Enter reason" required></textarea>
+                                                            placeholder="Enter reason for leave" required></textarea>
                                                     </div>
                                                     <!-- Submit Button -->
                                                     <div class="form-group mb-0">
-                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                        <button class="btn btn-primary float-end" type="submit">Submit</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -587,7 +587,7 @@
                                                                 <th>Apply Date</th>
                                                                 <th>From Date</th>
                                                                 <th>To Date</th>
-                                                                <th>Total</th>
+                                                                <th>Total Day</th>
                                                                 <th>Leave Type</th>
                                                                 <th>Reporting Reason</th>
                                                                 <th>Leave Reason</th>
@@ -653,7 +653,7 @@
                                                                             <p style="padding:6px 13px;font-size: 11px; color: red; display:inline;" title="" data-original-title="Cancellation Status"> - Cancellation Rejected</p>
                                                                         @else
                                                                             <!-- If cancellation status is not set -->
-                                                                            <p style="padding:6px 13px;font-size: 11px; color: grey; display:inline;" title="" data-original-title="Cancellation Status"> -</p>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: grey; display:none;" title="" data-original-title="Cancellation Status"> &nbsp;</p>
                                                                         @endif
                                                                     </td>
 
@@ -730,9 +730,9 @@
                                        <!-- Month Selection Form -->
                                     <!-- Month Selection Form -->
                                 <form method="GET" action="{{ route('attendanceViewleave') }}" id="leaveBalanceForm">
-                                        <div class="form-group col-sm-2">
-                                                <label for="month">Select Month</label>
-                                                <select class="form-select form-select-sm select-opt" id="month" name="month">
+                                        <div class="form-group float-end">
+                                                <label class="float-start mb-0 me-2 mt-1" for="month">Select Month</label>
+                                                <select class="form-select form-select-sm float-start select-opt" id="month" name="month" style="width:150px;font-size:12px;">
                                                     <option value="1" {{ (request('month') == 1) || (!request('month') && 1 == date('n')) ? 'selected' : '' }}>January</option>
                                                     <option value="2" {{ (request('month') == 2) || (!request('month') && 2 == date('n')) ? 'selected' : '' }}>February</option>
                                                     <option value="3" {{ (request('month') == 3) || (!request('month') && 3 == date('n')) ? 'selected' : '' }}>March</option>
@@ -801,12 +801,12 @@
                         <div class="card chart-card">
                             <ul class="nav nav-tabs" id="myTab1" role="tablist">
                                 <li class="nav-item">
-                                    <a style="color: #0e0e0e;" class="nav-link active" data-bs-toggle="tab"
+                                    <a title="Holiday" style="color: #0e0e0e;" class="nav-link active" data-bs-toggle="tab"
                                         href="#MonthHoliday" role="tab" aria-controls="MonthHoliday"
                                         aria-selected="true">Holiday</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab"
+                                    <a title="Festival Leave (Optional)" style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab"
                                         href="#FestivalLeave" role="tab" aria-controls="FestivalLeave"
                                         aria-selected="false">Festival Leave (Optional)</a>
                                 </li>
@@ -834,7 +834,7 @@
                                                         <label class="mb-0 ml-1 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
                                                     </h6>
                                                     @if(!empty($holiday->fes_image_path))
-                                                    <img class="mb-2 mt-2"
+                                                    <img title="{{ $holiday->HolidayName }}" class="mb-2 mt-2"
                                                         src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
                                                         alt="{{ $holiday->HolidayName }}" /><br>
                                                 @endif
@@ -842,7 +842,7 @@
                                                 
                                             @endforeach
                                             <!-- Show the 'All Holiday List' button only if holidays exist -->
-                                            <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href=""
+                                            <a title="All Holiday List" class="btn-outline secondary-outline mr-2 sm-btn mt-2" href=""
                                                 data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
                                         @endif
                                     </div>
@@ -1196,12 +1196,115 @@
             </div>
         </div>
     </div>
+    <!-- Modal for Leave request for calender  -->
+    <div class="modal fade" id="rangeModal" tabindex="-1" aria-labelledby="rangeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#a9cbcd;">
+                    <h5 class="modal-title" >Request Leave</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Leave Request Details -->
+                     <form id="leaveForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                
+                                <div class="form-group" style="display: block;">
+                                    <label class="col-form-label"><b>Contact Number</b></label>
+                                    <input type="text" id="contactNumber" class="form-control" style="width:100%">
+                                </div>
+                                <div class="form-group" style="display: block;">
+                                    <label class="col-form-label"><b>Selected Date</b></label>
+                                    <p id="modalText"></p>
+                                </div>
+                                <div class="form-group" id="otherRemarkGroup" style="display: block;">
+                                    <label class="col-form-label"><b>Address</b></label>
+                                    <textarea type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter Reason for Leave" maxlength="150"></textarea>
+                                </div>
+                                <div class="form-group" id="otherRemarkGroup" style="display: block;">
+                                    <label class="col-form-label"><b>Reason for Leave</b></label>
+                                    <textarea type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter Reason for Leave" maxlength="150"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-2">Leave Details</h5>
+                                <table class="table" id="leaveDaysTable" style="width:100%; margin-bottom:20px;">
+                                    <thead>
+                                        <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                                <hr>
+                                <p class="text-right"><b>Total: 3 Days</b></p>
+                                <h6 class="mb-2">Leave Summary</h5>
+                                <table class="table text-center">
+                                    <thead>
+                                    <tr>
+                                        <th style="border:1px solid #ccc;">Leave</th>
+                                        <th style="border:1px solid #ccc;">Current</th>
+                                        <th style="border:1px solid #ccc;">Used</th>
+                                        <th style="border:1px solid #ccc;">Balance</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #ccc; text-align:center;">CL</td>
+                                        <td style="border:1px solid #ccc; text-align:center;">6</td>
+                                        <td style="border:1px solid #ccc; text-align:center;">1</td>
+                                        <td style="border:1px solid #ccc; text-align:center;">5</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid #ccc; text-align:center;">PL</td>
+                                        <td style="border:1px solid #ccc; text-align:center;">6</td>
+                                        <td style="border:1px solid #ccc; text-align:center;">2</td>
+                                        <td style="border:1px solid #ccc; text-align:center;">4</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                   
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--- apply leave details ---->
+    <div class="modal fade" id="leavedeatilsModal" tabindex="-1" aria-labelledby="leavedeatilsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#a9cbcd;">
+                    <h5 class="modal-title" >Requested Leave Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                              
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     @include('employee.footer');
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
 
         document.addEventListener('DOMContentLoaded', function () {
             const currentDate = new Date();
@@ -1546,31 +1649,55 @@
                 });
 
             // Function to set the date limits
-            function setDateLimitsoptional(selectedHolidayDate) {
-                const currentDate = new Date();
+            // function setDateLimitsoptional(selectedHolidayDate) {
+            //     const currentDate = new Date();
 
-                // Set the minDate as 3 days ago from the current date
-                const threeDaysAgo = new Date(currentDate);
-                threeDaysAgo.setDate(currentDate.getDate() - 3);
-                const minDate = threeDaysAgo.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+            //     // Set the minDate as 3 days ago from the current date
+            //     const threeDaysAgo = new Date(currentDate);
+            //     threeDaysAgo.setDate(currentDate.getDate() - 3);
+            //     const minDate = threeDaysAgo.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
 
-                // Set the min and max dates for the from and to date inputs
-                fromDateInput.min = minDate; // Allow dates from 3 days ago
-                toDateInput.min = minDate; // Allow dates from 3 days ago
+            //     // Set the min and max dates for the from and to date inputs
+            //     fromDateInput.min = minDate; // Allow dates from 3 days ago
+            //     toDateInput.min = minDate; // Allow dates from 3 days ago
 
-                // Clear max to allow selection of any past date
-                fromDateInput.max = ""; // No maximum limit
-                toDateInput.max = ""; // No maximum limit
+            //     // Clear max to allow selection of any past date
+            //     fromDateInput.max = ""; // No maximum limit
+            //     toDateInput.max = ""; // No maximum limit
 
-                // Pre-select the fromDate and toDate fields as today's date by default
-                fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
-                toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
+            //     // Pre-select the fromDate and toDate fields as today's date by default
+            //     fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
+            //     toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
 
-                // Optional: You can also set the date fields based on the selected holiday if needed:
-                // For example, set both fields to the selected holiday date
-                fromDateInput.value = selectedHolidayDate.toISOString().split('T')[0]; 
-                toDateInput.value = selectedHolidayDate.toISOString().split('T')[0];
-            }
+            //     // Optional: You can also set the date fields based on the selected holiday if needed:
+            //     // For example, set both fields to the selected holiday date
+            //     fromDateInput.value = selectedHolidayDate.toISOString().split('T')[0]; 
+            //     toDateInput.value = selectedHolidayDate.toISOString().split('T')[0];
+            // }
+function setDateLimitsoptional(selectedHolidayDate) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
+    // Set min and max for current year only
+    const minDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];  // Jan 1st
+    const maxDate = new Date(currentYear, 11, 31).toISOString().split('T')[0]; // Dec 31st
+
+    fromDateInput.min = minDate;
+    toDateInput.min = minDate;
+
+    fromDateInput.max = maxDate;
+    toDateInput.max = maxDate;
+
+    // Clamp selected holiday to current year
+    let selectedDate = selectedHolidayDate;
+    if (selectedHolidayDate.getFullYear() !== currentYear) {
+        selectedDate = currentDate; // fallback to today if out of bounds
+    }
+
+    const formattedDate = selectedDate.toISOString().split('T')[0];
+    fromDateInput.value = formattedDate;
+    toDateInput.value = formattedDate;
+}
 
 
             monthDropdown.addEventListener('change', function () {
@@ -2689,8 +2816,120 @@
                     })
                     .catch(error => console.error('Error fetching attendance data:', error));
             }
+        
+       
+
 
         });
+
+         /*********************Calebnder Date range*****************************/
+let selecting = false;
+let startCell = null;
+let endCell = null;
+
+$(".calendar .day").on("click", function (e) {
+    console.log('dfghj');
+  if ($(e.target).closest(".open-modal").length > 0) return;
+
+  const clickedDate = $(this).find(".open-modal").data("date"); // format: "30-June-2025"
+  if (!clickedDate) return;
+
+  // Convert string to Date
+  const clicked = new Date(clickedDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // remove time for comparison
+
+  if (clicked < today) {
+    alert("Backdate selection is not allowed.");
+    return;
+  }
+
+  if (!selecting) {
+    $(".day").removeClass("selected start end");
+    startCell = this;
+    selecting = true;
+    $(this).addClass("selected start");
+  } else {
+    endCell = this;
+    selecting = false;
+
+    const endDate = $(endCell).find(".open-modal").data("date");
+    const end = new Date(endDate);
+    if (end < today) {
+      alert("Backdate range selection is not allowed.");
+      return;
+    }
+
+    applyRange(startCell, endCell);
+
+    const d1 = $(startCell).find('.day-num').text();
+    const d2 = $(endCell).find('.day-num').text();
+    $("#modalText").html("Selected dates: " + d1 + " - " + d2);
+    $("#rangeModal").show();
+
+    let all = $(".calendar .day").toArray();
+    let i1 = all.indexOf(startCell);
+    let i2 = all.indexOf(endCell);
+    if (i1 > i2) [i1, i2] = [i2, i1];
+
+    let rows = '';
+    let index = 0;
+    for (let i = i1; i <= i2; i++) {
+      const dateStr = $(all[i]).find(".open-modal").data("date");
+      if (!dateStr) continue;
+
+      const dt = new Date(dateStr);
+      if (dt < today) continue; // skip backdates
+
+      rows += '<tr>' +
+        '<td>' + dateStr + '</td>' +
+        '<td>' +
+          '<select class="form-control" name="leave_type[' + index + ']">' +
+            '<option>CL</option>' +
+            '<option>PL</option>' +
+            '<option>SL</option>' +
+          '</select>' +
+        '</td>' +
+        '<td>' +
+          '<select class="form-control" name="leave_time[' + index + ']">' +
+            '<option>All Day</option>' +
+            '<option>First Half</option>' +
+            '<option>Second Half</option>' +
+          '</select>' +
+        '</td>' +
+      '</tr>';
+      index++;
+    }
+
+    $("#leaveDaysTable tbody").html(rows);
+  }
+});
+
+$(".calendar .day").on("mouseover", function () {
+  if (selecting && startCell) {
+    $(".calendar .day").removeClass("range-hover");
+    const all = $(".calendar .day").toArray();
+    let i1 = all.indexOf(startCell);
+    let i2 = all.indexOf(this);
+    if (i1 > i2) [i1, i2] = [i2, i1];
+    for (let i = i1; i <= i2; i++) {
+      $(all[i]).addClass("range-hover");
+    }
+  }
+});
+
+function applyRange(start, end) {
+  const all = $(".calendar .day").toArray();
+  let i1 = all.indexOf(start);
+  let i2 = all.indexOf(end);
+  if (i1 > i2) [i1, i2] = [i2, i1];
+  for (let i = i1; i <= i2; i++) {
+    $(all[i]).addClass("selected");
+  }
+  $(all[i1]).addClass("start");
+  $(all[i2]).addClass("end");
+}
+/*************************calender date range*****************************/
 
         function isToday(date) {
         // Get today's date in UTC

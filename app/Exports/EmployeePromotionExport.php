@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
@@ -16,11 +17,11 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 
-class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatting, WithHeadings,ShouldAutoSize
+class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatting, WithHeadings, ShouldAutoSize
 {
-    protected $employeeId, $pmsYId, $department, $grade, $state, $region;
+    protected $employeeId, $pmsYId, $department, $grade, $state, $region, $zone, $bu;
 
-    public function __construct($employeeId, $pmsYId, $department = null, $grade = null, $state = null, $region = null)
+    public function __construct($employeeId, $pmsYId, $department = null, $grade = null, $state = null, $region = null, $zone = null, $bu = null)
     {
         $this->employeeId = $employeeId;
         $this->pmsYId = $pmsYId;
@@ -28,6 +29,8 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
         $this->grade = $grade;
         $this->state = $state;
         $this->region = $region;
+        $this->zone = $zone;
+        $this->bu = $bu;
     }
     public function view(): View
     {
@@ -35,15 +38,15 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
             ->where('HOD_EmployeeID', $this->employeeId)
             ->where('AssessmentYear', $this->pmsYId)
             ->pluck('EmployeeID');
-           
 
-            $query = DB::table('hrm_employee_general as emp')
+
+        $query = DB::table('hrm_employee_general as emp')
             ->leftJoin('core_departments as dept', 'emp.DepartmentId', '=', 'dept.id')
             ->leftJoin('hrm_employee as empp', 'emp.EmployeeID', '=', 'empp.EmployeeID')
             ->leftJoin('core_city_village_by_state as hq', 'emp.HqId', '=', 'hq.id')
             ->leftJoin('core_grades as grade', 'emp.GradeId', '=', 'grade.id')
             ->leftJoin('core_designation as desig', 'emp.DesigId', '=', 'desig.id')
-            ->leftJoin('core_regions as region', 'emp.TerrId', '=', 'region.id')
+            ->leftJoin('core_regions as region', 'emp.RegionId', '=', 'region.id')
             ->leftJoin('hrm_employee_pms as pms', function ($join) {
                 $join->on('emp.EmployeeID', '=', 'pms.EmployeeID')
                     ->where('pms.HOD_EmployeeID', '=', $this->employeeId)
@@ -56,6 +59,8 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
             ->leftJoin('core_grades as rev_grade', 'pms.Reviewer_EmpGrade', '=', 'rev_grade.id')
             ->leftJoin('core_grades as hod_grade', 'pms.Hod_EmpGrade', '=', 'hod_grade.id')
             ->leftJoin('core_grades as hr_grade', 'pms.HR_CurrGradeId', '=', 'hr_grade.id')
+            ->leftJoin('core_zones as zones', 'emp.ZoneId', '=', 'zones.id')
+            ->leftJoin('core_business_unit as bu', 'emp.BUId', '=', 'bu.id')
             ->leftJoin('core_designation as hr_desig', 'pms.HR_CurrDesigId', '=', 'hr_desig.id')
             ->leftJoin('hrm_employee as app', 'pms.Appraiser_EmployeeID', '=', 'app.EmployeeID')
             ->leftJoin('hrm_employee as rev', 'pms.Appraiser_EmployeeID', '=', 'rev.EmployeeID')
@@ -63,42 +68,59 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
             ->whereIn('emp.EmployeeID', $Mang_EmployeeID)
             ->where('empp.EmpStatus', 'A');
         $detailss = $query->select(
-                'empp.EmployeeID',
-                'empp.EmpCode',
-                'empp.Fname',
-                'empp.Sname',
-                'empp.Lname',
-                'dept.department_name',
-                'grade.grade_name',
-                'desig.designation_name',
-                'app_desig.designation_name as Appraiser_Designation',
-                'app_grade.grade_name as Appraiser_Grade',
-                'rev_desig.designation_name as Reviewer_Designation',
-                'rev_grade.grade_name as Reviewer_Grade',
-                'hr_desig.designation_name as HR_Designation',
-                'hr_grade.grade_name as HR_Grade',
-                'hod_grade.grade_name as Hod_Grade',
-                'hod_desig.designation_name as Hod_Designation',
-            )
+            'empp.EmployeeID',
+            'empp.EmpCode',
+            'empp.Fname',
+            'empp.Sname',
+            'empp.Lname',
+            'dept.department_name',
+            'grade.grade_name',
+            'region.region_name',
+            'zones.id as zone_id',
+            'bu.id as bu_id',
+            'desig.designation_name',
+            'app_desig.designation_name as Appraiser_Designation',
+            'app_grade.grade_name as Appraiser_Grade',
+            'rev_desig.designation_name as Reviewer_Designation',
+            'rev_grade.grade_name as Reviewer_Grade',
+            'hr_desig.designation_name as HR_Designation',
+            'hr_grade.grade_name as HR_Grade',
+            'hod_grade.grade_name as Hod_Grade',
+            'hod_desig.designation_name as Hod_Designation',
+        )
             ->get();
-            
-            // 🔍 Optional filters by department and grade name
-            $details = $detailss->filter(function ($item) {
-                $match = true;
 
-                if (!empty($this->department)) {
-                    $match = $match && (strcasecmp(trim($item->department_name), trim($this->department)) === 0);
-                }
+        // 🔍 Optional filters by department and grade name
+        $details = $detailss->filter(function ($item) {
+            $match = true;
 
-                if (!empty($this->grade)) {
-                    $match = $match && (strcasecmp(trim($item->grade_name), trim($this->grade)) === 0);
-                }
+            if (!empty($this->department)) {
+                $match = $match && (strcasecmp(trim($item->department_name), trim($this->department)) === 0);
+            }
 
-                return $match;
-            })->values(); // Reset keys
+            if (!empty($this->grade)) {
+                $match = $match && (strcasecmp(trim($item->grade_name), trim($this->grade)) === 0);
+            }
+           
+            if (!empty($this->region)) {
+                $match = $match && (strcasecmp(trim($item->region_name), trim($this->region)) === 0);
+            }
+
+            // ZONE
+            if (!empty($this->zone) && strtolower($this->zone) !== 'undefined' && strtolower($this->zone) !== 'null') {
+                $match = $match && (trim((string)$item->zone_id) === trim((string)$this->zone));
+            }
+
+            // BU
+            if (!empty($this->bu) && strtolower($this->bu) !== 'undefined' && strtolower($this->bu) !== 'null') {
+                $match = $match && (trim((string)$item->bu_id) === trim((string)$this->bu));
+            }
+
+            return $match;
+        })->values(); // Reset keys
 
         return view('exports.employeepromotionmanagement', compact('details'));
-        }        
+    }
 
     // Apply styles to specific columns
     public function styles($sheet)
@@ -135,21 +157,29 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
             ],
             // Row 2
             [
-                '', 'EC', 'Name', 'Department', 'Grade',
-                'Designation', 'Grade',
-                'Designation', 'Grade',
-                'Designation', 'Grade', 'Remarks',
+                '',
+                'EC',
+                'Name',
+                'Department',
+                'Grade',
+                'Designation',
+                'Grade',
+                'Designation',
+                'Grade',
+                'Designation',
+                'Grade',
+                'Remarks',
                 '',
             ],
         ];
     }
-    
+
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
-    
+
                 // Merge header cells
                 $sheet->mergeCells('A1:A2');
                 $sheet->mergeCells('B1:E1');
@@ -157,20 +187,20 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
                 $sheet->mergeCells('H1:I1');
                 $sheet->mergeCells('J1:L1');
                 $sheet->mergeCells('M1:M2');
-    
+
                 // Define header range
                 $headerRange = 'A1:M2';
-    
+
                 // Apply header styles
                 $sheet->getStyle($headerRange)->getFont()->setBold(true);
                 $sheet->getStyle($headerRange)->getFont()->setSize(12);
                 $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle($headerRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-    
+
                 // ✅ Apply background color to the header
                 $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID);
                 $sheet->getStyle($headerRange)->getFill()->getStartColor()->setARGB(Color::COLOR_YELLOW); // Change color if needed
-    
+
                 // ✅ Fix "SN." column
                 $sheet->getColumnDimension('A')->setWidth(5);
                 $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -180,7 +210,7 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
             },
         ];
     }
-    
+
 
     // Column formatting (e.g., date, number formatting)
     public function columnFormats(): array
@@ -191,4 +221,3 @@ class EmployeePromotionExport implements FromView, WithStyles, WithColumnFormatt
         ];
     }
 }
-

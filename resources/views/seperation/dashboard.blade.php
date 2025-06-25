@@ -79,6 +79,58 @@
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
                                         </li>
+                                         @if(Auth::user()->CompanyId == '1')
+
+                                        <li>
+                                            <b class="blink" style="color:red;">Ledger 2024-25</b>
+                                            @php
+                                                $employee = auth()->user();
+                                                $prefix = $employee->VCode === 'V' ? '' : 'E';
+                                                $empCode = $prefix . $employee->EmpCode;
+                                                $filePath = base_path("Employee/Emp1Lgr/2024-25/{$empCode}.pdf");
+                                                $ledgerExists = File::exists($filePath);
+
+                                                $hasConfirmed = DB::table('hrm_employee_ledger_confirmation')
+                                                    ->where('EmployeeId', auth()->user()->EmployeeID)
+                                                    ->where('Year', '2024-25')
+                                                    ->exists();
+                                            
+                                                
+                                                
+                                            @endphp
+                                            @if($ledgerExists)
+                                            <!-- Download link -->
+                                            <a style="float: right;" 
+                                                href="{{ $hasConfirmed 
+                                                            ? route('ledger.confirmation.print', ['id' => auth()->user()->EmployeeID]) 
+                                                            : route('ledger.downloadpage', ['employeeId' => auth()->user()->EmployeeID]) }}"
+                                                @if($hasConfirmed) download @endif
+                                                title="Download Ledger">
+                                                    <i class="fas fa-download ms-2 {{ $hasConfirmed ? 'text-primary' : 'text-muted' }}" style="cursor: pointer;"></i>
+                                                </a>
+
+                                            <a style="float: right;" href="#" data-bs-toggle="modal" data-bs-target="#ledgerViewModal" title="View Ledger">
+                                                <i class="fas fa-eye mr-2 {{ $hasConfirmed ? 'text-primary' : 'text-muted' }}" style="cursor: pointer;"></i> | 
+                                            </a>
+
+                                            @else
+                                            <a style="float: right;" href="#">
+                                                    <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModalNo" style="cursor: pointer;"></i> 
+                                                    | 
+                                                    <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModalNo" style="cursor: pointer;"></i> 
+                                                </a>
+                                            @endif
+
+                                        </li>
+                                        @else
+                                        <li><b class="blink" style="color:red;">Ledger 2024-25</b>
+                                                <a style="float: right;" href="#">
+                                                    <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                    | 
+                                                    <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                </a>
+                                            </li>
+                                        @endif
                                          <!-- Passport Expiry Notification -->
                                         @php
                                             // Retrieve the passport expiry date if available
@@ -1402,7 +1454,81 @@
             </div>
         </div>
     </div>
+     <!-- missiing leadger -->
+        <div class="modal fade" id="ledgerMissingModal" tabindex="-1" aria-labelledby="ledgerMissingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="ledgerMissingModalLabel">Ledger Not Available</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                The employee ledgers will be made available once all 
+                employee claims for March 2025 have been submitted and duly processed. 
+                Delays in both the submission and approval of these claims are 
+                contributing to a corresponding delay in the ledger uploads.
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>
+<!------------------>
+ <!-- missiing leadger -->
+        <div class="modal fade" id="ledgerMissingModalNo" tabindex="-1" aria-labelledby="ledgerMissingModalNoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="ledgerMissingModalNoLabel">Ledger Not Available</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             Ledger Not Available
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>
+<!------------------>
+
+
+<!-- Modal for displaying the ledger PDF -->
+<div class="modal fade" id="ledgerViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Employee Ledger 2024-25</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=location.reload();></button>
+            </div>
+            <div class="modal-body">
+                <div id="ledgerError" class="alert alert-danger d-none"></div>
+                <div id="ledgerLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary"></div>
+                    <p>Loading ledger...</p>
+                </div>
+                <div id="pdfContainer" class="d-none">
+                    <div id="viewer" class="pdfViewer"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- JavaScript Implementation -->
+    <script src="{{ asset('pdfjs/pdf.min.js') }}"></script>
+    <script src="{{ asset('pdfjs/pdf_viewer.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('pdfjs/pdf_viewer.min.css') }}">
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const currentDate = new Date();
@@ -4486,6 +4612,222 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
+    });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById("auto-scroll-container");
+
+        const interval = setInterval(() => {
+            container.scrollTop += 1;
+
+            const isAtBottom = Math.ceil(container.scrollTop + container.clientHeight) >= container.scrollHeight;
+            if (isAtBottom) {
+                clearInterval(interval); // Stop scrolling once the bottom is reached
+            }
+        }, 50); // Adjust speed if needed
+    });
+
+    // Trigger PDF load when modal is shown
+    document.addEventListener('DOMContentLoaded', function() {
+    console.log('PDF viewer script started at:', new Date().toISOString());
+
+    // Check if pdfjsLib is available
+    if (typeof pdfjsLib === 'undefined') {
+        console.error('pdfjsLib is not defined. Ensure pdf.min.js is loaded.');
+        alert('PDF library failed to load. Please refresh the page.');
+        return;
+    }
+
+    // Set PDF.js worker source
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ asset('pdfjs/pdf.worker.min.js') }}";
+
+    // DOM elements
+    const pdfContainer = document.getElementById('pdfContainer');
+    const viewer = document.getElementById('viewer');
+    const errorDiv = document.getElementById('ledgerError');
+    const loadingDiv = document.getElementById('ledgerLoading');
+    const modalElement = document.getElementById('ledgerViewModal');
+    const eyeIcon = document.querySelector('[data-bs-target="#ledgerViewModal"]');
+
+    // Initialize PDF.js viewer
+    let pdfViewer = null;
+    let modalInstance = null;
+    let currentPdfUrl = null;
+
+    // Initialize modal and PDF viewer when eye icon is clicked
+    eyeIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Show loading states
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-spinner', 'fa-spin');
+        loadingDiv.classList.remove('d-none');
+        errorDiv.classList.add('d-none');
+        pdfContainer.classList.add('d-none');
+
+        // Initialize modal if not already done
+        if (!modalInstance) {
+            modalInstance = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+
+        // Fetch employee data
+        fetch('{{ route("ledger.getEmployeeData") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                employeeId: '{{ Auth::user()->EmployeeID }}',
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Initialize PDF viewer if not already done
+                if (!pdfViewer) {
+                    const EventBus = window.pdfjsViewer.EventBus;
+                    const eventBus = new EventBus();
+                    
+                    pdfViewer = new pdfjsViewer.PDFViewer({
+                        container: pdfContainer,
+                        viewer: viewer,
+                        eventBus: eventBus,
+                        textLayerMode: 0,
+                        annotationLayerMode: 0
+                    });
+                }
+                // Load the PDF
+                loadPdf(data);
+            } else {
+                throw new Error(data.message || 'Ledger not available');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError(error.message);
+        })
+        .finally(() => {
+            // Restore the eye icon
+            eyeIcon.classList.remove('fa-spinner', 'fa-spin');
+            eyeIcon.classList.add('fa-eye');
+        });
+    });
+
+    // Load pdf function new
+    async function loadPdf(data) {
+    console.log('data new', data);
+    try {
+        const year = '2024-25';
+        const prefix = data.vCode === 'V' ? '' : 'E';
+        let currentPdfUrl = '';
+        const currentUserEmployeeId = {{ auth()->user()->EmployeeID }};
+
+        if (data.hasConfirmedEmployee) {
+            // Load merged ledger confirmation PDF URL
+            currentPdfUrl = `/ledger-confirmation/view/${currentUserEmployeeId}`;
+        } else {
+            // Load default ledger PDF URL
+            currentPdfUrl = `/ledger/view/${data.companyId}/${year}/${prefix}${data.empCode}?employeeId=${currentUserEmployeeId}&t=${Date.now()}`;
+        }
+
+        // Load PDF document with pdf.js
+        const loadingTask = pdfjsLib.getDocument({
+            url: currentPdfUrl,
+            disableAutoFetch: true,
+            disableStream: true
+        });
+
+        const pdfDocument = await loadingTask.promise;
+
+        // Set up viewer with the loaded document
+        pdfViewer.setDocument(pdfDocument);
+        pdfViewer.currentScaleValue = '1.0'; // you can change scale as needed
+
+        // Show content
+        loadingDiv.classList.add('d-none');
+        errorDiv.classList.add('d-none');
+        pdfContainer.classList.remove('d-none');
+
+        // Show modal (if using bootstrap modal instance)
+        modalInstance.show();
+
+        // Hide toolbar or customize as needed
+        customizeToolbar();
+
+        } catch (error) {
+            console.error('PDF loading error:', error);
+            showError(error.message.includes('CORS') 
+                ? 'Failed to load PDF due to security restrictions' 
+                : error.message || 'Failed to load ledger');
+        }
+    }
+
+    // Hide PDF.js toolbar
+    function customizeToolbar() {
+        const toolbar = document.querySelector('#viewer .toolbar');
+        if (toolbar) {
+            toolbar.style.display = 'none';
+        } else {
+            // Use MutationObserver if toolbar isn't immediately available
+            const observer = new MutationObserver(() => {
+                const toolbar = document.querySelector('#viewer .toolbar');
+                if (toolbar) {
+                    toolbar.style.display = 'none';
+                    observer.disconnect();
+                }
+            });
+            observer.observe(viewer, { childList: true, subtree: true });
+            setTimeout(() => observer.disconnect(), 3000);
+        }
+    }
+
+    // Show error message
+    function showError(message) {
+        loadingDiv.classList.add('d-none');
+        pdfContainer.classList.add('d-none');
+        
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('d-none');
+        
+        if (modalInstance) {
+            modalInstance.show();
+        }
+    }
+
+    // Clean up when modal is closed
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        if (pdfViewer) {
+            pdfViewer.setDocument(null);
+        }
+    });
+});
+//  document.addEventListener('contextmenu', e => e.preventDefault());
+//         document.addEventListener('keydown', e => {
+//             if (e.ctrlKey && ['s', 'p', 'c'].includes(e.key.toLowerCase())) e.preventDefault();
+//         });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggle = document.getElementById('manualDropdown');
+        const menu = toggle.nextElementSibling;
+
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        });
+
+        // Optional: Hide dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!document.getElementById('customDropdown').contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
     });
     
 
