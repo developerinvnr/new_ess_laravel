@@ -245,8 +245,8 @@ class ProfileController extends Controller
         // File paths
         // $tdsFileA = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_2024-25.pdf");
         // $tdsFileB = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_PARTB_2024-25.pdf");
-        $tdsFileA = "Employee_TDS/2024-25/{$panNo}_2024-25.pdf";
-        $tdsFileB= "Employee_TDS/2024-25/{$panNo}_PARTB_2024-25.pdf";
+        $tdsFileA = "Employee_TDS/2024-25/{$panNo}_2025-26.pdf";
+        $tdsFileB= "Employee_TDS/2024-25/{$panNo}_PARTB_2025-26.pdf";
 
 
         $tdsFileAUrl = Storage::disk('s3')->url($tdsFileA);
