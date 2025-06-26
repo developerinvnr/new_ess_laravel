@@ -1,10 +1,9 @@
 @component('mail::message')
-<p><b>Dear Sir/Mam,</b></p>
-<p>{{$details['EmpName']}} has submitted resignation application </p>
+<p>{{$details['EmpName']}} Separation Account NOC Clearance </p>
 <p><b>Department Name </b> : {{$details['DepartmentName']}}</p>
 <p><b>Designation name </b> : {{$details['DesigName']}}</p>
-<p>has submitted resignation application, 
-needs to be approved within 5 working days. For more details Kindly log on to ESS.
+<p>Finance has submitted the accounts statement for {{$details['EmpName']}}
+Log on to ESS for further details.
 
 @component('mail::button', ['url' => $details['site_link']])
        ESS

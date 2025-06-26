@@ -10,8 +10,9 @@
        ESS
 @endcomponent
 
-
-
+<p>If the ESS button is not working, please click the link below to access it directly</p>
+<a href="https://vnrseeds.co.in">https://vnrseeds.co.in</a>
+<br>
 <p>Regards,</p>
 <p>ESS Web Admin</p>
 
