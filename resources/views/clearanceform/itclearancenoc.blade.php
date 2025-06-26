@@ -1147,12 +1147,16 @@
                 .then((data) => {
                     let assetsContent = '';
                     let officialAssetsContent = '';
+                    const s3BaseUrl = "{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/') }}";
 
                     // Generate HTML content dynamically for different sections
                     data.assets.forEach((item) => {
-                        const billUrl = `/Employee/AssetReqUploadFile/${item.ReqBillImgExtName || ''}`;
-                        const assetUrl = `/Employee/AssetReqUploadFile/${item.ReqAssestImgExtName || ''}`;
-                        console.log(item);
+                        // const billUrl = `/Employee/AssetReqUploadFile/${item.ReqBillImgExtName || ''}`;
+                        // const assetUrl = `/Employee/AssetReqUploadFile/${item.ReqAssestImgExtName || ''}`;
+                        // console.log(item);
+
+                         const billUrl = s3BaseUrl + (item.ReqBillImgExtName || '');
+                        const assetUrl = s3BaseUrl + (item.ReqAssestImgExtName || '');
 
                         assetsContent += `
                             <div class="col-md-6">

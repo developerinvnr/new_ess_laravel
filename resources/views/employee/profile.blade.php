@@ -1147,7 +1147,7 @@
                                                         </div> -->
                                                    
                                                     
-                                                    @if($companyId == 1)
+                                                    @if($companyId == 12)
                                                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>Ledger</b></h5>
@@ -1199,7 +1199,7 @@
                                                             $healthCardDUrl = Storage::disk('s3')->url($healthCardDPath);
                                                             @endphp
 
-                                                        @if(($companyId == 1 || $companyId == 3) && $healthCardAUrl)
+                                                        @if(($companyId == 12 || $companyId == 32) && $healthCardAUrl)
                                                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                                 <div class="card-header" style="background-color: #ececec;">
                                                                     <h5><b>Health ID Card:</b></h5>
@@ -1247,10 +1247,10 @@
 
                                                                 $esicFilePath = "Employee_ESIC/{$companyId}/{$empCode}.pdf";
                                                                 $esicExists = Storage::disk('s3')->exists($esicFilePath);
-                                                                $esicUrl = Storage::disk('s3')->url($esicFilePath)
+                                                                $esicUrl = Storage::disk('s3')->url($esicFilePath);
                                                             @endphp
 
-                                                            @if($companyId == 1)
+                                                            @if($companyId == 12)
                                                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2"> 
                                                                     <div class="card-header" style="background-color: #ececec;">
                                                                         <h5><b>ESIC Card:</b></h5>
