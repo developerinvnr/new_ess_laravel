@@ -1644,6 +1644,120 @@
          </div>
       </div>
    </div>
+    <!-- Employee Details Modal -->
+    <div class="modal fade" id="empdetails" data-bs-backdrop="static"tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title">
+                  <img id="employeeImage" src="" alt="Employee Image" class="rounded-circle me-2" width="40" height="40">
+                  <span id="employeeNamehistory"></span>
+               </h5>
+               <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">×</span>
+               </button>
+            </div>
+            <div class="modal-body">
+               <div class="row emp-details-sep">
+                  <div class="col-md-6">
+                     <ul>
+                        <li><b>Employee Code:</b> <span id="employeeCode"></span></li>
+                        <li><b>Designation:</b> <span id="designation"></span></li>
+                        <li><b>Total VNR Experience:</b> <span id="totalExperienceYears"></span></li>
+                     </ul>
+                  </div>
+                  <div class="col-md-6">
+                     <ul>
+                        <li><b>Date of Joining:</b> <span id="dateJoining"></span></li>
+                        <li><b>Prev Experience:</b> <span id="totalprevExperienceYears"></span></li>
+                     </ul>
+                  </div>
+                  <div class="col-md-12 mt-3">
+                     <h5 id="careerh5"><b>Carrier Progression in VNR</b></h5>
+                     <table class="table table-bordered mt-2">
+                        <thead style="background-color:#cfdce1;">
+                           <tr>
+                              <th>SN</th>
+                              <th>Date</th>
+                              <th>Grade</th>
+                              <th>Designation</th>
+                              <th>Monthly Gross</th>
+                              <th>CTC</th>
+                              <th>Rating</th>
+                           </tr>
+                        </thead>
+                        <tbody id="careerProgressionTable">
+                           <!-- Career progression data will be populated here dynamically -->
+                        </tbody>
+                     </table>
+                  </div>
+                  <div class="col-md-12 mt-3" id="careerprev">
+                     <h5 ><b>Previous Employers</b></h5>
+                     <table class="table table-bordered mt-2">
+                        <thead style="background-color:#cfdce1;">
+                           <tr>
+                              <th>SN</th>
+                              <th>Company</th>
+                              <th>Designation</th>
+                              <th>From Date</th>
+                              <th>To Date</th>
+                              <th>Duration</th>
+                           </tr>
+                        </thead>
+                        <tbody id="experienceTable">
+                           <!-- Experience data will be populated here dynamically -->
+                        </tbody>
+                     </table>
+                  </div>
+                  <!-- Developmental Progress -->
+                  <div class="col-md-12 mt-3" id="careerprev">
+                     <h5 class="float-start"><b>Developmental Progress</b></h5>
+                     <h5 class="mb-2">A. Training Programs</h5>
+                     <table class="table table-pad mb-4">
+                        <thead>
+                           <tr>
+                              <th>SN.</th>
+                              <th>Subject</th>
+                              <th>Date</th>
+                              <th>Duration</th>
+                              <th>Institute</th>
+                              <th>Trainer</th>
+                              <th>Location</th>
+                           </tr>
+                        </thead>
+                        <tbody id="trainingProgramsTable">
+                           <tr>
+                              <td colspan="7" class="text-center">Loading...</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                     <h5 class="mb-2">B. Conference Attended</h5>
+                     <table class="table table-pad">
+                        <thead>
+                           <tr>
+                              <th>SN.</th>
+                              <th>Title</th>
+                              <th>Date</th>
+                              <th>Duration</th>
+                              <th>Conduct by</th>
+                              <th>Location</th>
+                           </tr>
+                        </thead>
+                        <tbody id="conferenceTable">
+                           <tr>
+                              <td colspan="6" class="text-center">Loading...</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+            </div>
+         </div>
+      </div>
+   </div>
    @include('employee.footer')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>  
 
@@ -2898,6 +3012,205 @@ function OpenEditWindow(encryptedEmpPmsId) {
          };
          return icons[ext] || icons["default"];
       }
+      function showEmployeeDetails(employeeId) {
+             var companyId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-companyid');
+             var PmsYId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-PmsYId');
+             var mangid = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-mangid');
+             var awsS3BaseUrl = "{{ env('AWS_URL') }}";
+
+                     $.ajax({
+                        url: '/employee/details/' + employeeId + '/' + PmsYId + '/' + mangid,
+                        method: 'GET',
+                         success: function(response) {
+                             console.log(response);
+          
+                             if (response.error) {
+                                 alert(response.error);
+                                 return;
+                             }
+          
+                             // Helper function to check if the date is invalid or is a default date like "01/01/1970"
+                             function isInvalidDate(date) {
+                                 return date === "1970-01-01" || date === "0000-00-00" || date === "";
+                             }
+                            //  var image_url = `https://vnrseeds.co.in/AdminUser/EmpImg${companyId}Emp/${response.employeeDetails.EmpCode}.jpg`;
+                       		var image_url = `${awsS3BaseUrl}/Employee_Image/${companyId}/${response.employeeDetails.EmpCode}.jpg`;
+
+                             // Update modal content dynamically with employee details
+                             $('#employeeNamehistory').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
+                             $('#employeeCode').text(response.employeeDetails.EmpCode);
+                             $('#designation').text(response.employeeDetails.designation_name);
+                             $('#department').text(response.employeeDetails.department_name);
+                             $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
+                             $('#employeeImage').attr('src', image_url);
+          
+                            
+                             $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' +
+                                 response.employeeDetails.MonthsSinceJoining + ' Months');
+          
+                             // **Handling Previous Experience Data**
+                             var experienceData = response.previousEmployers || [];
+                             console.log(experienceData);
+          
+                             // Empty the previous employer table before populating
+                             var experienceTable = $('#experienceTable');
+                             experienceTable.empty(); // Clear any previous data in the table
+                             let totalYears = 0, totalMonths = 0;
+          
+                             experienceData.forEach(function(experience) {
+                                 if (experience.DurationYears) {
+                                     totalYears += parseInt(experience.DurationYears) || 0;
+                                 }
+                                 if (experience.DurationMonths) {
+                                     totalMonths += parseInt(experience.DurationMonths) || 0;
+                                 }
+                             });
+          
+                             // Convert months to years if they exceed 12
+                             totalYears += Math.floor(totalMonths / 12);
+                             totalMonths = totalMonths % 12;
+          
+                             $('#totalprevExperienceYears').text(totalYears + ' Years ' + totalMonths + ' Months');
+          
+                             // Check if there's any previous experience data
+                             if (experienceData.some(function(experience) {
+                                     // Check if any of the values are not empty or null
+                                     return experience.ExpComName.trim() !== '' ||
+                                         experience.ExpDesignation.trim() !== '' ||
+                                         experience.ExpFromDate !== null ||
+                                         experience.ExpToDate !== null ||
+                                         experience.DurationYears !== null;
+                                 })) {
+                                 // If there's any valid data, loop through and display it
+                                 experienceData.forEach(function(experience, index) {
+                                     // Format dates and duration
+                                     var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(
+                                         experience.ExpFromDate);
+                                     var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(
+                                         experience.ExpToDate);
+                                     var duration = experience.DurationYears || '-';
+          
+                                     // Create the row for the table
+                                     var row = `<tr>
+                                 <td>${index + 1}</td>
+                                 <td>${experience.ExpComName || '-'}</td>
+                                 <td>${experience.ExpDesignation || '-'}</td>
+                                 <td>${fromDate}</td>
+                                 <td>${toDate}</td>
+                                 <td>${duration}</td>
+                             </tr>`;
+          
+                                     // Append the row to the table
+                                     experienceTable.append(row);
+                                 });
+          
+                                 // Show the "Previous Employers" section if there is valid data
+                                 $('#prevh5').show(); // Show the "Previous Employers" heading
+                                 $('#careerprev').show(); // Show the "Previous Employers" section
+                                 $('#experienceTable').closest('table').show(); // Show the table
+                             } else {
+                                 // Hide the "Previous Employers" section if no valid data is available
+                                 $('#prevh5').hide();
+                                 $('#careerprev').hide();
+                                 $('#experienceTable').closest('table').hide();
+                             }
+          
+          
+                             // **Handling Career Progression Data**
+                             var careerProgressionData = response.careerProgression || [];
+                             var careerProgressionTable = $('#careerProgressionTable');
+                             careerProgressionTable.empty(); // Clear any previous data in the table
+                             console.log(careerProgressionData);
+                             // Check if there's any career progression data
+                             if (Array.isArray(careerProgressionData) && careerProgressionData.length > 0) {
+                                 careerProgressionData.forEach(function(progress, index) {
+                                     var salaryDateRange = progress.Date|| '-';
+                                     var grade = progress.Grade|| '-';
+                                     var designation = progress.Designation|| '-';
+          
+                                     var monthly_gross = progress.Monthly_Gross|| '-';
+                                     var ctc = progress.CTC|| '-';
+                                     var rating = progress.Rating|| '-';
+          
+                                     var row = `<tr>
+                                         <td>${index + 1}</td>
+                                         <td>${salaryDateRange|| '-'}</td>
+                                         <td>${grade || '-'}</td>
+                                         <td>${designation|| '-'}</td>
+                                         <td style="text-align: right;">${monthly_gross|| '-'}</td>
+                                         <td style="text-align: right;">${ctc|| '-'}</td>
+                                         <td style="text-align: right;">${rating|| '-'}</td>
+                                     </tr>`;
+          
+                                     $('#careerProgressionTable').append(row);
+                                 });
+          
+                                 // Show the Career Progression section if there's data
+                                 $('#careerh5').show(); // Show the heading
+                                 $('#careerProgressionTable').closest('table').show(); // Show the table
+                             } else {
+                                 // If no career progression data, hide the section
+                                 $('#careerh5').hide();
+                                 $('#careerProgressionTable').closest('table').hide();
+                             }
+          
+          // Populate Training Programs Table
+          var trainingTable = $('#trainingProgramsTable');
+                   trainingTable.empty();
+          
+                   if (response.trainings) {
+                       response.trainings.forEach(function(training, index) {
+                           var row = `<tr>
+                               <td>${index + 1}</td>
+                               <td>${training.TraTitle || '-'}</td>
+                               <td>${formatDate(training.TraFrom)}</td>
+                               <td>${training.Duration || '-'}</td>
+                               <td>${training.Institute || '-'}</td>
+                               <td>${training.TrainerName || '-'}</td>
+                               <td>${training.Location || '-'}</td>
+                           </tr>`;
+                           trainingTable.append(row);
+                       });
+                   } else {
+                       trainingTable.append(`<tr><td colspan="7" class="text-center">No training programs found</td></tr>`);
+                   }
+          
+                   // Populate Conferences Table
+                   var conferenceTable = $('#conferenceTable');
+                   conferenceTable.empty();
+          
+                   if (response.conferences) {
+                       response.conferences.forEach(function(conference, index) {
+                           var row = `<tr>
+                               <td>${index + 1}</td>
+                               <td>${conference.Title || '-'}</td>
+                               <td>${formatDate(conference.ConfFrom)}</td>
+                               <td>${conference.Duration || '-'}</td>
+                               <td>${conference.ConductedBy || '-'}</td>
+                               <td>${conference.Location || '-'}</td>
+                           </tr>`;
+                           conferenceTable.append(row);
+                       });
+                   } else {
+                       conferenceTable.append(`<tr><td colspan="6" class="text-center">No conferences attended</td></tr>`);
+                   }
+                             // Show the modal
+                             $('#empdetails').modal('show');
+                         },
+                         error: function(xhr, status, error) {
+                             console.log('AJAX error:', status, error);
+                             alert('An error occurred while fetching the data.');
+                         }
+                     });
+        }
+          function formatDate(dateString) {
+             if (!dateString) return '-';
+             var date = new Date(dateString);
+             var day = ("0" + date.getDate()).slice(-2);
+             var month = ("0" + (date.getMonth() + 1)).slice(-2);
+             var year = date.getFullYear();
+             return day + '-' + month + '-' + year;
+          }
 
    </script>
    <style>

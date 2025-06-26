@@ -51,8 +51,8 @@
                                             <div class="profile-picture">
                                                 <!-- <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
                                                     alt="Profile Picture"> -->
-                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{$employee->EmpCode}}.jpg"
-                                                    alt="Profile Picture">
+
+                                                <img src="{{ Storage::disk('s3')->url('Employee_Image/' . $imagpath . '/' . $employee->EmpCode . '.jpg') }}" alt="Profile Picture">
 
 
                                             </div>

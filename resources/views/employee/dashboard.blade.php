@@ -474,21 +474,21 @@
                                                             @if($sqlConf->EmpShow === 'Y')
                                                             <!-- HR Policy Manual -->
                                                                     <li>
-                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                        <a target="_blank" href="https://vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
                                                                             <p style="color:blue;">E-Confirmation Letter</p>
                                                                         </a>
                                                                     </li>
                                                             @elseif($sqlConf->EmpShow_Trr === 'Y')
                                                                 <!-- E-Confirmation Letter -->
                                                                     <li>
-                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                        <a target="_blank" href="https://vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
                                                                             <p style="color:blue;">E-Confirmation Letter</p>
                                                                         </a>
                                                                     </li>
                                                             @elseif($sqlConf->EmpShow_Ext === 'Y')
                                                                 <!-- HR Policy Manual -->
                                                                     <li>
-                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                        <a target="_blank" href="https://vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
                                                                             <p style="color:blue;">E-Confirmation Postponement Letter</p>
                                                                         </a>
                                                                     </li>
@@ -697,9 +697,13 @@
                                                 foreach ($chunk as $item) {
                                                     echo '
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume ' . htmlspecialchars($item->IVal) . '" href="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IDocName) . '" target="_blank">
-                                                            <img class="d-block w-100 p-3" src="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IImg) . '" alt="Volume-' . htmlspecialchars($item->IVal) . '">
-                                                        </a>
+                                                        <a title="Volume ' . htmlspecialchars($item->IVal) . '" 
+                                                            href="' . Storage::disk('s3')->url('Impact_Magazine/' . $item->IDocName) . '" target="_blank">
+                                                                <img class="d-block w-100 p-3" 
+                                                                    src="' . Storage::disk('s3')->url('Impact_Magazine/' . $item->IImg) . '" 
+                                                                    alt="Volume-' . htmlspecialchars($item->IVal) . '">
+                                                            </a>
+
                                                         <h6 class="mt-2">Volume - ' . htmlspecialchars($item->IVal) . '</h6>
                                                     </div>';
                                                 }
@@ -3419,7 +3423,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                                 card.innerHTML = `
                         <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
                             <div class="float-start emp-request-leave">
-                                <img class="float-start me-2" src="https://vnrseeds.co.in/AdminUser/EmpImg${employeeDetails.CompanyId}Emp/${employeeDetails.ECode}.jpg">
+                                <img class="float-start me-2" src="https://s3.ap-south-1.amazonaws.com/vnrpeepal.bkt/Employee_Image/${employeeDetails.CompanyId}/${employeeDetails.ECode}.jpg">
 
                                 <b>Emp Code: ${employeeDetails.EmployeeID}</b>
                                 <p>${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}</p>
@@ -3716,7 +3720,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                                 <div class="card p-3 mb-3 late-atnd" style="border:1px solid #ddd;">
                                     <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
                                         <div class="float-start emp-request-leave">                                            
-                                            <img class="float-start me-2" src="https://vnrseeds.co.in/AdminUser/EmpImg${request.employeeDetails.CompanyId}Emp/${request.employeeDetails.ECode}.jpg">
+                                            <img class="float-start me-2" src="https://s3.ap-south-1.amazonaws.com/vnrpeepal.bkt/Employee_Image/${employeeDetails.CompanyId}/${employeeDetails.ECode}.jpg">
                                             <b>Emp Code: ${request.employeeDetails.EmpCode}</b>
                                             <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
                                         </div>
@@ -5247,15 +5251,18 @@ function formatDateddmmyyyy(date) {
                     
                     // Check if the current item date is today
                     const isTodayDatefirst = isToday(currentItem.date);  // Call isToday function outside of the string
+                    const s3BaseUrl = 'https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com';
+                    const companyId = '{{ Auth::user()->CompanyId }}';
 
                     
                     carouselItem += `
                     <div class="col text-center">
                         <img style="margin: 0 auto; display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                             class="d-block" 
-                            src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${currentItem.EmpCode}.jpg" 
+                            src="https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com/Employee_Image/{{ Auth::user()->CompanyId }}/${currentItem.EmpCode}.jpg" 
                             onerror="this.src='https://eu.ui-avatars.com/api/?name=${currentItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
                             alt="User Image">
+
                         <p><b>${formatDateddmm(currentItem.date)}</b></p>
                         <h6>${currentItem.Fname} ${currentItem.Lname}</h6>
                         <h6 class="degination">${currentItem.department_code} (${currentItem.city_village_name})</h6>
@@ -5289,9 +5296,10 @@ function formatDateddmmyyyy(date) {
                         <div class="col text-center">
                             <img style="display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                                 class="d-block" 
-                                src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${nextItem.EmpCode}.jpg" 
+                                src="https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com/Employee_Image/{{ Auth::user()->CompanyId }}/${nextItem.EmpCode}.jpg" 
                                 onerror="this.src='https://eu.ui-avatars.com/api/?name=${nextItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
                                 alt="User Image">
+
                             <p><b>${formatDateddmm(nextItem.date)}</b></p>
                             <h6>${nextItem.Fname} ${nextItem.Lname}</h6>
                             <h6 class="degination">${nextItem.department_code} (${nextItem.city_village_name})</h6>
@@ -5365,16 +5373,19 @@ function formatDateddmmyyyy(date) {
                 // Add each item to the modal
                 items.forEach(item => {
                     const isTodayDateall= isToday(item.date);  // Call isToday function outside of the string
+                const s3BaseUrl = 'https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com';
+                const companyId = '{{ Auth::user()->CompanyId }}';
 
                     const modalItem = `
                         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
                             <div class="border p-2 celebration-photo" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);min-height:245px;position:relative;">
                                 <!-- Employee Image -->
-                                <img 
-                                    src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${item.EmpCode}.jpg" 
-                                    alt="Employee Image" class="cele-img"
-                                    onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
-
+                                 <!-- Employee Image -->
+                                    <img 
+                                        src="${s3BaseUrl}/Employee_Image/${companyId}/${item.EmpCode}.jpg" 
+                                        alt="Employee Image" class="cele-img"
+                                        onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
+                                
                                 <!-- Employee Date -->
                                 <p class="cele-date">${formatDateddmm(item.date)}</p>
                                 

@@ -873,6 +873,7 @@ document.addEventListener("DOMContentLoaded", function() {
              var companyId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-companyid');
              var PmsYId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-PmsYId');
              var mangid = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-mangid');
+             var awsS3BaseUrl = "{{ env('AWS_URL') }}";
 
                      $.ajax({
                         url: '/employee/details/' + employeeId + '/' + PmsYId + '/' + mangid,
@@ -889,8 +890,8 @@ document.addEventListener("DOMContentLoaded", function() {
                              function isInvalidDate(date) {
                                  return date === "1970-01-01" || date === "0000-00-00" || date === "";
                              }
-                             var image_url = `https://vnrseeds.co.in/AdminUser/EmpImg${companyId}Emp/${response.employeeDetails.EmpCode}.jpg`;
-          
+                              var image_url = `${awsS3BaseUrl}/Employee_Image/${companyId}/${response.employeeDetails.EmpCode}.jpg`;
+
                              // Update modal content dynamically with employee details
                              $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
                              $('#employeeCode').text(response.employeeDetails.EmpCode);

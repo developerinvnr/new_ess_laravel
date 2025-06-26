@@ -94,14 +94,16 @@
 
     </a> -->
     @php
-    $imagpath = Auth::user()->CompanyId;
+    $companyId = Auth::user()->CompanyId;
+    $empCode = Auth::user()->EmpCode;
+    $s3BaseUrl = config('filesystems.disks.s3.url');
+    $imagePath = "Employee_Image/{$companyId}/{$empCode}.jpg";
+    $fullImageUrl = $s3BaseUrl . '/' . $imagePath;
     @endphp
 
     <a href="javascript:void(0);" class="user-info">
-    <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{ Auth::user()->EmpCode }}.jpg" 
-    alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
-
-</a>
+    <img src="{{ $fullImageUrl }}" alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
+    </a>
     @php
         $designationMenu = $essMenus->firstWhere('name', 'Navbar_Designation_Dropdown');
     @endphp

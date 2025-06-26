@@ -900,33 +900,35 @@ class AssetRequestController extends Controller
         $filenameInc = null;
         $EmployeeID = $vehicle->EmployeeID;
 
-        // File Upload Handling Function
-        function uploadFile($file, $prefix, $EmployeeID)
+        // File Upload Handling Function to S3
+        function uploadFileToS3($file, $prefix, $EmployeeID)
         {
             if ($file) {
                 $extension = $file->getClientOriginalExtension();
                 $fileName = "{$prefix}_{$EmployeeID}_" . date('Ymd_His') . ".{$extension}";
-                $destinationPath = base_path('Employee/VehcileInfo');
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/{$companyId}";
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
+                // Full S3 path/key
+                $path = $folder . '/' . $fileName;
 
-                $file->move($destinationPath, $fileName);
-                return $fileName;
+                // Upload file contents to S3 disk
+                Storage::disk('s3')->putFileAs($folder, $file, $fileName, 'public');
+
+                return $fileName;  // you can also return $path if you want full path in DB
             }
             return null;
         }
 
-        // Uploading files
+        // Uploading files to S3
         if ($request->hasFile('vehicle_image')) {
-            $filenameVehicle = uploadFile($request->file('vehicle_image'), 'employee_vehicle', $EmployeeID);
+            $filenameVehicle = uploadFileToS3($request->file('vehicle_image'), 'employee_vehicle', $EmployeeID);
         }
         if ($request->hasFile('rc_file')) {
-            $filenameRc = uploadFile($request->file('rc_file'), 'employee_rc', $EmployeeID);
+            $filenameRc = uploadFileToS3($request->file('rc_file'), 'employee_rc', $EmployeeID);
         }
         if ($request->hasFile('insurance')) {
-            $filenameInc = uploadFile($request->file('insurance'), 'employee_inc', $EmployeeID);
+            $filenameInc = uploadFileToS3($request->file('insurance'), 'employee_inc', $EmployeeID);
         }
 
         $updateData = [];
@@ -967,16 +969,14 @@ class AssetRequestController extends Controller
             ];
         }
 
-
-
         // Add uploaded file names if they exist
-        if ($filenameVehicle || $filenameVehicle != null) {
+        if ($filenameVehicle !== null) {
             $updateData['vehicle_image'] = $filenameVehicle;
         }
-        if ($filenameRc || $filenameRc != null) {
+        if ($filenameRc !== null) {
             $updateData['rc_file'] = $filenameRc;
         }
-        if ($filenameInc || $filenameInc != null) {
+        if ($filenameInc !== null) {
             $updateData['insurance'] = $filenameInc;
         }
 
@@ -985,7 +985,6 @@ class AssetRequestController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Vehicle details updated successfully.']);
     }
-
     public function upload(Request $request)
     {
         $employee_id = $request->employee_id;
@@ -1001,12 +1000,12 @@ class AssetRequestController extends Controller
         }
 
         $year_id = $yearRecord->YearId;
-        $destinationPath = base_path('Employee/AssetReqUploadFile');
-        if (!file_exists($destinationPath)) {
-            mkdir($destinationPath, 0777, true);
-        }
 
         $updateData = [];
+
+        // Company folder base path for S3
+        $companyId = Auth::user()->CompanyId;
+        $folder = "Employee_Assets/{$companyId}";
 
         // Handle Bill Upload
         if ($request->file('bill_copy')) {
@@ -1018,7 +1017,8 @@ class AssetRequestController extends Controller
             $extension = $file->getClientOriginalExtension();
             $fileName = 'employee_bill' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
 
-            $file->move($destinationPath, $fileName);
+            // Upload to S3 directly under Employee_Assets/{CompanyId}
+            Storage::disk('s3')->putFileAs($folder, $file, $fileName, 'public');
 
             $updateData['ReqBillImgExtName'] = $fileName;
             $updateData['ReqBillImgExt'] = $extension;
@@ -1034,7 +1034,8 @@ class AssetRequestController extends Controller
             $extension = $file->getClientOriginalExtension();
             $fileName = 'employee_asset' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
 
-            $file->move($destinationPath, $fileName);
+            // Upload to S3 directly under Employee_Assets/{CompanyId}
+            Storage::disk('s3')->putFileAs($folder, $file, $fileName, 'public');
 
             $updateData['ReqAssestImgExtName'] = $fileName;
             $updateData['ReqAssestImgExt'] = $extension;
@@ -1048,4 +1049,167 @@ class AssetRequestController extends Controller
 
         return back()->with('success', 'File uploaded successfully.');
     }
+
+    // old code
+    // public function updateVehicle(Request $request)
+    // {
+    //     $vehicle = DB::table('hrm_employee_vehicle')->where('id', $request->request_id)->first();
+
+    //     if (!$vehicle) {
+    //         return response()->json(['success' => false, 'message' => 'Vehicle not found.']);
+    //     }
+
+    //     $filenameVehicle = null;
+    //     $filenameRc = null;
+    //     $filenameInc = null;
+    //     $EmployeeID = $vehicle->EmployeeID;
+
+    //     // File Upload Handling Function
+    //     function uploadFile($file, $prefix, $EmployeeID)
+    //     {
+    //         if ($file) {
+    //             $extension = $file->getClientOriginalExtension();
+    //             $fileName = "{$prefix}_{$EmployeeID}_" . date('Ymd_His') . ".{$extension}";
+    //             $destinationPath = base_path('Employee/VehcileInfo');
+
+    //             if (!file_exists($destinationPath)) {
+    //                 mkdir($destinationPath, 0777, true);
+    //             }
+
+    //             $file->move($destinationPath, $fileName);
+    //             return $fileName;
+    //         }
+    //         return null;
+    //     }
+
+    //     // Uploading files
+    //     if ($request->hasFile('vehicle_image')) {
+    //         $filenameVehicle = uploadFile($request->file('vehicle_image'), 'employee_vehicle', $EmployeeID);
+    //     }
+    //     if ($request->hasFile('rc_file')) {
+    //         $filenameRc = uploadFile($request->file('rc_file'), 'employee_rc', $EmployeeID);
+    //     }
+    //     if ($request->hasFile('insurance')) {
+    //         $filenameInc = uploadFile($request->file('insurance'), 'employee_inc', $EmployeeID);
+    //     }
+
+    //     $updateData = [];
+
+    //     if ($vehicle->vehicle_type == '2-wheeler') {
+    //         // Data for 2-wheeler
+    //         $updateData = [
+    //             'brand' => $request->vehicle_brand,
+    //             'model_name' => $request->model_name,
+    //             'model_no' => $request->model_no,
+    //             'dealer_name' => $request->dealer_name,
+    //             'dealer_contact' => $request->dealer_contact,
+    //             'purchase_date' => $request->purchase_date,
+    //             'price' => $request->price,
+    //             'registration_no' => $request->registration_number,
+    //             'registration_date' => $request->purchase_date,
+    //             'bill_no' => $request->bill_number,
+    //             'fuel_type' => $request->fuel_type,
+    //             'ownership' => $request->ownership,
+    //             'remark' => $request->remark,
+    //         ];
+    //     } elseif ($vehicle->vehicle_type == '4-wheeler') {
+    //         // Data for 4-wheeler
+    //         $updateData = [
+    //             'four_brand' => $request->four_brand,
+    //             'four_model_name' => $request->four_model_name,
+    //             'four_model_no' => $request->four_model_no,
+    //             'four_dealer_name' => $request->four_dealer_name,
+    //             'four_dealer_contact' => $request->four_dealer_contact,
+    //             'four_purchase_date' => $request->four_purchase_date,
+    //             'four_price' => $request->four_price,
+    //             'four_registration_no' => $request->four_registration_number,
+    //             'four_registration_date' => $request->four_purchase_date,
+    //             'four_bill_no' => $request->four_bill_number,
+    //             'four_fuel_type' => $request->fuel_type,
+    //             'four_ownership' => $request->ownership,
+    //             'remark' => $request->remark,
+    //         ];
+    //     }
+
+
+
+    //     // Add uploaded file names if they exist
+    //     if ($filenameVehicle || $filenameVehicle != null) {
+    //         $updateData['vehicle_image'] = $filenameVehicle;
+    //     }
+    //     if ($filenameRc || $filenameRc != null) {
+    //         $updateData['rc_file'] = $filenameRc;
+    //     }
+    //     if ($filenameInc || $filenameInc != null) {
+    //         $updateData['insurance'] = $filenameInc;
+    //     }
+
+    //     // Update the database using Query Builder
+    //     DB::table('hrm_employee_vehicle')->where('id', $request->request_id)->update($updateData);
+
+    //     return response()->json(['success' => true, 'message' => 'Vehicle details updated successfully.']);
+    // }
+
+    // public function upload(Request $request)
+    // {
+    //     $employee_id = $request->employee_id;
+    //     $currentYear = date('Y');
+    //     $nextYear = $currentYear + 1;
+
+    //     $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
+    //         ->where('ToDate', 'like', "$nextYear-%")
+    //         ->first();
+
+    //     if (!$yearRecord) {
+    //         return back()->with('error', 'Year record not found.');
+    //     }
+
+    //     $year_id = $yearRecord->YearId;
+    //     $destinationPath = base_path('Employee/AssetReqUploadFile');
+    //     if (!file_exists($destinationPath)) {
+    //         mkdir($destinationPath, 0777, true);
+    //     }
+
+    //     $updateData = [];
+
+    //     // Handle Bill Upload
+    //     if ($request->file('bill_copy')) {
+    //         $file = $request->file('bill_copy');
+    //         if (!$file->isValid() || $file->getSize() > 2097152) {
+    //             return back()->with('error', 'Invalid or oversized bill file (max 2MB).');
+    //         }
+
+    //         $extension = $file->getClientOriginalExtension();
+    //         $fileName = 'employee_bill' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+
+    //         $file->move($destinationPath, $fileName);
+
+    //         $updateData['ReqBillImgExtName'] = $fileName;
+    //         $updateData['ReqBillImgExt'] = $extension;
+    //     }
+
+    //     // Handle Asset Upload
+    //     if ($request->file('asset_copy')) {
+    //         $file = $request->file('asset_copy');
+    //         if (!$file->isValid() || $file->getSize() > 2097152) {
+    //             return back()->with('error', 'Invalid or oversized asset file (max 2MB).');
+    //         }
+
+    //         $extension = $file->getClientOriginalExtension();
+    //         $fileName = 'employee_asset' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+
+    //         $file->move($destinationPath, $fileName);
+
+    //         $updateData['ReqAssestImgExtName'] = $fileName;
+    //         $updateData['ReqAssestImgExt'] = $extension;
+    //     }
+
+    //     if (!empty($updateData)) {
+    //         DB::table('hrm_asset_employee_request')
+    //             ->where('AssetEmpReqId', $request->request_id)
+    //             ->update($updateData);
+    //     }
+
+    //     return back()->with('success', 'File uploaded successfully.');
+    // }
 }

@@ -49,13 +49,21 @@
 									<h5 class="mt-2">Volume - <?php echo htmlspecialchars($item->IVal); ?></h5>
 								</div>
 								<div class="card-body">
-									<a title="Volume <?php echo htmlspecialchars($item->IVal); ?>" 
+                                    <a title="Volume <?php echo htmlspecialchars($item->IVal); ?>" 
+                                        href="https://s3.ap-south-1.amazonaws.com/vnrpeepal.bkt/Impact_Magazine/<?php echo htmlspecialchars($item->IDocName); ?>" 
+                                        target="_blank">
+                                            <img class="d-block w-100 p-3" 
+                                                src="https://s3.ap-south-1.amazonaws.com/vnrpeepal.bkt/Impact_Magazine/<?php echo htmlspecialchars($item->IImg); ?>" 
+                                                alt="Volume-<?php echo htmlspecialchars($item->IVal); ?>">
+                                        </a>
+
+									<!-- <a title="Volume <?php echo htmlspecialchars($item->IVal); ?>" 
 									href="https://vnrseeds.co.in/AdminUser/VnrImpact/<?php echo htmlspecialchars($item->IDocName); ?>" 
 									target="_blank">
 										<img class="d-block w-100 p-3" 
 											src="https://vnrseeds.co.in/AdminUser/VnrImpact/<?php echo htmlspecialchars($item->IImg); ?>" 
 											alt="Volume-<?php echo htmlspecialchars($item->IVal); ?>">
-									</a>
+									</a> -->
 								</div>
 							</div>
 						</div>

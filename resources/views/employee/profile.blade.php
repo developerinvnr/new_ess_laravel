@@ -53,9 +53,8 @@
                                             <div class="profile-picture">
                                                 <!-- <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
                                                     alt="Profile Picture"> -->
-                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{Auth::user()->EmpCode}}.jpg"
-                                                    alt="Profile Picture">
-
+                                                
+                                                <img src="{{ env('AWS_URL') }}/Employee_Image/{{$imagpath}}/{{ Auth::user()->EmpCode }}.jpg" alt="Profile Picture">
 
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
@@ -1098,37 +1097,36 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    @php
-                                                        $tdsAExists = file_exists($tdsFileA);
-                                                        $tdsBExists = file_exists($tdsFileB);
-                                                    @endphp
-
-                                                    @if($tdsAExists || $tdsBExists)
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2" >
-                                                            <div class="card-header" style="background-color: #ececec;">
-                                                                <h5><b>TDS Cert. 2023-24</b></h5>
-                                                            </div>
-                                                            <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
-                                                                <ul class="help-list" style="width:100%;">
-                                                                @if($tdsAExists)
-                                                                    <li><b>Form-A</b>  <a style="float:right;" href="{{ url("Employee/ImgTds{$companyId}232024/" . Auth::user()->personaldetails->PanNo . "_2024-25.pdf") }}" target="_blank" >
-                                                                        <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
-                                                                    </a></li>
-                                                                @endif
-
-                                                                @if($tdsBExists)
-                                                                    <li><b>Form-B</b>  
-                                                                    <a  style="float: right;" href="{{ url("Employee/ImgTds{$companyId}232024/" . Auth::user()->personaldetails->PanNo . "_PARTB_2024-25.pdf") }}" target="_blank" >
+                                                    @if($tdsFileA || $tdsFileB)
+                                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
+                                                        <div class="card-header" style="background-color: #ececec;">
+                                                            <h5><b>TDS Cert. 2024-25</b></h5>
+                                                        </div>
+                                                        <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
+                                                            <ul class="help-list" style="width:100%;">
+                                                                @if($tdsFileA)
+                                                                <li><b>Form-A</b>
+                                                                    <a style="float:right;" href="{{ $tdsFileAUrl }}" target="_blank">
                                                                         <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
                                                                     </a>
+                                                                </li>
                                                                 @endif
-                                                                </ul>
-                                                            </div>
+
+                                                                @if($tdsFileB)
+                                                                <li><b>Form-B</b>
+                                                                    <a style="float:right;" href="{{ $tdsFileBUrl }}" target="_blank">
+                                                                        <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                    </a>
+                                                                </li>
+                                                                @endif
+                                                            </ul>
                                                         </div>
+                                                    </div>
                                                     @endif
+
                                                     
                                                    
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2" >
+                                                        <!-- <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2" >
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>TDS Cert. 2024-25 <span class="blink text-danger">Latest</span></b></h5>
                                                             </div>
@@ -1146,20 +1144,23 @@
                                                                
                                                                 </ul>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
                                                    
                                                     
-                                                    @if($companyId == 12)
+                                                    @if($companyId == 1)
                                                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>Ledger</b></h5>
                                                             </div>
                                                             <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
                                                                 <ul class="help-list" style="width:100%;">
-                                                                    @if(isset($encryptedEmpCode))  <!-- Check if the encrypted code exists -->
+                                                                    @if($ledgerFile)
                                                                         <li><b>Ledger 2024-25 <span class="blink text-danger">Latest</span></b></b> 
                                                                         <!-- Use the encrypted empCode in the URL -->
-                                                                        <a style="float: right;" href="{{ url('Employee/Emp' . $companyId . 'Lgr/' . $encryptedEmpCode . '.pdf') }}" target="_blank">
+                                                                        <!-- <a style="float: right;" href="{{ url('Employee/Emp' . $companyId . 'Lgr/' . $encryptedEmpCode . '.pdf') }}" target="_blank">
+                                                                            <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                        </a> -->
+                                                                           <a style="float: right;" href="{{ $ledgerUrl }}" target="_blank">
                                                                             <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
                                                                         </a>
                                                                         </li>
@@ -1182,40 +1183,92 @@
                                                             </div>
                                                         </div>
                                                     @endif
+                                                        @php
+                                                            use Illuminate\Support\Facades\Storage;
 
-                                                    @if(($companyId == 1 || $companyId == 3) && file_exists($healthCardD))
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
-                                                            <div class="card-header" style="background-color: #ececec;">
-                                                                <h5><b>Health ID Card:</b></h5>
-                                                            </div>
-                                                            <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
-                                                                <ul class="help-list" style="width:100%;">
+                                                            // S3 paths for each health card PDF
+                                                            $healthCardAPath = "Employee_HealthID/{$companyId}/{$empCode}_A.pdf";
+                                                            $healthCardBPath = "Employee_HealthID/{$companyId}/{$empCode}_B.pdf";
+                                                            $healthCardCPath = "Employee_HealthID/{$companyId}/{$empCode}_C.pdf";
+                                                            $healthCardDPath = "Employee_HealthID/{$companyId}/{$empCode}_D.pdf";
 
-                                                            @php
-                                                                $healthCards = [];
-                                                                if (file_exists($healthCardA)) {
-                                                                    $healthCards[] = '<li><b>Self</b> <a style="float:right;" href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf") . '" target="_blank" ><i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i></a></li>';
-                                                                }
-                                                                if (file_exists($healthCardB)) {
-                                                                    $healthCards[] = '<li><b>Spouse</b> <a style="float:right;" href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_B.pdf") . '" target="_blank" > <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i></a></li>';
-                                                                }
-                                                                if (file_exists($healthCardC)) {
-                                                                    $healthCards[] = '<li><b>Child - 1</b> <a style="float:right;" href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_C.pdf") . '" target="_blank" > <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i></a></li>';
-                                                                }
-                                                                if (file_exists($healthCardD)) {
-                                                                    $healthCards[] = '<li><b>Child - 2</b> <a style="float:right;" href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_D.pdf") . '" target="_blank" > <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i></a></li>';
-                                                                }
+                                                            // Get URLs if exists, else null
+                                                            $healthCardAUrl = Storage::disk('s3')->url($healthCardAPath);
+                                                            $healthCardBUrl = Storage::disk('s3')->url($healthCardBPath);
+                                                            $healthCardCUrl = Storage::disk('s3')->url($healthCardCPath);
+                                                            $healthCardDUrl = Storage::disk('s3')->url($healthCardDPath);
                                                             @endphp
 
-                                                            @if(count($healthCards) > 0)
-                                                                {!! implode('', $healthCards) !!}
-                                                            @endif
-                                                                </ul>
+                                                        @if(($companyId == 1 || $companyId == 3) && $healthCardAUrl)
+                                                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
+                                                                <div class="card-header" style="background-color: #ececec;">
+                                                                    <h5><b>Health ID Card:</b></h5>
+                                                                </div>
+                                                                <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
+                                                                    <ul class="help-list" style="width:100%;">
+                                                                        @if($healthCardAUrl)
+                                                                            <li><b>Self</b> 
+                                                                                <a style="float:right;" href="{{ $healthCardAUrl }}" target="_blank">
+                                                                                    <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        @endif
+
+                                                                        @if($healthCardBUrl)
+                                                                            <li><b>Spouse</b> 
+                                                                                <a style="float:right;" href="{{ $healthCardBUrl }}" target="_blank">
+                                                                                    <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        @endif
+
+                                                                        @if($healthCardCUrl)
+                                                                            <li><b>Child - 1</b> 
+                                                                                <a style="float:right;" href="{{ $healthCardCUrl }}" target="_blank">
+                                                                                    <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        @endif
+
+                                                                        @if($healthCardDUrl)
+                                                                            <li><b>Child - 2</b> 
+                                                                                <a style="float:right;" href="{{ $healthCardDUrl }}" target="_blank">
+                                                                                    <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        @endif
+                                                                    </ul>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endif
+                                                        @endif
+
+                                                        @php
+                                                         
+
+                                                                $esicFilePath = "Employee_ESIC/{$companyId}/{$empCode}.pdf";
+                                                                $esicExists = Storage::disk('s3')->exists($esicFilePath);
+                                                                $esicUrl = Storage::disk('s3')->url($esicFilePath)
+                                                            @endphp
+
+                                                            @if($companyId == 1)
+                                                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2"> 
+                                                                    <div class="card-header" style="background-color: #ececec;">
+                                                                        <h5><b>ESIC Card:</b></h5>
+                                                                    </div>
+                                                                    <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
+                                                                        <ul class="help-list" style="width:100%;">
+                                                                            <li>ESIC Card 
+                                                                                <a style="float:right;" href="{{ $esicUrl }}" target="_blank" class="text-primary">
+                                                                                    <i class="fas fa-eye mr-2"></i> | <i class="fas fa-download ms-2"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+
                                                           
-                                                    @if($companyId == 1 && file_exists($esicCard))
+                                                    <!-- @if($companyId == 1 && file_exists($esicCard))
                                                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2"> 
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>ESIC Card:</b></h5>
@@ -1230,7 +1283,7 @@
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                    @endif
+                                                    @endif -->
 
                                                 </div>
                                             </div>
@@ -1385,20 +1438,20 @@
                                 </div>
                                 <div class="card-body">
                                 <form id="contact-form" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="form-group">
-        <label class="col-form-label">Subject:</label>
-        <input type="text" name="subject" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label class="col-form-label">Attached files:</label>
-        <input type="file" name="attachment" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label class="col-form-label">Message:</label>
-        <textarea name="message" class="form-control" required></textarea>
-    </div>
-    <button type="submit" class="effect-btn btn btn-success mr-2 sm-btn">Send</button>
+                                    @csrf
+                                    <div class="form-group">
+                                        <label class="col-form-label">Subject:</label>
+                                        <input type="text" name="subject" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Attached files:</label>
+                                        <input type="file" name="attachment" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Message:</label>
+                                        <textarea name="message" class="form-control" required></textarea>
+                                    </div>
+                                    <button type="submit" class="effect-btn btn btn-success mr-2 sm-btn">Send</button>
                                 </form>
                                 </div>
 							</div>
@@ -1808,6 +1861,7 @@
 
                 $.ajax({
                     url: '{{ route('contact.submit') }}',
+                    _token: $('meta[name="csrf-token"]').attr('content'),
                     type: 'POST',
                     data: formData,
                     success: function (response) {

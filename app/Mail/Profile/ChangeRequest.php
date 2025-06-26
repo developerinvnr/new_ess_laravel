@@ -20,14 +20,13 @@ class ChangeRequest extends Mailable
     public function build()
     {
         $mail = $this->from('webadmin@vnrseeds.com', 'Webadmin')
-                 ->subject($this->details['subject'])
+                ->subject($this->details['subject'] ?? 'Change Request')
                  ->markdown('mail.profile.change-request')
                  ->with('details', $this->details);
     
-    // Attach files if any
     if (!empty($this->details['attachments'])) {
         foreach ($this->details['attachments'] as $attachment) {
-            $mail->attach($attachment);
+            $mail->attachFromStorageDisk('s3', $attachment);
         }
     }
 

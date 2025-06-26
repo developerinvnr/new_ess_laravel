@@ -71,6 +71,7 @@ class QueryController extends Controller
             })
             ->orderBy('QueryDT', 'desc')  // Sort by QueryDT descending
             ->get();  // Fetch the result
+            
 
         $employeeIDs = $queries_frwrd->pluck('EmployeeID')
             ->unique();
@@ -80,8 +81,13 @@ class QueryController extends Controller
 
         // Step 4: Map employees to easily access their names by EmployeeID
         $employeeNames = $employees->keyBy('EmployeeID');
-
-        $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')->select(['core_departments.id', 'core_departments.department_name'])->groupBy('core_departments.id')->get();
+         //error in local
+        // $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')->select(['core_departments.id', 'core_departments.department_name'])->groupBy('core_departments.id')->get();
+        $query_department_list = \DB::table('hrm_deptquerysub')
+            ->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')
+            ->select(['core_departments.id', 'core_departments.department_name'])
+            ->groupBy('core_departments.id', 'core_departments.department_name')
+            ->get();
 
         $departments_sub = \DB::table('hrm_deptquerysub')->get();
 

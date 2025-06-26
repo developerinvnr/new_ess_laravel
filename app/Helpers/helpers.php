@@ -51,7 +51,13 @@ if (!function_exists('getEmployeeImage')) {
             return null;
         }
 
+            // Build the S3 path
+        $path = "Employee_Image/{$employee->CompanyId}/{$employee->EmpCode}.jpg";
+
+        // Return the public URL from S3 disk
+        return Storage::disk('s3')->url($path);
+
         // Build and return the employee image URL
-        return "https://vnrseeds.co.in/AdminUser/EmpImg{$employee->CompanyId}Emp/{$employee->EmpCode}.jpg";
+        // return "https://vnrseeds.co.in/AdminUser/EmpImg{$employee->CompanyId}Emp/{$employee->EmpCode}.jpg";
     }
 }

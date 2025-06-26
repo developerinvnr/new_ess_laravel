@@ -15,6 +15,8 @@ use App\Models\EmployeeSeparation;
 use App\Models\EmployeeSeparationNocDeptEmp;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
 class TeamController extends Controller
 {
     public function team(Request $request)
@@ -2985,9 +2987,13 @@ public function getEmployeeImage($employeeId) {
     if (!$employee || empty($employee->CompanyId) || empty($employee->EmpCode)) {
         return null;
     }
+    $path = "Employee_Image/{$employee->CompanyId}/{$employee->EmpCode}.jpg";
+
+    // Return the public URL from S3 disk
+    return Storage::disk('s3')->url($path);
 
     // Build and return the employee image URL
-    return "https://vnrseeds.co.in/AdminUser/EmpImg{$employee->CompanyId}Emp/{$employee->EmpCode}.jpg";
+    // return "https://vnrseeds.co.in/AdminUser/EmpImg{$employee->CompanyId}Emp/{$employee->EmpCode}.jpg";
 }
     
 }

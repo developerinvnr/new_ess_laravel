@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\Profile\ChangeRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -242,18 +243,38 @@ class ProfileController extends Controller
         $panNo = Auth::user()->personaldetails->PanNo;
         
         // File paths
-        $tdsFileA = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_2024-25.pdf");
-        $tdsFileB = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_PARTB_2024-25.pdf");
+        // $tdsFileA = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_2024-25.pdf");
+        // $tdsFileB = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_PARTB_2024-25.pdf");
+        $tdsFileA = "Employee_TDS/2024-25/{$panNo}_2024-25.pdf";
+        $tdsFileB= "Employee_TDS/2024-25/{$panNo}_PARTB_2024-25.pdf";
 
-        $ledgerFile = base_path("/Employee/Emp{$companyId}Lgr/E{$empCode}.pdf");
 
-        $healthCard = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf");
+        $tdsFileAUrl = Storage::disk('s3')->url($tdsFileA);
+        $tdsFileBUrl = Storage::disk('s3')->url($tdsFileB);
+    
 
-        // Set file paths
-        $healthCardA = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf");
-        $healthCardB = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_B.pdf");
-        $healthCardC = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_C.pdf");
-        $healthCardD = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_D.pdf");
+        // $ledgerFile = base_path("/Employee/Emp{$companyId}Lgr/E{$empCode}.pdf");
+        $ledgerFilename = "E{$empCode}.pdf";
+        $ledgerFile = "Employee_Ledger/{$companyId}/2024-25/{$ledgerFilename}";
+        $ledgerUrl = Storage::disk('s3')->url($ledgerFile);
+
+        // $healthCard = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf");
+
+        // // Set file paths
+        // $healthCardA = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf");
+        // $healthCardB = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_B.pdf");
+        // $healthCardC = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_C.pdf");
+        // $healthCardD = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_D.pdf");
+        $healthCardAPath = "Employee_HealthID/{$companyId}/{$empCode}/{$empCode}_A.pdf";
+        $healthCardBPath = "Employee_HealthID/{$companyId}/{$empCode}/{$empCode}_B.pdf";
+        $healthCardCPath = "Employee_HealthID/{$companyId}/{$empCode}/{$empCode}_C.pdf";
+        $healthCardDPath = "Employee_HealthID/{$companyId}/{$empCode}/{$empCode}_D.pdf";
+
+        $healthCardAUrl = Storage::disk('s3')->exists($healthCardAPath) ? Storage::disk('s3')->url($healthCardAPath) : null;
+        $healthCardBUrl = Storage::disk('s3')->exists($healthCardBPath) ? Storage::disk('s3')->url($healthCardBPath) : null;
+        $healthCardCUrl = Storage::disk('s3')->exists($healthCardCPath) ? Storage::disk('s3')->url($healthCardCPath) : null;
+        $healthCardDUrl = Storage::disk('s3')->exists($healthCardDPath) ? Storage::disk('s3')->url($healthCardDPath) : null;
+
 
         $esicCard = base_path("/Employee/ESIC_Card/{$empCode}.pdf");
         // Merge the results
@@ -280,8 +301,8 @@ class ProfileController extends Controller
             return view('seperation.profile', compact('employeeData','territoryData','designationName',
             'employeeDataDuration', 'finalResult','functionName','years','experience',
              'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 
-             'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'ledgerFile', 'healthCardA','regionData',
-             'buData','zoneData',
+             'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'ledgerFile','regionData',
+             'buData','zoneData','ledgerUrl',
               'esicCard'));
 
         }  
@@ -300,86 +321,80 @@ class ProfileController extends Controller
         'designationName','employeeDataDuration', 'finalResult','functionName','years',
         'experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile',
         'employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'regionData',
-        'buData','zoneData',
-        'healthCardA', 'esicCard','healthCardB','healthCardC','healthCardD'));
+        'buData','zoneData','tdsFileBUrl','tdsFileAUrl','ledgerFile','ledgerUrl','ledgerUrl',
+        'esicCard'));
     }
+
 
     public function submit(Request $request)
-{
-    
-    // Process the file upload (if any)
-    $attachments = [];
-    if ($request->hasFile('attachment')) {
-        $file = $request->file('attachment');
-        
-        // Define the destination path using base_path
-        $destinationPath = base_path('Employee/Changerequest');
-        
-        // Ensure the destination directory exists
-        if (!file_exists($destinationPath)) {
-            mkdir($destinationPath, 0777, true);
+    {
+        $attachments = [];
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $user = Auth::user();
+            $companyId = $user->CompanyId;
+            $employeeId = $user->EmployeeID;
+
+            $currentDate = now()->format('Y-m-d');
+            $filename = $employeeId . "_" . $currentDate . "." . $file->getClientOriginalExtension();
+
+            // S3 folder path
+            $s3Path = "Employee_Change_Request/{$companyId}/{$filename}";
+
+            // Upload to S3
+            Storage::disk('s3')->put($s3Path, file_get_contents($file), 'public');
+
+            // Generate the full S3 URL
+            $attachments[] = $s3Path;  // just the relative path inside the bucket
         }
 
-        $currentDate = now()->format('Y-m-d');
+        // Fetch Employee Info
+        $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
 
-        // Generate a filename for the uploaded file to avoid overwriting existing files
-        $filename = Auth::user()->EmployeeID . "_" . $currentDate . "." . $file->getClientOriginalExtension();
-        
-        // Move the file to the desired directory
-        $file->move($destinationPath, $filename);
-    
-        // Add the full path of the file to the attachments array
-        $attachments[] = $destinationPath . '/' . $filename; // Store the full path
+
+        $Empname = ($employeedetails->Fname ?? 'null') . ' ' .
+                ($employeedetails->Sname ?? 'null') . ' ' .
+                ($employeedetails->Lname ?? 'null');
+
+        // Email Data
+        $details = [
+            'subject' => 'Document Change Request',
+            'EmpName' => $Empname,
+            'Message' => $request->message,
+            'Subject' => $request->subject,
+            'EC' => $employeedetails->EmpCode,
+            'attachments' => $attachments,
+            'site_link' => "https://vnrseeds.co.in"
+        ];
+
+        // Send email
+        Mail::to('vspl.hr@vnrseeds.com')->send(new ChangeRequest($details));
+
+        return response()->json(['success' => true, 'message' => 'Your Change request has been sent successfully.']);
     }
 
-    // Fetch Employee General and Employee Information
-    $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+    public function viewLedger($companyId, $encryptedEmpCode)
+    {
+        try {
+            // Decrypt the empCode from the URL
+            $empCode = Crypt::decryptString($encryptedEmpCode);
 
-    // Prepare Employee Full Name
-    $Empname = ($employeedetails->Fname ?? 'null') . ' ' . ($employeedetails->Sname ?? 'null') . ' ' . ($employeedetails->Lname ?? 'null');
+            // Construct the actual file path using the decrypted empCode
+            $ledgerFile = base_path("/Employee/Emp{$companyId}Lgr/E{$empCode}.pdf");
 
-    // Prepare Email Details
-    $details = [
-        'subject' => 'Document Change Request',
-        'EmpName' => $Empname,
-        'Message'=>$request->message,
-        'Subject'=>$request->subject,
-        'EC'=>$employeedetails->EmpCode,
-        'attachments' => $attachments, // Attachments included in the details array
-        'site_link' => "https://vnrseeds.co.in"  // Assuming the site link is fixed
-    ];
-
-    // Send the email to HR
-    Mail::to('vspl.hr@vnrseeds.com')->send(new ChangeRequest($details)); // No need to pass $attachments separately
-    //Mail::to('preetinanda.vspl@gmail.com')->send(new ChangeRequest($details)); // No need to pass $attachments separately
-
-    
-    return response()->json(['success' => true, 'message' => 'Your Change request has been sent successfully.']);
-}
-public function viewLedger($companyId, $encryptedEmpCode)
-{
-    try {
-        // Decrypt the empCode from the URL
-        $empCode = Crypt::decryptString($encryptedEmpCode);
-
-        // Construct the actual file path using the decrypted empCode
-        $ledgerFile = base_path("/Employee/Emp{$companyId}Lgr/E{$empCode}.pdf");
-
-        // Check if the file exists
-        if (file_exists($ledgerFile)) {
-            // Open the file in the browser
-            return response()->file($ledgerFile);
-        } else {
-            // Handle file not found
-            return redirect()->back()->with('error', 'Ledger file not found.');
+            // Check if the file exists
+            if (file_exists($ledgerFile)) {
+                // Open the file in the browser
+                return response()->file($ledgerFile);
+            } else {
+                // Handle file not found
+                return redirect()->back()->with('error', 'Ledger file not found.');
+            }
+        } catch (\Exception $e) {
+            // Handle decryption errors
+            return redirect()->back()->with('error', 'Error in decryption or file retrieval.');
         }
-    } catch (\Exception $e) {
-        // Handle decryption errors
-        return redirect()->back()->with('error', 'Error in decryption or file retrieval.');
     }
-}
-
-
-
     
 }

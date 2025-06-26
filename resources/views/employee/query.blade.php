@@ -421,6 +421,17 @@
                                           </thead>
                                           <tbody id="newTabTableBody">
                                                 @foreach($queries_frwrd as $index => $query)
+                                                @php
+                                                
+                                                $forwardedEmpIds = $query->pluck('Level_1QFwdEmpId')->filter()->unique();
+
+                                                // Fetch employee details for all these IDs
+                                                $forwardedEmployees = DB::table('hrm_employee')
+                                                   ->whereIn('EmployeeID', $forwardedEmpIds)
+                                                   ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
+                                                   ->get()
+                                                   ->keyBy('EmployeeID'); // So you can access by ID easily
+                                                @endphp
                                                    <tr>
                                                       <td>{{ $index + 1 }}</td>
                                                       <td>{{$employeeNames[$query->EmployeeID]->EmpCode}}</td>
@@ -428,9 +439,13 @@
                                                       <td>
                                                             <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
                                                             <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
-                                                            <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->department_name ?? 'N/A' }} <br>
+                                                            <strong>Forwarded To:</strong>
+                                                            {{ $forwardedEmployees[$query->Level_1QFwdEmpId]->Fname ?? '' }}
+                                                            {{ $forwardedEmployees[$query->Level_1QFwdEmpId]->Sname ?? '' }}
+                                                            {{ $forwardedEmployees[$query->Level_1QFwdEmpId]->Lname ?? '' }}
                                                             </td>
                                                             <td>{{ \Carbon\Carbon::parse($query->QueryDT)->format('j F Y') }}</td>
+
                                                             @if($query->QueryStatus_Emp != "")
                                                                   <td>
                                                                      @if($query->QueryStatus_Emp == 1)

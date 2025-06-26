@@ -58,15 +58,30 @@ class ResignationController extends Controller
                 'message' => $validator->errors()->first()  // Get the first validation error message
             ]);
         }
-
-        // Handle the file upload
         if ($request->hasFile('SCopy')) {
             $file = $request->file('SCopy');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
-            // $filePath = public_path('uploads/resignation_letters');
-            $filePath = base_path('Employee/SprUploadFile');
-            $file->move($filePath, $fileName);
+
+            $companyId = Auth::user()->CompanyId;
+
+            $folder = "Employee_Separation/{$companyId}";
+
+            // Upload to S3 with the given folder and filename, set visibility to public
+            Storage::disk('s3')->putFileAs($folder, $file, $fileName, 'public');
+
+            // Optional: get the public URL
+            $fileUrl = Storage::disk('s3')->url("{$folder}/{$fileName}");
         }
+
+
+        // Handle the file upload
+        // if ($request->hasFile('SCopy')) {
+        //     $file = $request->file('SCopy');
+        //     $fileName = time() . '.' . $file->getClientOriginalExtension();
+        //     // $filePath = public_path('uploads/resignation_letters');
+        //     $filePath = base_path('Employee/SprUploadFile');
+        //     $file->move($filePath, $fileName);
+        // }
 
         // Other existing logic to retrieve employee data and prepare for insertion
         $reportingDetails = EmployeeReporting::where('EmployeeID', Auth::user()->EmployeeID)->first();
@@ -191,26 +206,26 @@ class ResignationController extends Controller
                 foreach ($uniqueEmails as $email) {
                     if (!empty($email)) {
 
-                        Mail::to($email)->send(new SeparationMail($details));
+                        // Mail::to($email)->send(new SeparationMail($details));
                     }
                 }
                 // Always send to these fixed HR emails separately
                 $hrEmails = ['fd@vnrseeds.com', 'vspl.hr@vnrseeds.com'];
 
-                Mail::to($hrEmails)->send(new SeparationMail($details));
+                // Mail::to($hrEmails)->send(new SeparationMail($details));
             } else {
                 $uniqueEmails = array_values(array_filter(array_unique($emails)));
                 // Always send only **one mail per unique email**
                 foreach ($uniqueEmails as $email) {
                     if (!empty($email)) {
 
-                        Mail::to($email)->send(new SeparationMail($details));
+                        // Mail::to($email)->send(new SeparationMail($details));
                     }
                 }
                 // Always send to these fixed HR emails separately
                 $hrEmails = ['vspl.hr@vnrseeds.com'];
 
-                Mail::to($hrEmails)->send(new SeparationMail($details));
+                // Mail::to($hrEmails)->send(new SeparationMail($details));
             }
 
 
@@ -241,7 +256,7 @@ class ResignationController extends Controller
 
         ];
 
-        $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
+        // $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
 
         //$mail =  Mail::to('preetinanda.vspl@gmail.com')->send(new RevertBackMail($details));
 
@@ -382,7 +397,7 @@ class ResignationController extends Controller
 
             ];
 
-            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
+            // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
 
             //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailRepo($details));
 
@@ -858,7 +873,7 @@ class ResignationController extends Controller
                         'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
                     ];
 
-                    Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
+                    // Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
 
                     //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailLog($details));
 
@@ -1168,7 +1183,7 @@ class ResignationController extends Controller
 
                 ];
 
-                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
+                // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
 
                 //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailClearRepo($details));
 
@@ -1561,7 +1576,7 @@ class ResignationController extends Controller
                 'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
             ];
 
-            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
+            // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
 
             //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailAccountClr($details));
 
@@ -2269,7 +2284,7 @@ class ResignationController extends Controller
 
             ];
 
-            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
+            // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
         } elseif ($buttonId == "save-draft-exit-repo") {
             // Set draft_submit to 'Y' if save draft was clicked
             $draftSubmit = 'Y';
@@ -2337,35 +2352,35 @@ class ResignationController extends Controller
     }
     public function expensesLedger()
     {
-        $path = base_path('/Employee/Emp1Lgr/2024-25');
+        $employee = Auth::user();
+        $companyId = $employee->CompanyId;
+        $prefix = $employee->VCode === 'V' ? '' : 'E';
+        $empCode = $prefix . $employee->EmpCode;
 
-        // Count only .pdf files in that folder
-        $pdfCount = 0;
 
-        if (File::exists($path)) {
-            $allFiles = File::files($path);
-            $pdfCount = collect($allFiles)->filter(function ($file) {
-                return strtolower($file->getExtension()) === 'pdf';
-            })->count();
-        }
+        $folderPath = "Employee_Ledger/{$companyId}/2024-25/";
+
+        // Get all files in the folder from S3
+        $allFiles = Storage::disk('s3')->files($folderPath);
+        $pdfCount = count($allFiles );
+
         $employeescode = [];
 
-        if (File::exists($path)) {
-            $files = File::files($path);
+        foreach ($allFiles as $filePath) {
+            // Extract filename only (without folder path)
+            $filename = basename($filePath); // e.g. "E1234.pdf"
 
-            foreach ($files as $file) {
-                $filename = $file->getFilename();
-
-                // Match E1234.pdf or V5678.pdf
-                if (preg_match('/^([EV])(\d+)\.pdf$/i', $filename, $matches)) {
-                    $employeescode[] = [
-                        'vcode' => strtoupper($matches[1]), // 'E' or 'V'
-                        'empCode' => $matches[2],          // numeric part only
-                    ];
-                }
+            // Match pattern like E1234.pdf or V5678.pdf (case-insensitive)
+            if (preg_match('/^([EV])(\d+)\.pdf$/i', $filename, $matches)) {
+                $employeescode[] = [
+                    'vcode' => strtoupper($matches[1]),  // 'E' or 'V'
+                    'empCode' => $matches[2],            // numeric part as string
+                    'filename' => $filename,
+                    'full_path' => $filePath,
+                ];
             }
         }
-     
+
 
         // Existing code here for active/inactive count
         $activeCount = 0;
@@ -2448,15 +2463,15 @@ class ResignationController extends Controller
 
 
                 $separationCount = DB::table('hrm_employee_separation as sep')
-                        ->join('hrm_employee as emp', 'sep.EmployeeID', '=', 'emp.EmployeeID')
-                        ->whereIn('sep.EmployeeID', $activeEmployeeIds)
-                        ->where('emp.EmpStatus', 'A')
-                        ->where(function ($query) {
-                            $query->where('Hod_Approved', '!=', 'C')
-                                ->where('Rep_Approved', '!=', 'C')
-                                ->where('HR_Approved', '!=', 'C');
-                        })
-                        ->count();
+                    ->join('hrm_employee as emp', 'sep.EmployeeID', '=', 'emp.EmployeeID')
+                    ->whereIn('sep.EmployeeID', $activeEmployeeIds)
+                    ->where('emp.EmpStatus', 'A')
+                    ->where(function ($query) {
+                        $query->where('Hod_Approved', '!=', 'C')
+                            ->where('Rep_Approved', '!=', 'C')
+                            ->where('HR_Approved', '!=', 'C');
+                    })
+                    ->count();
 
                 $notConfirmedEmployeeIds = array_diff($activeEmployeeIds, $confirmedEmployeeIds);
 
@@ -2549,53 +2564,53 @@ class ResignationController extends Controller
             ->sortBy(function ($name, $id) {
                 return strtolower($name);
             });
-            $statusRows = DB::table('hrm_employee')
-                ->where('CompanyId', 1)
-                ->where(function ($query) use ($uniqueEmployeesCode) {
-                    foreach ($uniqueEmployeesCode as $emp) {
-                        $empCodeInDB = ($emp['vcode'] === 'V')
-                            ? 'V' . ltrim($emp['empCode'], '0')
-                            : ltrim($emp['empCode'], '0');
+        $statusRows = DB::table('hrm_employee')
+            ->where('CompanyId', 1)
+            ->where(function ($query) use ($uniqueEmployeesCode) {
+                foreach ($uniqueEmployeesCode as $emp) {
+                    $empCodeInDB = ($emp['vcode'] === 'V')
+                        ? 'V' . ltrim($emp['empCode'], '0')
+                        : ltrim($emp['empCode'], '0');
 
-                        $query->orWhere('EmpCode', $empCodeInDB);
-                    }
-                })
-                ->select('EmpCode', 'EmpStatus')
-                ->get();
+                    $query->orWhere('EmpCode', $empCodeInDB);
+                }
+            })
+            ->select('EmpCode', 'EmpStatus')
+            ->get();
 
-            $statusMap = $statusRows->pluck('EmpStatus', 'EmpCode')->map(function ($status) {
-                return $status === 'A' ? 'Active' : ($status === 'D' ? 'Inactive' : 'Other');
-            });
+        $statusMap = $statusRows->pluck('EmpStatus', 'EmpCode')->map(function ($status) {
+            return $status === 'A' ? 'Active' : ($status === 'D' ? 'Inactive' : 'Other');
+        });
 
-            $employeeStatuses = $uniqueEmployeesCode->map(function ($emp) use ($statusMap) {
-                $empCode = ($emp['vcode'] === 'V')
-                    ? 'V' . ltrim($emp['empCode'], '0')
-                    : ltrim($emp['empCode'], '0');
+        $employeeStatuses = $uniqueEmployeesCode->map(function ($emp) use ($statusMap) {
+            $empCode = ($emp['vcode'] === 'V')
+                ? 'V' . ltrim($emp['empCode'], '0')
+                : ltrim($emp['empCode'], '0');
 
-                return [
-                    'vcode' => $emp['vcode'],
-                    'empCode' => $emp['empCode'],
-                    'status' => $statusMap[$empCode] ?? 'Not Found',
-                ];
-            });
-            //             return Excel::download(new class(collect($employeeStatuses)) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
-            //     protected $collection;
+            return [
+                'vcode' => $emp['vcode'],
+                'empCode' => $emp['empCode'],
+                'status' => $statusMap[$empCode] ?? 'Not Found',
+            ];
+        });
+        //             return Excel::download(new class(collect($employeeStatuses)) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
+        //     protected $collection;
 
-            //     public function __construct($collection) {
-            //         $this->collection = $collection;
-            //     }
+        //     public function __construct($collection) {
+        //         $this->collection = $collection;
+        //     }
 
-            //     public function collection(): \Illuminate\Support\Collection {
-            //         return $this->collection;
-            //     }
+        //     public function collection(): \Illuminate\Support\Collection {
+        //         return $this->collection;
+        //     }
 
-            //     public function headings(): array {
-            //         return ['vcode', 'empCode', 'status'];
-            //     }
-            // }, 'Uploaded_Ledger_Emp_Status.xlsx');
+        //     public function headings(): array {
+        //         return ['vcode', 'empCode', 'status'];
+        //     }
+        // }, 'Uploaded_Ledger_Emp_Status.xlsx');
 
 
 
-        return view("employee.expensesledgerlist", compact('separationCount','departmentsQueryraised', 'QueryRaisedEmployees', 'departmentsConfirm', 'departments', 'ConfirmedEmployees', 'notConfirmedEmployees', 'ledgerQueryCount', 'pdfCount', 'activeCount', 'inactiveCount', 'confirmedCount', 'notConfirmedCount'));
+        return view("employee.expensesledgerlist", compact('separationCount', 'departmentsQueryraised', 'QueryRaisedEmployees', 'departmentsConfirm', 'departments', 'ConfirmedEmployees', 'notConfirmedEmployees', 'ledgerQueryCount', 'pdfCount', 'activeCount', 'inactiveCount', 'confirmedCount', 'notConfirmedCount'));
     }
 }

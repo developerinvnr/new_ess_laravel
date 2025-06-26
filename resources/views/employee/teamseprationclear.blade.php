@@ -1552,8 +1552,9 @@ function formatDateddmmyyyy(date) {
        $('#loader').show();  // Show the loader spinner
 
         var empSepId = $(this).data('emp-sep-id'); // Get the EmpSepId from the data-* attribute
-        console.log(empSepId)
-        // AJAX request to fetch separation reason data
+        const awsBaseUrl = "{{ env('AWS_URL') }}" ; 
+        let companyId = {{ json_encode(Auth::user()->CompanyId) }};
+
         $.ajax({
             url: '/get-separation-reason/' + empSepId, // Your backend route for fetching data
             method: 'GET',
@@ -1564,7 +1565,10 @@ function formatDateddmmyyyy(date) {
                     console.log(response.employee);
                     let resignationStatus = response.data.ResignationStatus;
                     let fileName = response.data.SprUploadFile; // Get the file name from the response
-            let filePath = fileName ? '/Employee/SprUploadFile/' + fileName : null; // Construct the full path
+                    // let filePath = fileName ? '/Employee/SprUploadFile/' + fileName : null; // Construct the full path
+                    let filePath = fileName
+                    ? `${awsBaseUrl}/Employee_Separation/${companyId}/${fileName}`
+                    : null;
                     let statusText = ''; // Initialize the variable to store the status text
 
                     // Map the numeric status to corresponding text
