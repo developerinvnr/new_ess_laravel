@@ -87,15 +87,15 @@
                                                 $employee = auth()->user();
                                                 $prefix = $employee->VCode === 'V' ? '' : 'E';
                                                 $empCode = $prefix . $employee->EmpCode;
-                                                $filePath = base_path("Employee/Emp1Lgr/2024-25/{$empCode}.pdf");
+                                                <!-- $filePath = base_path("Employee/Emp1Lgr/2024-25/{$empCode}.pdf"); -->
+                                                $filePath = Storage::disk('s3')->url('Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf');
+                                           
                                                 $ledgerExists = File::exists($filePath);
 
                                                 $hasConfirmed = DB::table('hrm_employee_ledger_confirmation')
                                                     ->where('EmployeeId', auth()->user()->EmployeeID)
                                                     ->where('Year', '2024-25')
                                                     ->exists();
-                                            
-                                                
                                                 
                                             @endphp
                                             @if($ledgerExists)

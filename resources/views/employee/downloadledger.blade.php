@@ -866,11 +866,11 @@
         //     document.body.removeChild(link);
         // });
 
-        // Security measures
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.ctrlKey && ['s', 'p', 'c'].includes(e.key.toLowerCase())) e.preventDefault();
-        });
+        // // Security measures
+        // document.addEventListener('contextmenu', e => e.preventDefault());
+        // document.addEventListener('keydown', e => {
+        //     if (e.ctrlKey && ['s', 'p', 'c'].includes(e.key.toLowerCase())) e.preventDefault();
+        // });
 
         // Initialize the page
         console.log('Starting page initialization...');

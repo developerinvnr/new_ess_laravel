@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class AssetRequestController extends Controller
 {
@@ -82,157 +83,195 @@ class AssetRequestController extends Controller
         try {
 
             if ($request->file('bill_copy') || $request->hasFile('bill_copy')) {
-                // Get the file extension
-                $extension = $request->file('bill_copy')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_bill' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_bill' . $employee_id . '_' . date('Ymd_His') . '.' . $request->bill_copy->extension();
+                $path = "$folder/$filename";
 
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
 
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('bill_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $filenamebill = $fileName;
+                // Upload the file
+                $path1 = $request->bill_copy->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $filenamebill = $filename;
             }
 
             if ($request->hasFile('asset_copy')) {
-                // Get the file extension
-                $extension = $request->file('asset_copy')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_asset' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_asset' . $employee_id . '_' . date('Ymd_His') . '.' . $request->asset_copy->extension();
+                $path = "$folder/$filename";
 
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
 
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('asset_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $filenameassest = $fileName;
+                // Upload the file
+                $path1 = $request->asset_copy->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $filenameassest = $filename;
             }
 
             if ($request->hasFile('vehicle_photo')) {
-                // Store the uploaded asset copy in the public folder
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_vehcile' . $employee_id . '_' . date('Ymd_His') . '.' . $request->vehicle_photo->extension();
+                $path = "$folder/$filename";
 
-                // Get the file extension
-                $extension = $request->file('vehicle_photo')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_vehcile' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
-
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
-
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('vehicle_photo')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $vehicle_photopath = $fileName;
+                // Upload the file
+                $path1 = $request->vehicle_photo->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $vehicle_photopath = $filename;
             }
             if ($request->hasFile('dl_copy')) {
-                // Store the uploaded asset copy in the public folder
 
-                // Get the file extension
-                $extension = $request->file('dl_copy')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_dl' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_dl' . $employee_id . '_' . date('Ymd_His') . '.' . $request->dl_copy->extension();
+                $path = "$folder/$filename";
 
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
 
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('dl_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $dl_copyPath = $fileName;
+                // Upload the file
+                $path1 = $request->dl_copy->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $dl_copyPath = $filename;
             }
             if ($request->hasFile('rc_copy')) {
-                // Get the file extension
-                $extension = $request->file('rc_copy')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_rc' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_rc' . $employee_id . '_' . date('Ymd_His') . '.' . $request->rc_copy->extension();
+                $path = "$folder/$filename";
 
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
 
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('rc_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $rc_copyPath = $fileName;
+                // Upload the file
+                $path1 = $request->rc_copy->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $rc_copyPath = $filename;
             }
             if ($request->hasFile('insurance_copy')) {
-                // Get the file extension
-                $extension = $request->file('insurance_copy')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_inc' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_inc' . $employee_id . '_' . date('Ymd_His') . '.' . $request->insurance_copy->extension();
+                $path = "$folder/$filename";
 
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
 
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('insurance_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $insurance_copyPath = $fileName;
+                // Upload the file
+                $path1 = $request->insurance_copy->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $insurance_copyPath = $filename;
             }
             if ($request->hasFile('odometer_reading')) {
-                // Get the file extension
-                $extension = $request->file('odometer_reading')->getClientOriginalExtension();
 
-                // Create the custom file name with the employee ID and file extension
-                $fileName = 'employee_odo' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                $companyId = Auth::user()->CompanyId;
+                $folder = "Employee_Assets/$companyId";
+                $filename = 'employee_odo' . $employee_id . '_' . date('Ymd_His') . '.' . $request->odometer_reading->extension();
+                $path = "$folder/$filename";
 
-                // Set the target directory for storing the file
-                $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
 
-                // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                // Check if the folder exists
+                try {
+                    Storage::disk('s3')->delete($path);
+                } catch (\Exception $e) {
+                    // Log the error but continue, as the file may not exist or permission denied on list
+                    Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
                 }
 
-                // Move the uploaded file to the target directory
-                $request->file('odometer_reading')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
 
-                // Save the filename to use in the database
-                $odometer_readingPath = $fileName;
+                // Upload the file
+                $path1 = $request->odometer_reading->storeAs(
+                    'Employee_Assets/' . $companyId,
+                    $filename,
+                    's3'
+                );
+                Storage::disk('s3')->setVisibility($path1, 'public');
+
+                $odometer_readingPath = $filename;
             }
 
             // Get the ExpiryM value from the asset
@@ -396,7 +435,7 @@ class AssetRequestController extends Controller
                 'declared_status' => $request->has('declaration_agreed') ? 'Y' : 'N',
                 'ip_address' => $ipAddress ?? 'null',
             ];
-            
+
             $assetId = $request->asset;
 
             $assetName = DB::table('hrm_asset_name')
@@ -407,17 +446,10 @@ class AssetRequestController extends Controller
                 ->value('EmpCode');
 
             $employee = DB::table('hrm_employee')
-            ->where('EmployeeID', $employee_id)
-            ->select('EmpCode', 'Fname', 'Sname', 'Lname')
-            ->first();
+                ->where('EmployeeID', $employee_id)
+                ->select('EmpCode', 'Fname', 'Sname', 'Lname')
+                ->first();
 
-            $pdfPath = base_path("Finance/Asset_Reimbursement_Declarations/FY_2025/{$empCode}_{$assetName}.pdf");
-
-            $assetRequestData['DeclarationPdfPath'] = $pdfPath;
-
-            // Insert the data into the database
-            // \DB::table('hrm_asset_employee_request')->insert($assetRequestData);
-            $assetId = \DB::table('hrm_asset_employee_request')->insertGetId($assetRequestData);
 
             $pdf = PDF::loadView('pdf.asset_declaration', [
                 'employee_id' => $employee_id,
@@ -437,19 +469,26 @@ class AssetRequestController extends Controller
                 'dealer_name' => $request->dealer_name,
                 'dealer_number' => $request->dealer_contact,
                 'bill_number' => $request->bill_number,
-                'assetId'=>$assetId
+                'assetId' => $assetId
 
             ])
-            ->setPaper('a4', 'portrait');
+                ->setPaper('a4', 'portrait');
 
-            // Make directory if it doesn't exist
-            $dir = base_path('Finance/Asset_Reimbursement_Declarations/FY_2025/');
-            if (!File::exists($dir)) {
-                File::makeDirectory($dir, 0755, true);
-            }
 
-            // Save PDF
-            $pdf->save($pdfPath);
+            $s3Path = "Employee_Assets/$companyId/Reimbursement_Declarations/2025-26/{$empCode}_{$assetName}.pdf";
+
+            // Generate PDF content as string
+            $pdfContent = $pdf->output();  // output() returns PDF content as string
+
+            // Upload PDF content to S3
+            Storage::disk('s3')->put($s3Path, $pdfContent);
+            Storage::disk('s3')->setVisibility($s3Path, 'public');
+
+
+            // Save the S3 path (key) in DB or variable
+            $assetRequestData['DeclarationPdfPath'] = $s3Path;
+            // $assetRequestData['DeclarationPdfUrl'] = Storage::disk('s3')->url($s3Path); // if you want public URL
+            $assetId = \DB::table('hrm_asset_employee_request')->insertGetId($assetRequestData);
 
 
             $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employee_id)->first();
@@ -662,70 +701,128 @@ class AssetRequestController extends Controller
         $filenameinc = null;
 
         // Save vehicle data for two-wheeler (vehicle data)
+        // if ($request->hasFile('vehicle_photonew')) {
+        //     // Get the file extension
+        //     $extension = $request->file('vehicle_photonew')->getClientOriginalExtension();
+
+        //     // Create the custom file name with the employee ID and file extension
+        //     $fileName = 'employee_vehcile' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+
+        //     // Set the target directory for storing the file
+        //     $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+
+        //     // Ensure the directory exists
+        //     if (!file_exists($destinationPath)) {
+        //         mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+        //     }
+
+        //     // Move the uploaded file to the target directory
+        //     $request->file('vehicle_photonew')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+
+        //     // Save the filename to use in the database
+        //     $filenamevehcile = $fileName;
+        // }
+        // // Save vehicle data for two-wheeler (vehicle data)
+        // if ($request->hasFile('rc_copy')) {
+        //     // Get the file extension
+        //     $extension = $request->file('rc_copy')->getClientOriginalExtension();
+
+        //     // Create the custom file name with the employee ID and file extension
+        //     $fileName = 'employee_rc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+
+        //     // Set the target directory for storing the file
+        //     $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+
+        //     // Ensure the directory exists
+        //     if (!file_exists($destinationPath)) {
+        //         mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+        //     }
+
+        //     // Move the uploaded file to the target directory
+        //     $request->file('rc_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+
+        //     // Save the filename to use in the database
+        //     $filenamerc = $fileName;
+        // }
+        // if ($request->hasFile('insurance_copy')) {
+        //     // Get the file extension
+        //     $extension = $request->file('insurance_copy')->getClientOriginalExtension();
+
+        //     // Create the custom file name with the employee ID and file extension
+        //     $fileName = 'employee_inc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+
+        //     // Set the target directory for storing the file
+        //     $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+
+        //     // Ensure the directory exists
+        //     if (!file_exists($destinationPath)) {
+        //         mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+        //     }
+
+        //     // Move the uploaded file to the target directory
+        //     $request->file('insurance_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+
+        //     // Save the filename to use in the database
+        //     $filenameinc = $fileName;
+        // }
+        $companyId = Auth::user()->CompanyId;
+
         if ($request->hasFile('vehicle_photonew')) {
-            // Get the file extension
-            $extension = $request->file('vehicle_photonew')->getClientOriginalExtension();
+            $folder = "Employee_Assets/$companyId";
+            $extension = $request->file('vehicle_photonew')->extension();
+            $filename = 'employee_vehicle' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            $path = "$folder/$filename";
 
-            // Create the custom file name with the employee ID and file extension
-            $fileName = 'employee_vehcile' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
-
-            // Set the target directory for storing the file
-            $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
-
-            // Ensure the directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+            // Delete existing file if any
+            try {
+                Storage::disk('s3')->delete($path);
+            } catch (\Exception $e) {
+                Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
             }
 
-            // Move the uploaded file to the target directory
-            $request->file('vehicle_photonew')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+            // Upload to S3 and set public visibility
+            $uploadedPath = $request->file('vehicle_photonew')->storeAs($folder, $filename, 's3');
+            Storage::disk('s3')->setVisibility($uploadedPath, 'public');
 
-            // Save the filename to use in the database
-            $filenamevehcile = $fileName;
+            $filenamevehcile = $filename; // save filename for DB
         }
-        // Save vehicle data for two-wheeler (vehicle data)
+
         if ($request->hasFile('rc_copy')) {
-            // Get the file extension
-            $extension = $request->file('rc_copy')->getClientOriginalExtension();
+            $folder = "Employee_Assets/$companyId";
+            $extension = $request->file('rc_copy')->extension();
+            $filename = 'employee_rc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            $path = "$folder/$filename";
 
-            // Create the custom file name with the employee ID and file extension
-            $fileName = 'employee_rc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
-
-            // Set the target directory for storing the file
-            $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
-
-            // Ensure the directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+            try {
+                Storage::disk('s3')->delete($path);
+            } catch (\Exception $e) {
+                Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
             }
 
-            // Move the uploaded file to the target directory
-            $request->file('rc_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+            $uploadedPath = $request->file('rc_copy')->storeAs($folder, $filename, 's3');
+            Storage::disk('s3')->setVisibility($uploadedPath, 'public');
 
-            // Save the filename to use in the database
-            $filenamerc = $fileName;
+            $filenamerc = $filename;
         }
+
         if ($request->hasFile('insurance_copy')) {
-            // Get the file extension
-            $extension = $request->file('insurance_copy')->getClientOriginalExtension();
+            $folder = "Employee_Assets/$companyId";
+            $extension = $request->file('insurance_copy')->extension();
+            $filename = 'employee_inc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            $path = "$folder/$filename";
 
-            // Create the custom file name with the employee ID and file extension
-            $fileName = 'employee_inc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
-
-            // Set the target directory for storing the file
-            $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
-
-            // Ensure the directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+            try {
+                Storage::disk('s3')->delete($path);
+            } catch (\Exception $e) {
+                Log::warning("Unable to delete S3 file at $path: " . $e->getMessage());
             }
 
-            // Move the uploaded file to the target directory
-            $request->file('insurance_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+            $uploadedPath = $request->file('insurance_copy')->storeAs($folder, $filename, 's3');
+            Storage::disk('s3')->setVisibility($uploadedPath, 'public');
 
-            // Save the filename to use in the database
-            $filenameinc = $fileName;
+            $filenameinc = $filename;
         }
+
         if ($request->vehicle_typenew == "2-wheeler") {
             $vehicleData = [
                 'EmployeeID' => $EmployeeID,

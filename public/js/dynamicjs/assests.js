@@ -41,12 +41,15 @@ $('#fileModal').on('show.bs.modal', function (event) {
 
     filePreviewContainer.empty();
 
+
     if (fileType === 'bill' || fileType === 'asset') {
         var imageElement = $('<img />', {
             src: fileUrl,
             class: 'img-fluid',
             alt: 'File preview',
         });
+    console.log(imageElement);
+
 
         filePreviewContainer.append(imageElement);
     } else {

@@ -74,7 +74,7 @@
                 <div class="col-8">
                     <ol class="breadcrumb m-0 mt-1 flex-grow-1">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Transfer</a></li>
-                        <li class="breadcrumb-item active">Location</li>
+                        <li class="breadcrumb-item active">Department</li>
                     </ol>
                 </div>
                 <div class="col-2">

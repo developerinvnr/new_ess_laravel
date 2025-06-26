@@ -574,13 +574,15 @@
                                           <!-- Check if it's a PDF -->
                                           @if(str_ends_with($request->ReqBillImgExtName, '.pdf'))
                                           <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->ReqBillImgExtName) }}"
+                                             
+                                             data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->ReqBillImgExtName) }}"
+
                                              data-file-type="bill">
                                              <i class="fas fa-eye me-2"></i>
                                           </a>
                                           @else
                                           <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->ReqBillImgExtName) }}"
+                                             data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->ReqBillImgExtName) }}"
                                              data-file-type="bill">
                                              <i class="fas fa-eye me-2"></i>
                                           </a>
@@ -602,13 +604,13 @@
                                           <!-- Check if it's a PDF -->
                                           @if(str_ends_with($request->ReqAssestImgExtName, '.pdf'))
                                           <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->ReqAssestImgExtName) }}"
+                                             data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqAssestImgExtName) }}"
                                              data-file-type="asset">
                                              <i class="fas fa-eye me-2"></i>
                                           </a>
                                           @else
                                           <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->ReqAssestImgExtName) }}"
+                                          data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqAssestImgExtName) }}"
                                              data-file-type="asset">
                                              <i class="fas fa-eye me-2"></i>
                                           </a>
@@ -1012,11 +1014,11 @@
                                              <td class="text-center">
                                                 @if($request->vehicle_image != '')
                                                 @if(str_ends_with($request->vehicle_image, '.pdf'))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->vehicle_image) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->vehicle_image) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->vehicle_image) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->vehicle_image) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @endif
@@ -1029,11 +1031,11 @@
                                              <td class="text-center">
                                                 @if($request->rc_file != '')
                                                 @if(str_ends_with($request->rc_file, '.pdf'))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->rc_file) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->rc_file) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->rc_file) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->rc_file) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @endif
@@ -1046,11 +1048,11 @@
                                              <td class="text-center">
                                                 @if($request->insurance != '')
                                                 @if(str_ends_with($request->insurance, '.pdf'))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->insurance) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->insurance) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->insurance) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->insurance) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @endif
@@ -1117,11 +1119,11 @@
                                              <td class="text-center">
                                                 @if($request->four_vehicle_image != '')
                                                 @if(str_ends_with($request->four_vehicle_image, '.pdf'))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->four_vehicle_image) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->four_vehicle_image) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->four_vehicle_image) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->four_vehicle_image) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @endif
@@ -1134,11 +1136,11 @@
                                              <td class="text-center">
                                                 @if($request->four_rc_file != '')
                                                 @if(str_ends_with($request->four_rc_file, '.pdf'))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->four_rc_file) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->four_rc_file) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->four_rc_file) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->four_rc_file) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @endif
@@ -1151,11 +1153,11 @@
                                              <td class="text-center">
                                                 @if($request->four_insurance != '')
                                                 @if(str_ends_with($request->four_insurance, '.pdf'))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->four_insurance) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->four_insurance) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ url('Employee/VehcileInfo/' . $request->four_insurance) }}" data-file-type="bill">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal" data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/' . Auth::user()->CompanyId . '/' . $request->four_insurance) }}" data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @endif
@@ -1272,10 +1274,9 @@
                                           $isAccountApprover = true;
                                           }
                                           $acctStatus = $request->AccPayStatus;
-                                          $fullUrl = $request->DeclarationPdfPath;
-                                          $pos = strpos($fullUrl, '/Finance');
-                                          $pathOnly = $pos !== false ? substr($fullUrl, $pos) : $fullUrl;
-                                          
+                                       $pdfPath = $request->DeclarationPdfPath; // S3 key, e.g. 'Employee_Assets/1/somefile.pdf'
+                                       $pdfExists = $pdfPath && Storage::disk('s3')->exists($pdfPath);
+                                       $pdfUrl = $pdfExists ? Storage::disk('s3')->url($pdfPath) : null;
                                           @endphp
                                           <tr data-status="{{ $acctStatus }}">
                                              <td>{{ $request->EmpCode }}</td>
@@ -1331,13 +1332,13 @@
                                                 <!-- Check if it's a PDF -->
                                                 @if(str_ends_with($request->ReqBillImgExtName, '.pdf'))
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
+                                                  data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqBillImgExtName) }}"
                                                    data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
+                                                  data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqBillImgExtName) }}"
                                                    data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
@@ -1351,13 +1352,13 @@
                                                 <!-- Check if it's a PDF -->
                                                 @if(str_ends_with($request->ReqAssestImgExtName, '.pdf'))
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
+                                                   data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqAssestImgExtName) }}"
                                                    data-file-type="asset">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
+                                                   data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqAssestImgExtName) }}"
                                                    data-file-type="asset">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
@@ -1384,12 +1385,11 @@
 
                                              </td>
                                              <td>
-                                                @if(!empty($request->DeclarationPdfPath) && file_exists($request->DeclarationPdfPath))
-                                                  <a href="{{$pathOnly}}" target="_blank" class="btn btn-sm">
-                                                      <i class="fas fa-file-pdf"></i>
+                                                @if ($pdfExists)
+                                                   <a href="{{ $pdfUrl }}" target="_blank" class="btn btn-sm">
+                                                         <i class="fas fa-file-pdf"></i>
                                                    </a>
                                                 @else
-                                                   <!-- Optional: Show something else or leave blank -->
                                                    <span>No PDF</span>
                                                 @endif
                                              </td>   
@@ -1600,13 +1600,13 @@
                                                 <!-- Check if it's a PDF -->
                                                 @if(str_ends_with($request->ReqBillImgExtName, '.pdf'))
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
+                                                   data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqBillImgExtName) }}"
                                                    data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
+                                                   data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqBillImgExtName) }}"
                                                    data-file-type="bill">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
@@ -1620,13 +1620,13 @@
                                                 <!-- Check if it's a PDF -->
                                                 @if(str_ends_with($request->ReqAssestImgExtName, '.pdf'))
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
+                                                   data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqAssestImgExtName) }}"
                                                    data-file-type="asset">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
                                                 @else
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                                   data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
+                                                   data-file-url="{{ Storage::disk('s3')->url('Employee_Assets/1/' . $request->ReqAssestImgExtName) }}"
                                                    data-file-type="asset">
                                                    <i class="fas fa-eye me-2"></i>
                                                 </a>
@@ -3001,6 +3001,9 @@
             alert('Invalid asset request ID.');
             return;
          }
+         const s3BaseUrl = "{{ config('filesystems.disks.s3.url') }}"; // gets AWS_URL from config/filesystems.php
+
+         const companyId = "{{ Auth::user()->CompanyId }}";
 
          $.ajax({
             url: `/assets/details/${assetEmpReqId}`,
@@ -3014,15 +3017,25 @@
                   const data = response.data;
                   console.log(data.AssetCopy);
 
-                  let billCopyUrl = 'Employee/AssetReqUploadFile/' + (data.BillCopy || '');
-                  let assetsCopyUrl = 'Employee/AssetReqUploadFile/' + (data.AssetCopy || '');
-                  let vehiclePhotoUrl = 'Employee/AssetReqUploadFile/' + (data.VehiclePhoto || '');
-                  let rcCopyUrl = 'Employee/AssetReqUploadFile/' + (data.RCCopy || '');
-                  let dLCopyUrl = 'Employee/AssetReqUploadFile/' + (data.DLCopy || '');
-                  let insuranceCopyUrl = 'Employee/AssetReqUploadFile/' + (data.InsuranceCopy || '');
-                  let odometerReadingUrl = 'Employee/AssetReqUploadFile/' + (data.OdometerReading || '');
+                  let billCopyUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.BillCopy || '');
+                  let assetsCopyUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.AssetCopy || '');
+                  let vehiclePhotoUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.VehiclePhoto || '');
+                  let rcCopyUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.RCCopy || '');
+                  let dLCopyUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.DLCopy || '');
+                  let insuranceCopyUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.InsuranceCopy || '');
+                  let odometerReadingUrl = s3BaseUrl + '/Employee_Assets/' + companyId + '/' + (data.OdometerReading || '');
 
-                  let defaultPath = 'Employee/AssetReqUploadFile/';
+                  let defaultPath = s3BaseUrl + '/Employee_Assets/' + companyId + '/';
+
+                  // let billCopyUrl = 'Employee/AssetReqUploadFile/' + (data.BillCopy || '');
+                  // let assetsCopyUrl = 'Employee/AssetReqUploadFile/' + (data.AssetCopy || '');
+                  // let vehiclePhotoUrl = 'Employee/AssetReqUploadFile/' + (data.VehiclePhoto || '');
+                  // let rcCopyUrl = 'Employee/AssetReqUploadFile/' + (data.RCCopy || '');
+                  // let dLCopyUrl = 'Employee/AssetReqUploadFile/' + (data.DLCopy || '');
+                  // let insuranceCopyUrl = 'Employee/AssetReqUploadFile/' + (data.InsuranceCopy || '');
+                  // let odometerReadingUrl = 'Employee/AssetReqUploadFile/' + (data.OdometerReading || '');
+
+                  // let defaultPath = 'Employee/AssetReqUploadFile/';
 
                   $('#asstBillCopy')
                      .html(billCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-file-pdf"></i>')

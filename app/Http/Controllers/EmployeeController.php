@@ -69,10 +69,10 @@ class EmployeeController extends Controller
             Log::error('Employee not found in getEmployeeData', ['employeeId' => $employeeId]);
             return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
         }
-        $hasConfirmedEmployee= DB::table('hrm_employee_ledger_confirmation')
-        ->where('EmployeeId', $employeeId)
-        ->where('Year', '2024-25')
-        ->exists();
+        $hasConfirmedEmployee = DB::table('hrm_employee_ledger_confirmation')
+            ->where('EmployeeId', $employeeId)
+            ->where('Year', '2024-25')
+            ->exists();
 
         Log::info('Employee data retrieved', ['employee' => (array)$employee]);
         return response()->json([
@@ -80,7 +80,7 @@ class EmployeeController extends Controller
             'companyId' => $employee->CompanyId,
             'empCode' => $employee->EmpCode,
             'vCode' => $employee->VCode,
-            'hasConfirmedEmployee'=> $hasConfirmedEmployee
+            'hasConfirmedEmployee' => $hasConfirmedEmployee
         ]);
     }
 
@@ -136,11 +136,13 @@ class EmployeeController extends Controller
 
         // Construct the file path relative to project root
         $prefix = $employee->VCode === 'V' ? '' : 'E';
-        $filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
+        // $filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
+
+        // $filePath = Storage::disk('s3')->url('Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf');
+        $filePath = 'Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf';
         Log::info('Constructed file path', ['filePath' => $filePath]);
 
-        // Check if file exists
-        if (!file_exists($filePath)) {
+        if (!Storage::disk('s3')->exists($filePath)) {
             Log::error('Ledger file not found', ['filePath' => $filePath]);
             return response()->json([
                 'success' => false,
@@ -148,19 +150,22 @@ class EmployeeController extends Controller
             ], 404);
         }
 
-        Log::info('File exists, attempting to stream PDF', ['filePath' => $filePath]);
 
+        Log::info('File exists, attempting to stream PDF', ['filePath' => $filePath]);
+        $pdfStream = Storage::disk('s3')->readStream($filePath);
         try {
-            // Stream the PDF without allowing download
-            return response()->file($filePath, [
+
+            return response()->stream(function () use ($pdfStream) {
+                fpassthru($pdfStream);
+            }, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="ledger.pdf"',
                 'Cache-Control' => 'no-store, no-cache, must-revalidate, private',
                 'Pragma' => 'no-cache',
-                'Expires' => '0'
+                'Expires' => '0',
             ]);
         } catch (\Exception $e) {
-            Log::error('Error streaming PDF', ['filePath' => $filePath, 'error' => $e->getMessage()]);
+            Log::error('Error streaming PDF', ['filePath' => $pdfStream, 'error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Your ledger is not available right now'
@@ -229,17 +234,40 @@ class EmployeeController extends Controller
 
         // Construct the file path
         $prefix = $employee->VCode === 'V' ? '' : 'E';
-        $filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
+        // $filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
+        // $filePath = 'Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf';
 
-        if (!file_exists($filePath)) {
+        // if (!file_exists($filePath)) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Ledger file not found'
+        //     ], 404);
+        // }
+
+
+        // return response()->download($filePath, "ledger_{$year}_{$prefix}{$employee->EmpCode}.pdf");
+        $filePath = 'Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf';
+        // Check if file exists on S3
+        if (!Storage::disk('s3')->exists($filePath)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Ledger file not found'
             ], 404);
         }
-        
 
-        return response()->download($filePath, "ledger_{$year}_{$prefix}{$employee->EmpCode}.pdf");
+        // Get a read stream from S3
+        $stream = Storage::disk('s3')->readStream($filePath);
+
+        // Stream file as a response with download headers
+        return response()->streamDownload(function () use ($stream) {
+            fpassthru($stream);
+        }, "ledger_{$year}_{$prefix}{$employee->EmpCode}.pdf", [
+            'Content-Type' => 'application/pdf',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
+
     }
 
     public function checkConfirmation(Request $request)
@@ -284,7 +312,7 @@ class EmployeeController extends Controller
 
             // Add initial query
             if ($query->QueryValue) {
-                 $statusLabels = [
+                $statusLabels = [
                     0 => 'Open',
                     1 => 'In Process',
                     2 => 'Replied',
@@ -301,7 +329,7 @@ class EmployeeController extends Controller
             // Check for replies
 
             if ($query->QueryReply || $query->Level_1ReplyAns) {
-             $statusLabels = [
+                $statusLabels = [
                     0 => 'Open',
                     1 => 'In Process',
                     2 => 'Replied',
@@ -317,7 +345,6 @@ class EmployeeController extends Controller
                         'status' => $statusLabels[$query->Level_1QStatus] ?? 'Unknown'
                     ];
                     $hasReply = true;
-
                 } elseif ($query->Level_1ReplyAns) {
                     $queryHistory[] = [
                         'text' => $query->Level_1ReplyAns,
@@ -374,7 +401,7 @@ class EmployeeController extends Controller
                 'queryStatus' => ($query->Level_1QStatus == 2 || $query->QueryStatus_Emp == 2),
                 'queryHistory' => $queryHistory,
                 'canAddNewQuery' => (
-                    in_array($query->Level_1QStatus, [0, 1, 3]) || 
+                    in_array($query->Level_1QStatus, [0, 1, 3]) ||
                     in_array($query->QueryStatus_Emp, [0, 1, 3])
                 ),
                 'hasReply' => $hasReply,
@@ -464,15 +491,24 @@ class EmployeeController extends Controller
                 $fullName = trim("{$employee->Fname} {$employee->Sname} {$employee->Lname}");
 
                 $prefix = $employee->VCode === 'V' ? '' : 'E';
-                $filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
+                //$filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
+                $filePath = 'Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf';
+                // Check if the file exists on S3
+                if (!Storage::disk('s3')->exists($filePath)) {
+                    Log::warning("Ledger PDF not found at path: s3://{$filePath}");
 
-                if (!file_exists($filePath)) {
-                    Log::warning("Ledger PDF not found at path: $filePath");
                     return response()->json([
                         'success' => false,
                         'message' => 'Ledger file not found'
                     ], 404);
                 }
+                // if (!file_exists($filePath)) {
+                //     Log::warning("Ledger PDF not found at path: $filePath");
+                //     return response()->json([
+                //         'success' => false,
+                //         'message' => 'Ledger file not found'
+                //     ], 404);
+                // }
 
                 // Subject/Department Mapping
                 $departmentId = 4;
@@ -549,88 +585,6 @@ class EmployeeController extends Controller
                 ], 500);
             }
         }
-
-        // Handle confirmation
-        // if ($confirmation === 'confirm') {
-        //     DB::table('hrm_employee_ledger_confirmation')->updateOrInsert(
-        //         ['EmployeeId' => $employeeId, 'Year' => $year],
-        //         ['ip_address' => $ipAddress,
-        //           'ip_details' => json_encode($request->fingerprint),
-        //          'created_at' => now(), 'updated_at' => now()]
-        //     );
-        //     // Fetch employee full name
-        //     $employee = DB::table('hrm_employee')
-        //         ->select('Fname', 'Lname', 'Sname')
-        //         ->where('EmployeeId', $employeeId)
-        //         ->first();
-
-        //     $fullName = $employee
-        //         ? trim("{$employee->Fname} {$employee->Sname} {$employee->Lname}")
-        //         : null;
-
-        //     // Generate the PDF file path
-        //     $prefix = $employee->VCode === 'V' ? '' : 'E';
-        //     $filePath = base_path("Employee/Emp{$companyId}Lgr/{$year}/{$prefix}{$employee->EmpCode}.pdf");
-
-        //     if (!file_exists($filePath)) {
-        //         return response()->json([
-        //             'success' => false,
-        //             'message' => 'Ledger file not found'
-        //         ], 404);
-        //     }
-        //     $departmentId = 4; // Ledger Confirmation department
-        //     $subject = 'Ledger Confirmation';
-
-        //     // Get department subject ID
-        //     $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $subject)
-        //         ->where('DepartmentId', $departmentId)
-        //         ->first();
-
-        //     if (!$departmentQuerySub) {
-        //         return response()->json([
-        //             'success' => false,
-        //             'message' => 'Ledger confirmation department not configured'
-        //         ], 404);
-        //     }
-        //              // Get financial year
-        //     if (Carbon::now()->month >= 4) {
-        //         $financialYearStart = Carbon::createFromDate(Carbon::now()->year, 4, 1)->toDateString();
-        //         $financialYearEnd = Carbon::createFromDate(Carbon::now()->year + 1, 3, 31)->toDateString();
-        //     } else {
-        //         $financialYearStart = Carbon::createFromDate(Carbon::now()->year - 1, 4, 1)->toDateString();
-        //         $financialYearEnd = Carbon::createFromDate(Carbon::now()->year, 3, 31)->toDateString();
-        //     }
-
-        //     $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
-        //         ->whereDate('ToDate', '=', $financialYearEnd)
-        //         ->first();
-        //     $year_id_current = $currentYearRecord->YearId;
-        //       $existing = DB::table('hrm_employee_queryemp')
-        //         ->where('EmployeeID', $employeeId)
-        //         ->where('QuerySubject', $subject)
-        //         ->where('QToDepartmentId', $departmentId)
-        //         ->where('QueryYearId', $year_id_current)
-        //         ->first();
-        //     if ($existing) {
-        //         $queryData = [
-        //             'QueryStatus_Emp' => 3,
-        //             'Level_1QStatus' => 3,
-        //         ];
-
-        //         DB::table('hrm_employee_queryemp')
-        //                 ->where('QueryId', $existing->QueryId)
-        //                 ->update($queryData);
-        //     }
-                
-
-        //     // Return both success message and download URL
-        //     return response()->json([
-        //         'success' => true,
-        //         'message' => 'Thank you! Your confirmation has been submitted successfully.',
-        //         'downloadUrl' => url("/ledger/download/{$companyId}/{$year}/{$prefix}{$employee->EmpCode}?employeeId={$employeeId}"),
-        //         'fullName'=> $fullName ??null
-        //     ]);
-        // }
 
         // Handle query with 30/60 day deadlines
         if ($confirmation === 'query') {

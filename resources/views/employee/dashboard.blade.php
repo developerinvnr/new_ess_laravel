@@ -207,8 +207,9 @@
                                                 $employee = auth()->user();
                                                 $prefix = $employee->VCode === 'V' ? '' : 'E';
                                                 $empCode = $prefix . $employee->EmpCode;
-                                                $filePath = base_path("Employee/Emp1Lgr/2024-25/{$empCode}.pdf");
-                                                $ledgerExists = File::exists($filePath);
+                                               $ledgerPath = 'Employee_Ledger/' . $companyId . '/2024-25/' . $prefix . $employee->EmpCode . '.pdf';
+
+                                                $ledgerExists = Storage::disk('s3')->exists($ledgerPath);
 
                                                 $hasConfirmed = DB::table('hrm_employee_ledger_confirmation')
                                                     ->where('EmployeeId', auth()->user()->EmployeeID)
@@ -8539,7 +8540,6 @@ document.addEventListener('keypress', function (e) {
             // Load default ledger PDF URL
             currentPdfUrl = `/ledger/view/${data.companyId}/${year}/${prefix}${data.empCode}?employeeId=${currentUserEmployeeId}&t=${Date.now()}`;
         }
-
         // Load PDF document with pdf.js
         const loadingTask = pdfjsLib.getDocument({
             url: currentPdfUrl,
@@ -8654,10 +8654,10 @@ document.addEventListener('keypress', function (e) {
         }
     });
 });
- document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.ctrlKey && ['s', 'p', 'c'].includes(e.key.toLowerCase())) e.preventDefault();
-        });
+//  document.addEventListener('contextmenu', e => e.preventDefault());
+//         document.addEventListener('keydown', e => {
+//             if (e.ctrlKey && ['s', 'p', 'c'].includes(e.key.toLowerCase())) e.preventDefault();
+//         });
 
     document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('manualDropdown');

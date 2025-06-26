@@ -28,7 +28,7 @@
                 $route = $item->route_define;
                 $isValidRoute = $route && $route !== '#' && $route !== '[]' && Route::has($route);
                 @endphp
-                @if($isValidRoute)
+                
                 <li class="nav-item" role="presentation">
                     <a class="nav-link {{ request()->routeIs($route) ? 'active' : '' }}"
                         href="{{ route($route) }}"
@@ -38,7 +38,7 @@
                         <span class="d-none d-sm-block">{{ $item->name }}</span>
                     </a>
                 </li>
-                @endif
+              
                 @endforeach
             </ul>
         </div>
