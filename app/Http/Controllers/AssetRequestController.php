@@ -505,7 +505,7 @@ class AssetRequestController extends Controller
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
             ];
 
-            // Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
+            Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
 
 
             return response()->json(['success' => true, 'message' => 'Asset request submitted successfully']);
@@ -548,7 +548,7 @@ class AssetRequestController extends Controller
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
             ];
 
-            // Mail::to($ITEmailId)->send(new AssestsIt($details));
+            Mail::to($ITEmailId)->send(new AssestsIt($details));
 
             $updateFields = [
                 'ITApprovalStatus' => $request->approval_status,

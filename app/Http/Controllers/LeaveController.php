@@ -364,7 +364,7 @@ class LeaveController extends Controller
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                     ];
 
-                    // // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
 
                 }
             }
@@ -457,7 +457,7 @@ class LeaveController extends Controller
 
                     ];
 
-                    // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
 
                 }
             }
@@ -543,7 +543,7 @@ class LeaveController extends Controller
 
                     ];
 
-                    // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
 
                 }
             }
@@ -629,7 +629,7 @@ class LeaveController extends Controller
 
                     ];
 
-                    // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
 
                 }
             }
@@ -717,7 +717,7 @@ class LeaveController extends Controller
 
                     ];
 
-                    // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
 
                 }
             }
@@ -3346,7 +3346,7 @@ class LeaveController extends Controller
                                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                             ];
 
-                            // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                            mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
 
                             return 1; // Successfully updated record
                         } else {
@@ -3643,7 +3643,7 @@ class LeaveController extends Controller
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                         ];
 
-                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                        mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
 
                         return 1; // Successfully updated record
                     } else {
@@ -3735,7 +3735,7 @@ class LeaveController extends Controller
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                         ];
 
-                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                        mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
 
                         return 1; // Successfully updated record
 
@@ -3916,7 +3916,7 @@ class LeaveController extends Controller
                                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                             ];
 
-                            // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                            mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
 
                             return 1; // Successfully updated record
                         } else {
@@ -4132,7 +4132,7 @@ class LeaveController extends Controller
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                         ];
 
-                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                        mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
 
                         return 1; // Successfully updated record
                     } else {
@@ -4200,7 +4200,7 @@ class LeaveController extends Controller
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                         ];
 
-                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                        mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
 
                         return 1; // Successfully updated record
 
@@ -4333,7 +4333,7 @@ class LeaveController extends Controller
                 'Status' => $s,
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
             ];
-            // // Mail::to($EmailId_Vnr)->send(new LeaveCancelStatusMail($details));
+            mail::to($EmailId_Vnr)->send(new LeaveCancelStatusMail($details));
 
             return response()->json(['success' => true, 'message' => 'Leave request processed successfully.']);
         }
@@ -4374,7 +4374,7 @@ class LeaveController extends Controller
             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
 
-        // Mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
+        mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
 
     }
     public function getBirthdays(Request $request)
@@ -4599,7 +4599,7 @@ class LeaveController extends Controller
             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
 
-        // Mail::to($ReportingEmailId)->send(new LeaveDeleteMail($details));
+        mail::to($ReportingEmailId)->send(new LeaveDeleteMail($details));
 
         // Soft delete the leave request
         $leaveRequest->delete();

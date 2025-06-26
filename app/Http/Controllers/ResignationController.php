@@ -188,7 +188,7 @@ class ResignationController extends Controller
             // Send the email to HR
 
             // Optionally, send the email to the Reporting Manager as well
-            //Mail::to([$ReportingEmailId, 'vspl.hr@vnrseeds.com'])->send(new SeparationMail($details));
+            Mail::to([$ReportingEmailId, 'vspl.hr@vnrseeds.com'])->send(new SeparationMail($details));
             $emails = [
                 $ReportingEmailId,
                 $ReportingEmailIdapp,
@@ -206,26 +206,26 @@ class ResignationController extends Controller
                 foreach ($uniqueEmails as $email) {
                     if (!empty($email)) {
 
-                        // Mail::to($email)->send(new SeparationMail($details));
+                        Mail::to($email)->send(new SeparationMail($details));
                     }
                 }
                 // Always send to these fixed HR emails separately
                 $hrEmails = ['fd@vnrseeds.com', 'vspl.hr@vnrseeds.com'];
 
-                // Mail::to($hrEmails)->send(new SeparationMail($details));
+                Mail::to($hrEmails)->send(new SeparationMail($details));
             } else {
                 $uniqueEmails = array_values(array_filter(array_unique($emails)));
                 // Always send only **one mail per unique email**
                 foreach ($uniqueEmails as $email) {
                     if (!empty($email)) {
 
-                        // Mail::to($email)->send(new SeparationMail($details));
+                        Mail::to($email)->send(new SeparationMail($details));
                     }
                 }
                 // Always send to these fixed HR emails separately
                 $hrEmails = ['vspl.hr@vnrseeds.com'];
 
-                // Mail::to($hrEmails)->send(new SeparationMail($details));
+                Mail::to($hrEmails)->send(new SeparationMail($details));
             }
 
 
@@ -256,9 +256,7 @@ class ResignationController extends Controller
 
         ];
 
-        // $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
-
-        //$mail =  Mail::to('preetinanda.vspl@gmail.com')->send(new RevertBackMail($details));
+        $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
 
         if ($mail) {
             return response()->json(['success' => true, 'message' => 'Mail sent '], 200);
@@ -397,11 +395,7 @@ class ResignationController extends Controller
 
             ];
 
-            // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
-
-            //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailRepo($details));
-
-
+            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
 
             return response()->json(['success' => true, 'message' => 'Reporting status has been updated'], 200);
         }
@@ -873,7 +867,7 @@ class ResignationController extends Controller
                         'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
                     ];
 
-                    // Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
+                    Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
 
                     //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailLog($details));
 
@@ -1183,7 +1177,7 @@ class ResignationController extends Controller
 
                 ];
 
-                // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
+                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
 
                 //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailClearRepo($details));
 
@@ -1576,7 +1570,7 @@ class ResignationController extends Controller
                 'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
             ];
 
-            // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
+            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
 
             //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailAccountClr($details));
 
@@ -2284,7 +2278,7 @@ class ResignationController extends Controller
 
             ];
 
-            // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
+            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
         } elseif ($buttonId == "save-draft-exit-repo") {
             // Set draft_submit to 'Y' if save draft was clicked
             $draftSubmit = 'Y';
