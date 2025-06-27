@@ -183,9 +183,8 @@
                                         $tdsFileB= "Employee_TDS/2024-25/{$panNo}_PARTB_2025-26.pdf";
                                         $exitstdsA = Storage::disk('s3')->exists($tdsFileA);
                                         $exitstdsB = Storage::disk('s3')->exists($tdsFileB);
-                                        $tdsFileAUrl = Storage::disk('s3')->url($tdsFileA);
-                                        $tdsFileBUrl = Storage::disk('s3')->url($tdsFileB);
-                                            
+                                        $tdsFileAUrl = $exitstdsA ? url('/file-view/' . $tdsFileA) : null;
+                                        $tdsFileBUrl = $exitstdsB ? url('/file-view/' . $tdsFileB) : null; 
 
                                         @endphp
                                          @if($exitstdsA || $exitstdsB)
@@ -699,15 +698,13 @@
                                                 $isActive = false;
 
                                                 foreach ($chunk as $item) {
-                                                    echo '
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
+                                                            echo '<div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume ' . htmlspecialchars($item->IVal) . '" 
-                                                            href="' . Storage::disk('s3')->url('Impact_Magazine/' . $item->IDocName) . '" target="_blank">
-                                                                <img class="d-block w-100 p-3" 
-                                                                    src="' . Storage::disk('s3')->url('Impact_Magazine/' . $item->IImg) . '" 
-                                                                    alt="Volume-' . htmlspecialchars($item->IVal) . '">
-                                                            </a>
-
+                                                        href="' . url('/file-view/Impact_Magazine/' . $item->IDocName) . '" target="_blank">
+                                                            <img class="d-block w-100 p-3" 
+                                                                src="' . url('/file-view/Impact_Magazine/' . $item->IImg) . '" 
+                                                                alt="Volume-' . htmlspecialchars($item->IVal) . '">
+                                                        </a>
                                                         <h6 class="mt-2">Volume - ' . htmlspecialchars($item->IVal) . '</h6>
                                                     </div>';
                                                 }
@@ -3427,7 +3424,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                                 card.innerHTML = `
                         <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
                             <div class="float-start emp-request-leave">
-                                <img class="float-start me-2" src="https://s3.ap-south-1.amazonaws.com/vnrpeepal.bkt/Employee_Image/${employeeDetails.CompanyId}/${employeeDetails.ECode}.jpg">
+                                <img class="float-start me-2" src="/file-view/Employee_Image/${request.employeeDetails.CompanyId}/${request.employeeDetails.EmpCode}.jpg">
 
                                 <b>Emp Code: ${employeeDetails.EmployeeID}</b>
                                 <p>${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}</p>
@@ -3724,7 +3721,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                                 <div class="card p-3 mb-3 late-atnd" style="border:1px solid #ddd;">
                                     <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
                                         <div class="float-start emp-request-leave">                                            
-                                            <img class="float-start me-2" src="https://s3.ap-south-1.amazonaws.com/vnrpeepal.bkt/Employee_Image/${employeeDetails.CompanyId}/${employeeDetails.ECode}.jpg">
+                                            <img class="float-start me-2" src="/file-view/Employee_Image/${request.employeeDetails.CompanyId}/${request.employeeDetails.EmpCode}.jpg">
                                             <b>Emp Code: ${request.employeeDetails.EmpCode}</b>
                                             <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
                                         </div>
@@ -5263,7 +5260,7 @@ function formatDateddmmyyyy(date) {
                     <div class="col text-center">
                         <img style="margin: 0 auto; display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                             class="d-block" 
-                            src="https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com/Employee_Image/{{ Auth::user()->CompanyId }}/${currentItem.EmpCode}.jpg" 
+                            src="/file-view/Employee_Image/{{ Auth::user()->CompanyId }}/${currentItem.EmpCode}.jpg" 
                             onerror="this.src='https://eu.ui-avatars.com/api/?name=${currentItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
                             alt="User Image">
 
@@ -5300,7 +5297,7 @@ function formatDateddmmyyyy(date) {
                         <div class="col text-center">
                             <img style="display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                                 class="d-block" 
-                                src="https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com/Employee_Image/{{ Auth::user()->CompanyId }}/${nextItem.EmpCode}.jpg" 
+                                src="/file-view/Employee_Image/{{ Auth::user()->CompanyId }}/${nextItem.EmpCode}.jpg" 
                                 onerror="this.src='https://eu.ui-avatars.com/api/?name=${nextItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
                                 alt="User Image">
 

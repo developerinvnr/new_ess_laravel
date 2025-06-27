@@ -98,7 +98,8 @@
     $empCode = Auth::user()->EmpCode;
     $s3BaseUrl = config('filesystems.disks.s3.url');
     $imagePath = "Employee_Image/{$companyId}/{$empCode}.jpg";
-    $fullImageUrl = $s3BaseUrl . '/' . $imagePath;
+    $fullImageUrl = url('/file-view/' . $imagePath);
+
     @endphp
 
     <a href="javascript:void(0);" class="user-info">

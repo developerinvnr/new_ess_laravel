@@ -34,10 +34,8 @@ use App\Http\Controllers\Export\EmployeeScoreController;
 use App\Http\Controllers\Export\IncrementExportController;
 use App\Http\Controllers\Export\LedgerExportController;
 use App\Http\Controllers\Export\AssetRequestControllerAll;
-
-
+use Illuminate\Support\Facades\Storage;
 use App\Http\Middleware\PreventBackHistory;
-
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttAppController;
 
@@ -411,3 +409,23 @@ Route::get('/asset/requests/export', [AssetRequestControllerAll::class, 'export'
 Route::post('/ledger/check-confirmation/new', [LedgerConfirmationController::class, 'checkConfirmation'])->name('check.confirmation');
 
 Route::get('/ledger-confirmation/view/{id}', [LedgerConfirmationController::class, 'viewConfirmation'])->name('ledger.confirmation.view');
+
+
+Route::get('/file-view/{path}', function ($path) {
+    $cleanPath = str_replace('..', '', $path); // Prevent directory traversal
+
+    $s3Path = $cleanPath;
+    $s3 = Storage::disk('s3');
+
+    if (!$s3->exists($s3Path)) {
+        abort(404, 'File not found.');
+    }
+
+    $file = $s3->get($s3Path);
+    $mime = $s3->mimeType($s3Path);
+
+    return Response::make($file, 200, [
+        'Content-Type' => $mime,
+        'Content-Disposition' => 'inline; filename="' . basename($s3Path) . '"'
+    ]);
+})->where('path', '.*');

@@ -50,6 +50,8 @@ class DailyreportsController extends Controller
         if ($request->month) {
             $dailyreportsQuery->whereMonth('r.MorEveDate', $request->month);
         }
+        $dailyreportsQuery->orderByDesc('r.MorEveDate');
+
 
         // Decrypt the EmployeeID from the request
         if ($request->employee) {

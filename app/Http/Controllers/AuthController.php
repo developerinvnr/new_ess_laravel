@@ -18,7 +18,7 @@ use Carbon\Carbon;
 use App\Models\ActivityLog;
 use Illuminate\Support\Str;
 
-use App\Models\Backend\EssMenu; 
+use App\Models\Backend\EssMenu;
 
 class AuthController extends Controller
 {
@@ -129,21 +129,21 @@ class AuthController extends Controller
             // Log the user in
             Auth::login($employee, $request->has('remember'));
             ActivityLog::create([
-                        'log_name'     => 'login',
-                        'description'  => 'Employee logged in',
-                        'subject_type' => Employee::class,
-                        'subject_id'   => $employee->EmployeeID,
-                        'event'        => 'login',
-                        'causer_type'  => Employee::class,
-                        'causer_id'    => $employee->EmployeeID,
-                        'properties'   => json_encode([
-                            'ip' => $request->ip(),
-                            'agent' => $request->userAgent(),
-                        ]),
-                        'batch_uuid'   => (string) Str::uuid(),
-                        'created_at'   => now(),
-                        'updated_at'   => now(),
-                    ]);
+                'log_name'     => 'login',
+                'description'  => 'Employee logged in',
+                'subject_type' => Employee::class,
+                'subject_id'   => $employee->EmployeeID,
+                'event'        => 'login',
+                'causer_type'  => Employee::class,
+                'causer_id'    => $employee->EmployeeID,
+                'properties'   => json_encode([
+                    'ip' => $request->ip(),
+                    'agent' => $request->userAgent(),
+                ]),
+                'batch_uuid'   => (string) Str::uuid(),
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
             // Fetch additional employee details using EmployeeID
             $employeeDetails = Employee::with(
                 'stateDetails',
@@ -258,7 +258,7 @@ class AuthController extends Controller
     //             return redirect('/change-password-new');
 
     //         }
-            
+
     //         // if($employee->ChangePwd == 'Y'){            
 
     //         //     // if ($employeeDetails->ProfileCertify == 'Y') {
@@ -531,32 +531,20 @@ class AuthController extends Controller
                 }
             }
         }
-         //error on sunday 
-        // while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
-        //     // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
-        //     if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
-        //         $allDates->push($datePointer->toDateString());
-        //     }
-        //     $datePointer->subDay();
-        // }
-
 
         //updated   it(02-02-2025) 
 
         while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
             // Ensure $all_holidays is always an array, even if it's null or some other type
             $all_holidays_array = is_array($all_holidays) ? $all_holidays : ($all_holidays ? $all_holidays->toArray() : []);
-        
+
             // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
             if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays_array)) {
                 $allDates->push($datePointer->toDateString());
             }
-        
+
             $datePointer->subDay();
         }
-        
-        
-        
 
         // Fetch existing attendance records for this range
         $existingAttendanceDates = \DB::table('hrm_employee_attendance')
@@ -579,7 +567,7 @@ class AuthController extends Controller
 
         $separationRecord = \DB::table('hrm_employee_separation')
             ->where('EmployeeID', Auth::user()->EmployeeID)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('Hod_Approved', '!=', 'C')
                     ->where('Rep_Approved', '!=', 'C')
                     ->where('HR_Approved', '!=', 'C');
@@ -589,471 +577,511 @@ class AuthController extends Controller
             return redirect('/seperation');  // Redirect to the separation page
         }
         $currentYearMonth =  \Carbon\Carbon::now()->format('Y-m'); // e.g., "2024-12"
-        
+
         $attRequests = \DB::table('hrm_employee_attendance_req')
-        ->join('hrm_employee_attendance', function ($join) {
-            $join->on('hrm_employee_attendance_req.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')
-                 ->on('hrm_employee_attendance_req.AttDate', '=', 'hrm_employee_attendance.AttDate'); // Match specific attendance date
-        })
-        ->where('hrm_employee_attendance_req.EmployeeID', Auth::user()->EmployeeID)
-        ->where('hrm_employee_attendance_req.ReqDate', 'LIKE', $currentYearMonth . '%') // Match current month
-        ->select(
-            'hrm_employee_attendance_req.AttDate as RequestAttDate',
-            \DB::raw('COALESCE(hrm_employee_attendance.AttDate, "N/A") as AttendanceDate'),
-            \DB::raw('COALESCE(hrm_employee_attendance.Inn, "00:00") as Inn'),
-            \DB::raw('COALESCE(hrm_employee_attendance.Outt, "00:00") as Outt'),
-            'hrm_employee_attendance_req.Status',
-            'hrm_employee_attendance_req.InStatus',
-            'hrm_employee_attendance_req.OutStatus',
-            'hrm_employee_attendance_req.SStatus',
-            'hrm_employee_attendance_req.Remark as ReqRemark',
-            'hrm_employee_attendance_req.OutRemark as ReqOutRemark',
-            'hrm_employee_attendance_req.InRemark as ReqInRemark',
-            'hrm_employee_attendance_req.Reason as ReqReason',
-            'hrm_employee_attendance_req.OutReason as ReqOutReason',
-            'hrm_employee_attendance_req.InReason as ReqInReason'
-        )
-        ->get();
+            ->join('hrm_employee_attendance', function ($join) {
+                $join->on('hrm_employee_attendance_req.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')
+                    ->on('hrm_employee_attendance_req.AttDate', '=', 'hrm_employee_attendance.AttDate'); // Match specific attendance date
+            })
+            ->where('hrm_employee_attendance_req.EmployeeID', Auth::user()->EmployeeID)
+            ->where('hrm_employee_attendance_req.ReqDate', 'LIKE', $currentYearMonth . '%') // Match current month
+            ->select(
+                'hrm_employee_attendance_req.AttDate as RequestAttDate',
+                \DB::raw('COALESCE(hrm_employee_attendance.AttDate, "N/A") as AttendanceDate'),
+                \DB::raw('COALESCE(hrm_employee_attendance.Inn, "00:00") as Inn'),
+                \DB::raw('COALESCE(hrm_employee_attendance.Outt, "00:00") as Outt'),
+                'hrm_employee_attendance_req.Status',
+                'hrm_employee_attendance_req.InStatus',
+                'hrm_employee_attendance_req.OutStatus',
+                'hrm_employee_attendance_req.SStatus',
+                'hrm_employee_attendance_req.Remark as ReqRemark',
+                'hrm_employee_attendance_req.OutRemark as ReqOutRemark',
+                'hrm_employee_attendance_req.InRemark as ReqInRemark',
+                'hrm_employee_attendance_req.Reason as ReqReason',
+                'hrm_employee_attendance_req.OutReason as ReqOutReason',
+                'hrm_employee_attendance_req.InReason as ReqInReason'
+            )
+            ->get();
         $employeeQueryData = \DB::table('hrm_employee_queryemp')
-                            ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId') // Join subject table
-                            ->leftJoin('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id') // Join department table
-                            ->where('hrm_employee_queryemp.EmployeeID', Auth::user()->EmployeeID)
-                            ->where('hrm_employee_queryemp.QueryDT', 'LIKE', $currentYearMonth . '%') // Match current month
-                            ->select(
-                                'hrm_employee_queryemp.QuerySubject',
-                                'hrm_employee_queryemp.QStatus',
-                                'hrm_employee_queryemp.QueryDT',
-                                'hrm_deptquerysub.DeptQSubject as SubjectName', // Fetch subject name
-                                'core_departments.department_name as DepartmentName' // Fetch department name
-                            )
-                            ->get();
-                            
-                     
+            ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId') // Join subject table
+            ->leftJoin('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id') // Join department table
+            ->where('hrm_employee_queryemp.EmployeeID', Auth::user()->EmployeeID)
+            ->where('hrm_employee_queryemp.QueryDT', 'LIKE', $currentYearMonth . '%') // Match current month
+            ->select(
+                'hrm_employee_queryemp.QuerySubject',
+                'hrm_employee_queryemp.QStatus',
+                'hrm_employee_queryemp.QueryDT',
+                'hrm_deptquerysub.DeptQSubject as SubjectName', // Fetch subject name
+                'core_departments.department_name as DepartmentName' // Fetch department name
+            )
+            ->get();
+
+
         $leaveRequests = EmployeeApplyLeave::where('EmployeeID', Auth::user()->EmployeeID)
-        ->where('Apply_Date', 'LIKE', $currentYearMonth . '%')  // Match "YYYY-MM%" pattern in Apply_Date
-        ->whereIn('LeaveStatus', [0, 4, 3])  // Correctly use whereIn for LeaveStatus
-        ->get();
-        
-       $display_ojas = \DB::table('hrm_employee')
-        ->where('EmployeeId', Auth::user()->EmployeeID)
-        ->where('is_ojas_user', '1')
-        ->exists();
-    $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id', 'core_departments.department_name')->get();
-    
-    $departments_sub = \DB::table('hrm_deptquerysub')->get();
-   
+            ->where('Apply_Date', 'LIKE', $currentYearMonth . '%')  // Match "YYYY-MM%" pattern in Apply_Date
+            ->whereIn('LeaveStatus', [0, 4, 3])  // Correctly use whereIn for LeaveStatus
+            ->get();
+
+        $display_ojas = \DB::table('hrm_employee')
+            ->where('EmployeeId', Auth::user()->EmployeeID)
+            ->where('is_ojas_user', '1')
+            ->exists();
+        $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')->select(['core_departments.id', 'core_departments.department_name'])->groupBy('core_departments.id', 'core_departments.department_name')->get();
+
+        $departments_sub = \DB::table('hrm_deptquerysub')->get();
+
         $today = Carbon::today()->format('Y-m-d'); // Format as YYYY-MM-DD
         $thresholdDate = Carbon::today()->addDays(15)->format('Y-m-d'); // 15 days ahead
 
         $employees = EmployeeGeneral::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-                ->where('RepEmployeeID', Auth::user()->EmployeeID) // Filter by RepEmployeeID
-                ->where('DateConfirmationYN', 'N')
-                ->where('EmpStatus', 'A')
-                ->where(function($query) use ($today, $thresholdDate) {
-                    $query->whereBetween('DateConfirmation', [$today, $thresholdDate]) // Check within 15 days
-                        ->orWhere('DateConfirmation', '<', $today); // Include those with past confirmation date
-                })
-                ->pluck('hrm_employee.EmployeeID');
-            
+            ->where('RepEmployeeID', Auth::user()->EmployeeID) // Filter by RepEmployeeID
+            ->where('DateConfirmationYN', 'N')
+            ->where('EmpStatus', 'A')
+            ->where(function ($query) use ($today, $thresholdDate) {
+                $query->whereBetween('DateConfirmation', [$today, $thresholdDate]) // Check within 15 days
+                    ->orWhere('DateConfirmation', '<', $today); // Include those with past confirmation date
+            })
+            ->pluck('hrm_employee.EmployeeID');
 
-        $isConfirmationDue = $employees->isNotEmpty(); 
 
-                $showWarmWelcome = DB::table('hrm_employee_key')
-                ->where('CompanyId', 1)
-                ->value('WarmWelCome');
+        $isConfirmationDue = $employees->isNotEmpty();
 
-            // Get the previous month range
-            $from = now()->subMonthNoOverflow()->startOfMonth();
-            $to = now()->subMonthNoOverflow()->endOfMonth();
+        $showWarmWelcome = DB::table('hrm_employee_key')
+            ->where('CompanyId', 1)
+            ->value('WarmWelCome');
 
-            // Fetch newly joined employees
-            $newEmployees = DB::table('hrm_employee as e')
-                ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-                ->leftJoin('hrm_employee_personal as p', 'e.EmployeeID', '=', 'p.EmployeeID')
-                ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
-                ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-                ->leftJoin('core_city_village_by_state as vlg', 'g.HqId', '=', 'vlg.id')
-                ->leftJoin('core_states as s', 'g.CostCenter', '=', 's.id')
-                ->leftJoin('core_territory as tr', 'g.TerrId', '=', 'tr.id')
-                ->whereBetween('g.DateJoining', [$from, $to])
-                ->where('e.EmpStatus', 'A')
-                ->where('e.CompanyId', 1)
-                ->select(
-                    'e.CompanyId','e.EmployeeID', 'e.EmpCode', 'e.Fname', 'e.Sname', 'e.Lname',
-                    'd.department_name', 'g.DepartmentId', 'g.EmpVertical',
-                    'de.designation_name', 's.state_name', 'p.Gender', 'p.DR', 'p.Married',
-                    'g.DateJoining', 'g.DOB', 'g.RepEmployeeID', 'g.TerrId', 'g.HqId',
-                    'vlg.city_village_name', 'tr.territory_name'
-                )
-                ->orderBy('e.EmpCode')
-                ->get();
+        // Get the previous month range
+        $from = now()->subMonthNoOverflow()->startOfMonth();
+        $to = now()->subMonthNoOverflow()->endOfMonth();
 
-            $verticals = DB::table('core_verticals')->pluck('vertical_name', 'id');
+        // Fetch newly joined employees
+        $newEmployees = DB::table('hrm_employee as e')
+            ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+            ->leftJoin('hrm_employee_personal as p', 'e.EmployeeID', '=', 'p.EmployeeID')
+            ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
+            ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+            ->leftJoin('core_city_village_by_state as vlg', 'g.HqId', '=', 'vlg.id')
+            ->leftJoin('core_states as s', 'g.CostCenter', '=', 's.id')
+            ->leftJoin('core_territory as tr', 'g.TerrId', '=', 'tr.id')
+            ->whereBetween('g.DateJoining', [$from, $to])
+            ->where('e.EmpStatus', 'A')
+            ->where('e.CompanyId', 1)
+            ->select(
+                'e.CompanyId',
+                'e.EmployeeID',
+                'e.EmpCode',
+                'e.Fname',
+                'e.Sname',
+                'e.Lname',
+                'd.department_name',
+                'g.DepartmentId',
+                'g.EmpVertical',
+                'de.designation_name',
+                's.state_name',
+                'p.Gender',
+                'p.DR',
+                'p.Married',
+                'g.DateJoining',
+                'g.DOB',
+                'g.RepEmployeeID',
+                'g.TerrId',
+                'g.HqId',
+                'vlg.city_village_name',
+                'tr.territory_name'
+            )
+            ->orderBy('e.EmpCode')
+            ->get();
 
-            $qualifications = DB::table('hrm_employee_qualification')
-                ->where('MaxQuali', 'Y')
-                ->whereNotNull('Specialization')
-                ->where('Specialization', '!=', '')
-                ->whereNotNull('Institute')
-                ->where('Institute', '!=', '')
-                ->get()
-                ->groupBy('EmployeeID');
+        $verticals = DB::table('core_verticals')->pluck('vertical_name', 'id');
 
-            $experiences = DB::table('hrm_employee_experience')
-                ->whereNotNull('ExpComName')
-                ->where('ExpComName', '!=', '')
-                ->orderByDesc('ExperienceId')
-                ->get()
-                ->groupBy('EmployeeID');
+        $qualifications = DB::table('hrm_employee_qualification')
+            ->where('MaxQuali', 'Y')
+            ->whereNotNull('Specialization')
+            ->where('Specialization', '!=', '')
+            ->whereNotNull('Institute')
+            ->where('Institute', '!=', '')
+            ->get()
+            ->groupBy('EmployeeID');
 
-            $families1 = DB::table('hrm_employee_family')
-                ->select('EmployeeID', 'HW_SN', 'HusWifeName')
-                ->whereNotNull('HusWifeName')
-                ->where('HusWifeName', '!=', '')
-                ->get()
-                ->keyBy('EmployeeID');
-            $families2 = DB::table('hrm_employee_family2')
-                ->select('EmployeeID', 'FamilyRelation', 'FamilyName')
-                ->whereIn('FamilyRelation', ['SON', 'DAUGHTER', 'CHILD'])
-                ->get()
-                ->groupBy('EmployeeID');
+        $experiences = DB::table('hrm_employee_experience')
+            ->whereNotNull('ExpComName')
+            ->where('ExpComName', '!=', '')
+            ->orderByDesc('ExperienceId')
+            ->get()
+            ->groupBy('EmployeeID');
 
-            $reportingManagers = DB::table('hrm_employee as e')
-                ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-                ->leftJoin('hrm_employee_personal as p', 'e.EmployeeID', '=', 'p.EmployeeID')
-                ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
-                ->select(
-                    'e.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname',
-                    'p.DR', 'p.Gender', 'p.Married',
-                    'g.EmpVertical', 'de.designation_name'
-                )
-                ->get()
-                ->keyBy('EmployeeID');
+        $families1 = DB::table('hrm_employee_family')
+            ->select('EmployeeID', 'HW_SN', 'HusWifeName')
+            ->whereNotNull('HusWifeName')
+            ->where('HusWifeName', '!=', '')
+            ->get()
+            ->keyBy('EmployeeID');
+        $families2 = DB::table('hrm_employee_family2')
+            ->select('EmployeeID', 'FamilyRelation', 'FamilyName')
+            ->whereIn('FamilyRelation', ['SON', 'DAUGHTER', 'CHILD'])
+            ->get()
+            ->groupBy('EmployeeID');
 
-            $employees = $newEmployees->map(function ($emp) use ($verticals, $qualifications, $experiences, $families1, $families2, $reportingManagers) {
-                $prefix = $emp->DR === 'Y' ? 'Dr.' : ($emp->Gender === 'M' ? 'Mr.' : ($emp->Married === 'Y' ? 'Mrs.' : 'Ms.'));
-                $name = $prefix . ' ' . ucwords(strtolower(trim($emp->Fname . ' ' . $emp->Sname . ' ' . $emp->Lname)));
+        $reportingManagers = DB::table('hrm_employee as e')
+            ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+            ->leftJoin('hrm_employee_personal as p', 'e.EmployeeID', '=', 'p.EmployeeID')
+            ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
+            ->select(
+                'e.EmployeeID',
+                'e.Fname',
+                'e.Sname',
+                'e.Lname',
+                'p.DR',
+                'p.Gender',
+                'p.Married',
+                'g.EmpVertical',
+                'de.designation_name'
+            )
+            ->get()
+            ->keyBy('EmployeeID');
 
-                $location = $emp->TerrId ? $emp->territory_name : $emp->city_village_name;
-                $vertical = $verticals[$emp->EmpVertical] ?? '';
-                $qualification = optional($qualifications->get($emp->EmployeeID)?->first());
-                $experience = $experiences[$emp->EmployeeID] ?? collect();
-                $expCompanies = $experience->pluck('ExpComName')->filter()->unique()->values();
+        $employees = $newEmployees->map(function ($emp) use ($verticals, $qualifications, $experiences, $families1, $families2, $reportingManagers) {
+            $prefix = $emp->DR === 'Y' ? 'Dr.' : ($emp->Gender === 'M' ? 'Mr.' : ($emp->Married === 'Y' ? 'Mrs.' : 'Ms.'));
+            $name = $prefix . ' ' . ucwords(strtolower(trim($emp->Fname . ' ' . $emp->Sname . ' ' . $emp->Lname)));
+
+            $location = $emp->TerrId ? $emp->territory_name : $emp->city_village_name;
+            $vertical = $verticals[$emp->EmpVertical] ?? '';
+            $qualification = optional($qualifications->get($emp->EmployeeID)?->first());
+            $experience = $experiences[$emp->EmployeeID] ?? collect();
+            $expCompanies = $experience->pluck('ExpComName')->filter()->unique()->values();
             //dd($expCompanies);
-                $spouse = $families1[$emp->EmployeeID] ?? null;
-                $kids = $families2[$emp->EmployeeID] ?? collect();
+            $spouse = $families1[$emp->EmployeeID] ?? null;
+            $kids = $families2[$emp->EmployeeID] ?? collect();
 
             $kids->transform(function ($kid) {
                 $kid->FamilyRelation = strtoupper($kid->FamilyRelation);
                 return $kid;
             });
 
-                $sons = $kids->where('FamilyRelation', 'SON')->pluck('FamilyName')->values();
-                $daughters = $kids->where('FamilyRelation', 'DAUGHTER')->pluck('FamilyName')->values();
-                $children = $kids->where('FamilyRelation', 'CHILD')->pluck('FamilyName')->values();
-                $rm = $reportingManagers[$emp->RepEmployeeID] ?? null;
-                $rmPrefix = $rm ? ($rm->DR === 'Y' ? 'Dr.' : ($rm->Gender === 'M' ? 'Mr.' : ($rm->Married === 'Y' ? 'Mrs.' : 'Ms.'))) : '';
-                $rmName = $rm ? $rmPrefix . ' ' . ucwords(strtolower(trim($rm->Fname . ' ' . $rm->Sname . ' ' . $rm->Lname))) : 'N/A';
-                $rmDesignation = $rm->designation_name ?? '';
-                $reportingManager = 'N/A';
-                if ($rm) {
-                    $includeVertical = ($emp->DepartmentId == 15) && in_array($emp->EmpVertical, [1, 2]);
-                    $rmVertical = $verticals[$rm->EmpVertical] ?? '';
+            $sons = $kids->where('FamilyRelation', 'SON')->pluck('FamilyName')->values();
+            $daughters = $kids->where('FamilyRelation', 'DAUGHTER')->pluck('FamilyName')->values();
+            $children = $kids->where('FamilyRelation', 'CHILD')->pluck('FamilyName')->values();
+            $rm = $reportingManagers[$emp->RepEmployeeID] ?? null;
+            $rmPrefix = $rm ? ($rm->DR === 'Y' ? 'Dr.' : ($rm->Gender === 'M' ? 'Mr.' : ($rm->Married === 'Y' ? 'Mrs.' : 'Ms.'))) : '';
+            $rmName = $rm ? $rmPrefix . ' ' . ucwords(strtolower(trim($rm->Fname . ' ' . $rm->Sname . ' ' . $rm->Lname))) : 'N/A';
+            $rmDesignation = $rm->designation_name ?? '';
+            $reportingManager = 'N/A';
+            if ($rm) {
+                $includeVertical = ($emp->DepartmentId == 15) && in_array($emp->EmpVertical, [1, 2]);
+                $rmVertical = $verticals[$rm->EmpVertical] ?? '';
 
-                    if ($includeVertical) {
-                        $reportingManager = $rmName . ' - ' . $rmDesignation . ($rmVertical ? ' (' . $rmVertical . ')' : '');
-                    } else {
-                        $reportingManager = $rmName . ($rmDesignation ? ' (' . $rmDesignation . ')' : '');
-                    }
+                if ($includeVertical) {
+                    $reportingManager = $rmName . ' - ' . $rmDesignation . ($rmVertical ? ' (' . $rmVertical . ')' : '');
+                } else {
+                    $reportingManager = $rmName . ($rmDesignation ? ' (' . $rmDesignation . ')' : '');
                 }
+            }
 
-                return [
-                    'name' => $name,
-                    'EmployeeID' => $emp->EmployeeID,
-                    'department_name' => $emp->department_name,
-                    'state_name' => $emp->state_name,
-                    'gender' => $emp->Gender,
-                    'designation' => $emp->designation_name,
-                    'joining_date' => \Carbon\Carbon::parse($emp->DateJoining)->format('d M Y'),
-                    'location' => $location,
-                    'vertical' => $vertical,
-                    'reporting_manager' => $reportingManager,
-                    'qualification' => $qualification,
-                    'experience_companies' => $expCompanies,
-                    'family_spouse' => $spouse ? $spouse->HW_SN . '. ' . $spouse->HusWifeName : null,
-                    'family_sons' => $sons,
-                    'family_daughters' => $daughters,
-                    'family_children' => $children,
-                    'company_id' => $emp->CompanyId,
-                    'emp_code' => $emp->EmpCode,
-                ];
-            });
+            return [
+                'name' => $name,
+                'EmployeeID' => $emp->EmployeeID,
+                'department_name' => $emp->department_name,
+                'state_name' => $emp->state_name,
+                'gender' => $emp->Gender,
+                'designation' => $emp->designation_name,
+                'joining_date' => \Carbon\Carbon::parse($emp->DateJoining)->format('d M Y'),
+                'location' => $location,
+                'vertical' => $vertical,
+                'reporting_manager' => $reportingManager,
+                'qualification' => $qualification,
+                'experience_companies' => $expCompanies,
+                'family_spouse' => $spouse ? $spouse->HW_SN . '. ' . $spouse->HusWifeName : null,
+                'family_sons' => $sons,
+                'family_daughters' => $daughters,
+                'family_children' => $children,
+                'company_id' => $emp->CompanyId,
+                'emp_code' => $emp->EmpCode,
+            ];
+        });
 
-            $employeeID = Auth::user()->EmployeeID;
+        $employeeID = Auth::user()->EmployeeID;
 
-            $employeeData = DB::table('hrm_employee')
-                ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-                ->join('hrm_employee_personal', 'hrm_employee.EmployeeID', '=', 'hrm_employee_personal.EmployeeID')
-                ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')
-                ->join('hrm_investdecl_setting_submission', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting_submission.CompanyID')
-                ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')
-                ->where('hrm_employee.EmployeeID', $employeeID)
+        $employeeData = DB::table('hrm_employee')
+            ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
+            ->join('hrm_employee_personal', 'hrm_employee.EmployeeID', '=', 'hrm_employee_personal.EmployeeID')
+            ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')
+            ->join('hrm_investdecl_setting_submission', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting_submission.CompanyID')
+            ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')
+            ->where('hrm_employee.EmployeeID', $employeeID)
+            ->first();
+
+        $showModal = false;
+        $needInvestment = false;
+        $needOpinion = false;
+        $needChangePassword = false;
+
+
+        if ($employeeData) {
+            $joiningDate = Carbon::parse($employeeData->DateJoining)->format('Y-m-d');
+            $cutoffDate = Carbon::create(2025, 5, 15)->format('Y-m-d');
+
+            // Your existing setting fetch
+            $setting = DB::table('hrm_investdecl_setting')
+                ->where('CompanyId', 1)
+                ->where('Status', 'A')
                 ->first();
 
-            $showModal = false;
-            $needInvestment = false;
-            $needOpinion = false;
-            $needChangePassword = false;
+            $yearC = DB::table('hrm_year')
+                ->where('YearId', $setting->C_YearId)
+                ->first();
 
+            $fc = Carbon::parse($yearC->FromDate)->format('Y');
+            $tc = Carbon::parse($yearC->ToDate)->format('Y');
+            $PrdCurr = $fc . '-' . $tc;
 
-          if ($employeeData) {
-                $joiningDate = Carbon::parse($employeeData->DateJoining)->format('Y-m-d');
-                $cutoffDate = Carbon::create(2025, 5, 15)->format('Y-m-d');
+            $hasInvestment = DB::table('hrm_employee_investment_declaration')
+                ->where('EmployeeID', $employeeID)
+                ->where('Period', $PrdCurr)
+                ->where('Month', $setting->C_Month)
+                ->exists();
 
-                // Your existing setting fetch
-                $setting = DB::table('hrm_investdecl_setting')
-                    ->where('CompanyId', 1)
-                    ->where('Status', 'A')
-                    ->first();
+            $hasOpinion = DB::table('hrm_opinion')
+                ->where('EmployeeID', $employeeID)
+                ->exists();
 
-                $yearC = DB::table('hrm_year')
-                    ->where('YearId', $setting->C_YearId)
-                    ->first();
+            $hasChangedPassword = DB::table('hrm_employee')
+                ->where('EmployeeID', $employeeID)
+                ->where('ChangePwd', 'N')
+                ->exists();
 
-                $fc = Carbon::parse($yearC->FromDate)->format('Y');
-                $tc = Carbon::parse($yearC->ToDate)->format('Y');
-                $PrdCurr = $fc . '-' . $tc;
+            $needInvestment = !$hasInvestment;
+            $needOpinion = !$hasOpinion;
+            $needChangePassword = $hasChangedPassword;
 
-                $hasInvestment = DB::table('hrm_employee_investment_declaration')
-                    ->where('EmployeeID', $employeeID)
-                    ->where('Period', $PrdCurr)
-                    ->where('Month', $setting->C_Month)
-                    ->exists();
-
-                $hasOpinion = DB::table('hrm_opinion')
-                    ->where('EmployeeID', $employeeID)
-                    ->exists();
-
-                $hasChangedPassword = DB::table('hrm_employee')
-                                ->where('EmployeeID', $employeeID)
-                                ->where('ChangePwd', 'N')
-                                ->exists();
-
-                $needInvestment = !$hasInvestment;
-                $needOpinion = !$hasOpinion;
-                $needChangePassword = $hasChangedPassword;
-
-                // **Add this date condition check here:**
-                if ($joiningDate >= $cutoffDate) {
-                    $showModal = $needInvestment || $needOpinion || $needChangePassword;
-                } else {
-                    $showModal = false;
-                }
+            // **Add this date condition check here:**
+            if ($joiningDate >= $cutoffDate) {
+                $showModal = $needInvestment || $needOpinion || $needChangePassword;
             } else {
                 $showModal = false;
             }
+        } else {
+            $showModal = false;
+        }
 
-       // dd($employees);
-    return view('employee.dashboard',compact('employeeData','sqlConf','showLetter','showModal','needChangePassword','needInvestment', 'needOpinion',
-    'missingDates','attRequests','isConfirmationDue','employeeQueryData','leaveRequests','display_ojas','query_department_list','departments_sub','employees','showWarmWelcome')); // Adjust the view name as needed
+        // dd($employees);
+        return view('employee.dashboard', compact(
+            'employeeData',
+            'sqlConf',
+            'showLetter',
+            'showModal',
+            'needChangePassword',
+            'needInvestment',
+            'needOpinion',
+            'missingDates',
+            'attRequests',
+            'isConfirmationDue',
+            'employeeQueryData',
+            'leaveRequests',
+            'display_ojas',
+            'query_department_list',
+            'departments_sub',
+            'employees',
+            'showWarmWelcome'
+        )); // Adjust the view name as needed
     }
+
     public function seperation()
     {
 
-                                    // Retrieve confirmation letter data
-                                    $sqlConf = \DB::table('hrm_employee_confletter')
-                                        ->where(function ($query) {
-                                            $query->where('EmpShow', 'Y')
-                                                ->orWhere('EmpShow_Trr', 'Y')
-                                                ->orWhere('EmpShow_Ext', 'Y');
-                                        })
-                                        ->where('EmployeeID', Auth::user()->EmployeeID) // Replace $EmployeeId with the actual employee ID variable
-                                        ->where('Status', 'A')
-                                        ->first();
+        // Retrieve confirmation letter data
+        $sqlConf = \DB::table('hrm_employee_confletter')
+            ->where(function ($query) {
+                $query->where('EmpShow', 'Y')
+                    ->orWhere('EmpShow_Trr', 'Y')
+                    ->orWhere('EmpShow_Ext', 'Y');
+            })
+            ->where('EmployeeID', Auth::user()->EmployeeID) // Replace $EmployeeId with the actual employee ID variable
+            ->where('Status', 'A')
+            ->first();
 
-                                    $lockDate = \Carbon\Carbon::now()->toDateString();
+        $lockDate = \Carbon\Carbon::now()->toDateString();
 
-                                    if ($sqlConf) {
-                                        // Parse the confirmation date and add a month
-                                        $confDate = \Carbon\Carbon::parse($sqlConf->ConfDate);
-                                        $lockDate = $confDate->addMonth()->toDateString();
-                                    
-                                        // Determine whether to show the confirmation letter
-                                        $showLetter = (Auth::user()->CompanyId != 4)
-                                            && $lockDate >= \Carbon\Carbon::now()->toDateString()
-                                            && (
-                                                $sqlConf->EmpShow === 'Y' ||
-                                                $sqlConf->EmpShow_Trr === 'Y' ||
-                                                $sqlConf->EmpShow_Ext === 'Y'
-                                            );
-                                    } else {
-                                        $showLetter = false; // Default if no record exists
-                                    }
-                                    
-                                                        // Get the current date and start of the month
-                        $currentDate = \Carbon\Carbon::now()->toDateString();
-                        $startOfMonth = \Carbon\Carbon::now()->startOfMonth()->toDateString();
+        if ($sqlConf) {
+            // Parse the confirmation date and add a month
+            $confDate = \Carbon\Carbon::parse($sqlConf->ConfDate);
+            $lockDate = $confDate->addMonth()->toDateString();
 
-                        // Generate all dates from the start of the month to the current date
-                        $allDates = collect();
-                        $datePointer = \Carbon\Carbon::now()->subDay(); // Start from yesterday to exclude the current date
-                    // Fetch the HQ name for the employee
-                    $hq_name = \DB::table('hrm_employee_general')
-                        ->join('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id')
-                        ->where('hrm_employee_general.EmployeeID', Auth::user()->EmployeeID)
-                        ->value('core_city_village_by_state.city_village_name');
+            // Determine whether to show the confirmation letter
+            $showLetter = (Auth::user()->CompanyId != 4)
+                && $lockDate >= \Carbon\Carbon::now()->toDateString()
+                && (
+                    $sqlConf->EmpShow === 'Y' ||
+                    $sqlConf->EmpShow_Trr === 'Y' ||
+                    $sqlConf->EmpShow_Ext === 'Y'
+                );
+        } else {
+            $showLetter = false; // Default if no record exists
+        }
 
-                    // Define the current date
-                    $currentDate = date('Y-m-d');  // Assuming $Y is the year and $m is the month
-                    $cc = \DB::table('hrm_employee_general')
-                    ->where('EmployeeID', Auth::user()->EmployeeID)
-                    ->value('CostCenter');
-        
-                    // Initialize the holidays list
-                    $all_holidays = collect();
-                    // Fetch all holidays
-                    $Y= now()->year;
-                    $m = now()->month;
-                    // Determine the holiday condition based on the HQ name
-                    if ($hq_name == "Bandamailaram") {
-                        // Holidays for Bandamailaram HQ
-                        $all_holidays = \DB::table('hrm_holiday')
-                            ->where('State_3', 1)
-                            ->where('Year', $Y)
-                            ->where('HolidayDate', '=', $m)
-                            ->where('status', 'A')
-                            ->pluck('HolidayDate')
-                            ->toArray();
-                    } else {
-                        // Fetch holidays for other HQs
-                        $all_holidays_list = \DB::table('hrm_holiday')
-                            ->where('Year', $Y)
-                            ->whereMonth('HolidayDate', '=', $m)
-                            ->where('status', 'A')
-                            ->get();
-                        
-                        // Filter holidays based on cost center (State_2 or State_1)
-                        if ($all_holidays_list->isNotEmpty()) {
-                            $state_2_details = $all_holidays_list->pluck('State_2_details')->toArray();
-                            
-                            if (in_array($cc, $state_2_details)) {
-                                $all_holidays = \DB::table('hrm_holiday')
-                                    ->where('State_2', 1)
-                                    ->where('Year', $Y)
-                                    ->whereMonth('HolidayDate', '=', $m)
-                                    ->where('status', 'A')
-                                    ->pluck('HolidayDate')
-                                    ->toArray();
-                            } else {
-                                $all_holidays = \DB::table('hrm_holiday')
-                                    ->where('State_1', 1)
-                                    ->where('Year', $Y)
-                                    ->whereMonth('HolidayDate', '=', $m)
-                                    ->where('status', 'A')
-                                    ->pluck('HolidayDate')
-                                    ->toArray();
-                            }
-                        }
-                    }
-                            // while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
-                            //     // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
-                            //     if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
-                            //         $allDates->push($datePointer->toDateString());
-                            //     }
-                            //     $datePointer->subDay();
-                            // }
-                            
-                            while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
-                                // Ensure $all_holidays is always an array, even if it's null or some other type
-                                $all_holidays_array = is_array($all_holidays) ? $all_holidays : ($all_holidays ? $all_holidays->toArray() : []);
-                            
-                                // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
-                                if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays_array)) {
-                                    $allDates->push($datePointer->toDateString());
-                                }
-                            
-                                $datePointer->subDay();
-                            }
-                            
+        // Get the current date and start of the month
+        $currentDate = \Carbon\Carbon::now()->toDateString();
+        $startOfMonth = \Carbon\Carbon::now()->startOfMonth()->toDateString();
 
+        // Generate all dates from the start of the month to the current date
+        $allDates = collect();
+        $datePointer = \Carbon\Carbon::now()->subDay(); // Start from yesterday to exclude the current date
+        // Fetch the HQ name for the employee
+        $hq_name = \DB::table('hrm_employee_general')
+            ->join('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id')
+            ->where('hrm_employee_general.EmployeeID', Auth::user()->EmployeeID)
+            ->value('core_city_village_by_state.city_village_name');
 
-                       // Fetch existing attendance records for this range
-                        $existingAttendanceDates = \DB::table('hrm_employee_attendance')
-                            ->where('EmployeeID', Auth::user()->EmployeeID)
-                            ->whereBetween('AttDate', [$startOfMonth, $currentDate])
-                            ->whereNotIn('AttDate', $all_holidays) // Exclude holidays
-                            ->pluck('AttDate')
-                            ->toArray();
+        // Define the current date
+        $currentDate = date('Y-m-d');  // Assuming $Y is the year and $m is the month
+        $cc = \DB::table('hrm_employee_general')
+            ->where('EmployeeID', Auth::user()->EmployeeID)
+            ->value('CostCenter');
 
-                        // Filter out Sundays (day 0 in Carbon, Sunday = 0)
-                        $existingAttendanceDates = array_filter($existingAttendanceDates, function($date) {
-                            return \Carbon\Carbon::parse($date)->dayOfWeek !== 0; // Exclude Sunday
-                        });
+        // Initialize the holidays list
+        $all_holidays = collect();
+        // Fetch all holidays
+        $Y = now()->year;
+        $m = now()->month;
+        // Determine the holiday condition based on the HQ name
+        if ($hq_name == "Bandamailaram") {
+            // Holidays for Bandamailaram HQ
+            $all_holidays = \DB::table('hrm_holiday')
+                ->where('State_3', 1)
+                ->where('Year', $Y)
+                ->where('HolidayDate', '=', $m)
+                ->where('status', 'A')
+                ->pluck('HolidayDate')
+                ->toArray();
+        } else {
+            // Fetch holidays for other HQs
+            $all_holidays_list = \DB::table('hrm_holiday')
+                ->where('Year', $Y)
+                ->whereMonth('HolidayDate', '=', $m)
+                ->where('status', 'A')
+                ->get();
+
+            // Filter holidays based on cost center (State_2 or State_1)
+            if ($all_holidays_list->isNotEmpty()) {
+                $state_2_details = $all_holidays_list->pluck('State_2_details')->toArray();
+
+                if (in_array($cc, $state_2_details)) {
+                    $all_holidays = \DB::table('hrm_holiday')
+                        ->where('State_2', 1)
+                        ->where('Year', $Y)
+                        ->whereMonth('HolidayDate', '=', $m)
+                        ->where('status', 'A')
+                        ->pluck('HolidayDate')
+                        ->toArray();
+                } else {
+                    $all_holidays = \DB::table('hrm_holiday')
+                        ->where('State_1', 1)
+                        ->where('Year', $Y)
+                        ->whereMonth('HolidayDate', '=', $m)
+                        ->where('status', 'A')
+                        ->pluck('HolidayDate')
+                        ->toArray();
+                }
+            }
+        }
+        // while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
+        //     // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
+        //     if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
+        //         $allDates->push($datePointer->toDateString());
+        //     }
+        //     $datePointer->subDay();
+        // }
+
+        while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
+            // Ensure $all_holidays is always an array, even if it's null or some other type
+            $all_holidays_array = is_array($all_holidays) ? $all_holidays : ($all_holidays ? $all_holidays->toArray() : []);
+
+            // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
+            if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays_array)) {
+                $allDates->push($datePointer->toDateString());
+            }
+
+            $datePointer->subDay();
+        }
 
 
-                        // Re-index the array if needed (optional)
-                        $existingAttendanceDates = array_values($existingAttendanceDates);
-                        
-                        // Find missing dates
-                        $missingDates = $allDates->diff(collect($existingAttendanceDates));
-                        $currentYearMonth =  \Carbon\Carbon::now()->format('Y-m'); // e.g., "2024-12"
 
-                    
-                        // Step 3: Fetch Query Data
-                        $employeeQueryData = \DB::table('hrm_employee_queryemp')
-                            ->join('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId') // Join subject table
-                            ->join('hrm_department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_department.DepartmentID') // Join department table
-                            ->where('hrm_employee_queryemp.EmployeeID', Auth::user()->EmployeeID)
-                            ->where('hrm_employee_queryemp.QueryDT', 'LIKE', $currentYearMonth . '%') // Match current month
-                            ->select(
-                                'hrm_employee_queryemp.QuerySubject',
-                                'hrm_employee_queryemp.QStatus',
-                                'hrm_deptquerysub.DeptQSubject as SubjectName', // Fetch subject name
-                                'hrm_department.DepartmentName as DepartmentName' // Fetch department name
-                            )
-                            ->get();
-                    
-                            $attRequests = \DB::table('hrm_employee_attendance_req')
-                            ->join('hrm_employee_attendance', function ($join) {
-                                $join->on('hrm_employee_attendance_req.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')
-                                     ->on('hrm_employee_attendance_req.AttDate', '=', 'hrm_employee_attendance.AttDate'); // Match specific attendance date
-                            })
-                            ->where('hrm_employee_attendance_req.EmployeeID', Auth::user()->EmployeeID)
-                            ->where('hrm_employee_attendance_req.ReqDate', 'LIKE', $currentYearMonth . '%') // Match current month
-                            ->select(
-                                'hrm_employee_attendance_req.AttDate as RequestAttDate',
-                                \DB::raw('COALESCE(hrm_employee_attendance.AttDate, "N/A") as AttendanceDate'),
-                                \DB::raw('COALESCE(hrm_employee_attendance.Inn, "00:00") as Inn'),
-                                \DB::raw('COALESCE(hrm_employee_attendance.Outt, "00:00") as Outt'),
-                                'hrm_employee_attendance_req.Status',
-                                    'hrm_employee_attendance_req.InStatus',
-                                    'hrm_employee_attendance_req.OutStatus',
-                                    'hrm_employee_attendance_req.SStatus',
+        // Fetch existing attendance records for this range
+        $existingAttendanceDates = \DB::table('hrm_employee_attendance')
+            ->where('EmployeeID', Auth::user()->EmployeeID)
+            ->whereBetween('AttDate', [$startOfMonth, $currentDate])
+            ->whereNotIn('AttDate', $all_holidays) // Exclude holidays
+            ->pluck('AttDate')
+            ->toArray();
 
-                                'hrm_employee_attendance_req.Remark as ReqRemark',
-                                'hrm_employee_attendance_req.OutRemark as ReqOutRemark',
-                                'hrm_employee_attendance_req.InRemark as ReqInRemark'
-                            )
-                            ->get();
-                            $startOfMonth = \Carbon\Carbon::now()->startOfMonth();
-                            $endOfMonth = \Carbon\Carbon::now()->endOfMonth();
-                            $leaveRequests = EmployeeApplyLeave::where('EmployeeID', Auth::user()->EmployeeID)
-                            ->where('Apply_Date', 'LIKE', $currentYearMonth . '%')  // Match "YYYY-MM%" pattern in Apply_Date
-                            ->whereIn('LeaveStatus', [0, 4, 3])  // Correctly use whereIn for LeaveStatus
-                            ->get();
-                            $display_ojas = \DB::table('hrm_employee')
-                            ->where('EmployeeId', Auth::user()->EmployeeID)
-                            ->where('is_ojas_user', '1')
-                            ->exists();
-                            $departments_sub = \DB::table('hrm_deptquerysub')->get();
-                            // $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
-                            $query_department_list = \DB::table('hrm_deptquerysub')
-                                ->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')
-                                ->select('core_departments.id', 'core_departments.department_name')
-                                ->distinct()
-                                ->get();
+        // Filter out Sundays (day 0 in Carbon, Sunday = 0)
+        $existingAttendanceDates = array_filter($existingAttendanceDates, function ($date) {
+            return \Carbon\Carbon::parse($date)->dayOfWeek !== 0; // Exclude Sunday
+        });
 
-                                return view('seperation.dashboard',compact('sqlConf','query_department_list','display_ojas','showLetter','missingDates','attRequests','employeeQueryData','leaveRequests','departments_sub')); // Adjust the view name as needed
+
+        // Re-index the array if needed (optional)
+        $existingAttendanceDates = array_values($existingAttendanceDates);
+
+        // Find missing dates
+        $missingDates = $allDates->diff(collect($existingAttendanceDates));
+        $currentYearMonth =  \Carbon\Carbon::now()->format('Y-m'); // e.g., "2024-12"
+
+
+        // Step 3: Fetch Query Data
+        $employeeQueryData = \DB::table('hrm_employee_queryemp')
+            ->join('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId') // Join subject table
+            ->join('hrm_department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_department.DepartmentID') // Join department table
+            ->where('hrm_employee_queryemp.EmployeeID', Auth::user()->EmployeeID)
+            ->where('hrm_employee_queryemp.QueryDT', 'LIKE', $currentYearMonth . '%') // Match current month
+            ->select(
+                'hrm_employee_queryemp.QuerySubject',
+                'hrm_employee_queryemp.QStatus',
+                'hrm_deptquerysub.DeptQSubject as SubjectName', // Fetch subject name
+                'hrm_department.DepartmentName as DepartmentName' // Fetch department name
+            )
+            ->get();
+
+        $attRequests = \DB::table('hrm_employee_attendance_req')
+            ->join('hrm_employee_attendance', function ($join) {
+                $join->on('hrm_employee_attendance_req.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')
+                    ->on('hrm_employee_attendance_req.AttDate', '=', 'hrm_employee_attendance.AttDate'); // Match specific attendance date
+            })
+            ->where('hrm_employee_attendance_req.EmployeeID', Auth::user()->EmployeeID)
+            ->where('hrm_employee_attendance_req.ReqDate', 'LIKE', $currentYearMonth . '%') // Match current month
+            ->select(
+                'hrm_employee_attendance_req.AttDate as RequestAttDate',
+                \DB::raw('COALESCE(hrm_employee_attendance.AttDate, "N/A") as AttendanceDate'),
+                \DB::raw('COALESCE(hrm_employee_attendance.Inn, "00:00") as Inn'),
+                \DB::raw('COALESCE(hrm_employee_attendance.Outt, "00:00") as Outt'),
+                'hrm_employee_attendance_req.Status',
+                'hrm_employee_attendance_req.InStatus',
+                'hrm_employee_attendance_req.OutStatus',
+                'hrm_employee_attendance_req.SStatus',
+
+                'hrm_employee_attendance_req.Remark as ReqRemark',
+                'hrm_employee_attendance_req.OutRemark as ReqOutRemark',
+                'hrm_employee_attendance_req.InRemark as ReqInRemark'
+            )
+            ->get();
+        $startOfMonth = \Carbon\Carbon::now()->startOfMonth();
+        $endOfMonth = \Carbon\Carbon::now()->endOfMonth();
+        $leaveRequests = EmployeeApplyLeave::where('EmployeeID', Auth::user()->EmployeeID)
+            ->where('Apply_Date', 'LIKE', $currentYearMonth . '%')  // Match "YYYY-MM%" pattern in Apply_Date
+            ->whereIn('LeaveStatus', [0, 4, 3])  // Correctly use whereIn for LeaveStatus
+            ->get();
+        $display_ojas = \DB::table('hrm_employee')
+            ->where('EmployeeId', Auth::user()->EmployeeID)
+            ->where('is_ojas_user', '1')
+            ->exists();
+        $departments_sub = \DB::table('hrm_deptquerysub')->get();
+        // $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
+        $query_department_list = \DB::table('hrm_deptquerysub')
+            ->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')
+            ->select('core_departments.id', 'core_departments.department_name')
+            ->distinct()
+            ->get();
+
+        return view('seperation.dashboard', compact('sqlConf', 'query_department_list', 'display_ojas', 'showLetter', 'missingDates', 'attRequests', 'employeeQueryData', 'leaveRequests', 'departments_sub')); // Adjust the view name as needed
 
     }
 
@@ -1082,10 +1110,10 @@ class AuthController extends Controller
     {
         $storedPassword = $this->decrypt(Auth::user()->EmpPass);
         // Manually check if current password matches
-            if ($storedPassword !== $request->current_password) {
-                return back()->withErrors(['current_password' => 'The current password is incorrect.'])->withInput();
-            }
-         // Validate the request inputs
+        if ($storedPassword !== $request->current_password) {
+            return back()->withErrors(['current_password' => 'The current password is incorrect.'])->withInput();
+        }
+        // Validate the request inputs
         $request->validate([
             'current_password' => ['required'],
             'password' => ['required', 'confirmed', 'min:8'], // 'confirmed' automatically checks password_confirmation
@@ -1094,8 +1122,8 @@ class AuthController extends Controller
         ]);
         $employeechange = Auth::user()->EmployeeID;
         $employee = Employee::findOrFail(Auth::user()->EmployeeID);
-        if($employee->ChangePwd == 'N'){
-         
+        if ($employee->ChangePwd == 'N') {
+
             // Encrypt the new password using the provided encryption method
             $encryptedPassword = $this->encrypt($request->password, $this->strcode);
 
@@ -1104,19 +1132,19 @@ class AuthController extends Controller
                 ->where('EmployeeID', Auth::user()->EmployeeID)
                 ->update([
                     'EmpPass' => $encryptedPassword,
-                    'ChangePwd'=>'Y'
+                    'ChangePwd' => 'Y'
 
                 ]);
             return redirect('/dashboard');  // Redirect to the separation page
 
-                //      // Logout the user
-                // Auth::logout();
-                // Session::flush();
-                // Cache::flush();
-                // return redirect('/')->with('success', 'Password changed successfully. Please login again.');
+            //      // Logout the user
+            // Auth::logout();
+            // Session::flush();
+            // Cache::flush();
+            // return redirect('/')->with('success', 'Password changed successfully. Please login again.');
 
         }
-  
+
 
         // Decrypt the stored password and compare with the provided current password
         $storedPassword = $this->decrypt(Auth::user()->EmpPass);
@@ -1143,11 +1171,10 @@ class AuthController extends Controller
     }
     public function govtssschemes()
     {
-        $employeeId =Auth::user()->EmployeeID;
+        $employeeId = Auth::user()->EmployeeID;
 
         $opinion = DB::table('hrm_opinion')->where('EmployeeID', $employeeId)->first();
-        return view("employee.govtssschemes",compact('opinion'));
-        
+        return view("employee.govtssschemes", compact('opinion'));
     }
 
 
