@@ -2049,7 +2049,7 @@
       </div>
    </div>
    <!-- Modal -->
-   <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+   <div class="modal fade" id="fileModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="fileModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
          <div class="modal-content">
             <!-- Modal Header -->
