@@ -45,7 +45,7 @@
                                         </div> -->
                                         @php
                                             $imagpath = Auth::user()->CompanyId;
-                                            @endphp
+                                        @endphp
 
                                         <div class="profile-info">
                                             <h2>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . ' ' . Auth::user()->Lname }}
@@ -1147,14 +1147,14 @@
                                                         </div> -->
                                                    
                                                     
-                                                    @if($companyId == 12)
+                                                    @if($companyId == 1)
                                                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>Ledger</b></h5>
                                                             </div>
                                                             <div class="card-body dd-flex align-items-center" style="border:1px solid #ddd;">
                                                                 <ul class="help-list" style="width:100%;">
-                                                                    @if($ledgerFile)
+                                                                    @if($exitsledger)
                                                                         <li><b>Ledger 2024-25 <span class="blink text-danger">Latest</span></b></b> 
                                                                         <!-- Use the encrypted empCode in the URL -->
                                                                         <!-- <a style="float: right;" href="{{ url('Employee/Emp' . $companyId . 'Lgr/' . $encryptedEmpCode . '.pdf') }}" target="_blank">
@@ -1192,6 +1192,12 @@
                                                             $healthCardCPath = "Employee_HealthID/{$companyId}/{$empCode}_C.pdf";
                                                             $healthCardDPath = "Employee_HealthID/{$companyId}/{$empCode}_D.pdf";
 
+                                                            $exitshealthCardA = Storage::disk('s3')->exists($healthCardAPath);
+                                                            $exitshealthCardB = Storage::disk('s3')->exists($healthCardBPath);
+                                                            $exitshealthCardC = Storage::disk('s3')->exists($healthCardCPath);
+                                                            $exitshealthCardD = Storage::disk('s3')->exists($healthCardDPath);
+
+
                                                             // Get URLs if exists, else null
                                                             $healthCardAUrl = Storage::disk('s3')->url($healthCardAPath);
                                                             $healthCardBUrl = Storage::disk('s3')->url($healthCardBPath);
@@ -1199,7 +1205,7 @@
                                                             $healthCardDUrl = Storage::disk('s3')->url($healthCardDPath);
                                                             @endphp
 
-                                                        @if(($companyId == 12 || $companyId == 32) && $healthCardAUrl)
+                                                        @if(($companyId == 1 || $companyId == 3) && $exitshealthCardA)
                                                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                                 <div class="card-header" style="background-color: #ececec;">
                                                                     <h5><b>Health ID Card:</b></h5>
@@ -1250,7 +1256,7 @@
                                                                 $esicUrl = Storage::disk('s3')->url($esicFilePath);
                                                             @endphp
 
-                                                            @if($companyId == 12)
+                                                            @if($companyId == 1 && $esicExists)
                                                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2"> 
                                                                     <div class="card-header" style="background-color: #ececec;">
                                                                         <h5><b>ESIC Card:</b></h5>
@@ -1872,11 +1878,11 @@
                                 "timeOut": 10000  // Duration for which the toast is visible (in ms)
                             });
                             // Optionally, you can hide the modal and reset the form after a delay
-                            setTimeout(function () {
-                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
-                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
-                                location.reload();  // Reload the page
-                            }, 2000);  // 2000 milliseconds = 2 seconds
+                            // setTimeout(function () {
+                            //     $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
+                            //     $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
+                            //     location.reload();  // Reload the page
+                            // }, 2000);  // 2000 milliseconds = 2 seconds
                         } else {
                             // Display error toast
                             toastr.error(response.message, 'Error', {

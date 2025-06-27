@@ -179,22 +179,26 @@
                                         $panNo = Auth::user()->personaldetails->PanNo;
                                         
                                         // File paths
-                                        $tdsFileA = base_path("/Employee/ImgTds{$companyId}242025/{$panNo}_2025-26.pdf");
-                                        $tdsFileB = base_path("/Employee/ImgTds{$companyId}242025/{$panNo}_PARTB_2025-26.pdf");
-                                            $tdsAExists = file_exists($tdsFileA);
-                                            $tdsBExists = file_exists($tdsFileB);
+                                        $tdsFileA = "Employee_TDS/2024-25/{$panNo}_2025-26.pdf";
+                                        $tdsFileB= "Employee_TDS/2024-25/{$panNo}_PARTB_2025-26.pdf";
+                                        $exitstdsA = Storage::disk('s3')->exists($tdsFileA);
+                                        $exitstdsB = Storage::disk('s3')->exists($tdsFileB);
+                                        $tdsFileAUrl = Storage::disk('s3')->url($tdsFileA);
+                                        $tdsFileBUrl = Storage::disk('s3')->url($tdsFileB);
+                                            
+
                                         @endphp
-                                         @if($tdsAExists || $tdsBExists)
+                                         @if($exitstdsA || $exitstdsB)
                                         <li style="display: flex; justify-content: space-between; align-items: center;">
                                             <a href="https://vnrseeds.co.in/profile#Documents" class="blink" style="color: green;">
                                                 <b>Form 16 (FY 2024-25)</b>
                                             </a>
                                             <span>
-                                                @if($tdsAExists)
-                                                <a href="{{ url("Employee/ImgTds{$companyId}242025/" . Auth::user()->personaldetails->PanNo . "_2025-26.pdf") }}" class="blink" target="_blank" style="color: #007bff;margin-right: 10px;"><b>Form A | </b></a>
+                                                @if($exitstdsA)
+                                                <a href="{{ $tdsFileAUrl}}" class="blink" target="_blank" style="color: #007bff;margin-right: 10px;"><b>Form A | </b></a>
                                                 @endif
-                                                @if($tdsBExists)
-                                                <a href="{{ url("Employee/ImgTds{$companyId}242025/" . Auth::user()->personaldetails->PanNo . "_PARTB_2025-26.pdf") }}" class="blink" target="_blank" style="color: #ff6600;"><b>Form B</b></a>
+                                                @if($exitstdsB)
+                                                <a href="{{$tdsFileBUrl}}" class="blink" target="_blank" style="color: #ff6600;"><b>Form B</b></a>
                                                 @endif
                                             </span>
                                         </li>

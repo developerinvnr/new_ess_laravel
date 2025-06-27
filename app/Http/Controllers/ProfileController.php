@@ -247,6 +247,10 @@ class ProfileController extends Controller
         // $tdsFileB = base_path("/Employee/ImgTds{$companyId}232024/{$panNo}_PARTB_2024-25.pdf");
         $tdsFileA = "Employee_TDS/2024-25/{$panNo}_2025-26.pdf";
         $tdsFileB= "Employee_TDS/2024-25/{$panNo}_PARTB_2025-26.pdf";
+        $exitstdsA = Storage::disk('s3')->exists($tdsFileA);
+        $exitstdsB = Storage::disk('s3')->exists($tdsFileB);
+
+
 
 
         $tdsFileAUrl = Storage::disk('s3')->url($tdsFileA);
@@ -254,10 +258,19 @@ class ProfileController extends Controller
     
 
         // $ledgerFile = base_path("/Employee/Emp{$companyId}Lgr/E{$empCode}.pdf");
+        // $ledgerFilename = "E{$empCode}.pdf";
+        // $ledgerFile = "Employee_Ledger/{$companyId}/2024-25/{$ledgerFilename}";
+        // $ledgerUrl = Storage::disk('s3')->url($ledgerFile);
         $ledgerFilename = "E{$empCode}.pdf";
         $ledgerFile = "Employee_Ledger/{$companyId}/2024-25/{$ledgerFilename}";
-        $ledgerUrl = Storage::disk('s3')->url($ledgerFile);
+        $exitsledger = Storage::disk('s3')->exists($ledgerFile);
 
+        // Check if file exists on S3
+        if ($exitsledger) {
+            $ledgerUrl = Storage::disk('s3')->url($ledgerFile);
+        } else {
+            $ledgerUrl = null; // or a placeholder/fallback value
+        }
         // $healthCard = base_path("/Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf");
 
         // // Set file paths
@@ -302,7 +315,7 @@ class ProfileController extends Controller
             'employeeDataDuration', 'finalResult','functionName','years','experience',
              'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 
              'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'ledgerFile','regionData',
-             'buData','zoneData','ledgerUrl',
+             'buData','zoneData','ledgerUrl','exitstdsA','exitstdsB',
               'esicCard'));
 
         }  
@@ -321,7 +334,7 @@ class ProfileController extends Controller
         'designationName','employeeDataDuration', 'finalResult','functionName','years',
         'experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile',
         'employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'regionData',
-        'buData','zoneData','tdsFileBUrl','tdsFileAUrl','ledgerFile','ledgerUrl','ledgerUrl',
+        'buData','zoneData','tdsFileBUrl','tdsFileAUrl','ledgerFile','ledgerUrl','ledgerUrl','exitsledger',
         'esicCard'));
     }
 
