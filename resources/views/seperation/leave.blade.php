@@ -1099,7 +1099,7 @@
             //         document.getElementById('remarkOutGroup').style.display = 'none';
 
             //         // Fetch company_id and department_id based on employeeId
-            //         fetch(`/api/getEmployeeDetails/${employeeId}`)
+            //         fetch(`/getEmployeeDetails/${employeeId}`)
             //             .then(response => response.json())
             //             .then(data => {
             //                 console.log(data);
@@ -1107,7 +1107,7 @@
             //                 const departmentId = data.department_id;
 
             //                 // Fetch reasons based on companyId and departmentId
-            //                 return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+            //                 return fetch(`/getReasons/${companyId}/${departmentId}`);
             //             })
             //             .then(response => response.json())
             //             .then(reasons => {
@@ -1721,13 +1721,13 @@
                             console.error('Error fetching attendance data:', error);
                         });
                     // Fetch company_id and department_id based on employeeId
-                    fetch(`/api/getEmployeeDetails/${employeeId}`)
+                    fetch(`/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
                             const companyId = data.company_id;
                             const departmentId = data.department_id;
                             // Fetch reasons based on companyId and departmentId
-                            return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+                            return fetch(`/getReasons/${companyId}/${departmentId}`);
                         })
                         .then(response => response.json())
                         .then(reasons => {

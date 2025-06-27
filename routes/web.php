@@ -113,8 +113,8 @@ Route::middleware('auth')->get('/assests', [AssestsController::class, 'assests']
 
 Route::middleware('auth')->get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
 
-Route::get('/api/getEmployeeDetails/{employeeId}', [EmployeeController::class, 'getEmployeeDetails']);
-Route::get('/api/getReasons/{companyId}/{departmentId}', [ReasonController::class, 'getReasons']);
+Route::get('/getEmployeeDetails/{employeeId}', [EmployeeController::class, 'getEmployeeDetails']);
+Route::get('/getReasons/{companyId}/{departmentId}', [ReasonController::class, 'getReasons']);
 
 
 Route::get('/leave-balance/{employeeId}', [AuthController::class, 'leaveBalance']);

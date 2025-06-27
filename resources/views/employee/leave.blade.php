@@ -1054,12 +1054,12 @@
    
      <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
-    <div class="modal fade" id="AttendenceAuthorisation" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle">
+    <div class="modal fade" id="AttendenceAuthorisation" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -2224,13 +2224,13 @@ function setDateLimitsoptional(selectedHolidayDate) {
                             console.error('Error fetching attendance data:', error);
                         });
                     // Fetch company_id and department_id based on employeeId
-                    fetch(`/api/getEmployeeDetails/${employeeId}`)
+                    fetch(`/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
                             const companyId = data.company_id;
                             const departmentId = data.department_id;
                             // Fetch reasons based on companyId and departmentId
-                            return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+                            return fetch(`/getReasons/${companyId}/${departmentId}`);
                         })
                         .then(response => response.json())
                         .then(reasons => {
