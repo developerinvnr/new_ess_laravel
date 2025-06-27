@@ -85,10 +85,11 @@
                                             <b class="blink" style="color:red;">Ledger 2024-25</b>
                                             @php
                                                 $employee = auth()->user();
+                                                $companyId = Auth::user()->CompanyId;
+
                                                 $prefix = $employee->VCode === 'V' ? '' : 'E';
                                                 $empCode = $prefix . $employee->EmpCode;
-                                                <!-- $filePath = base_path("Employee/Emp1Lgr/2024-25/{$empCode}.pdf"); -->
-                                                $filePath = Storage::disk('s3')->url('Employee_Ledger/' . $companyId . '/' . $year . '/' . $prefix . $employee->EmpCode . '.pdf');
+                                                $filePath = Storage::disk('s3')->url('Employee_Ledger/' . $companyId . '/' . 2024-25 . '/' . $prefix . $employee->EmpCode . '.pdf');
                                            
                                                 $ledgerExists = File::exists($filePath);
 

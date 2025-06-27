@@ -44,16 +44,16 @@
                                         <!-- <div class="profile-picture">
                                             <img src="./images/7.jpg" alt="Profile Picture">
                                         </div> -->
-
+                                                @php
+                                            $imagpath = Auth::user()->CompanyId;
+                                            @endphp
                                         <div class="profile-info">
                                             <h2>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}
                                             </h2>
                                             <div class="profile-picture">
                                                 <!-- <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
                                                     alt="Profile Picture"> -->
-                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/{{Auth::user()->EmpCode}}.jpg"
-                                                    alt="Profile Picture">
-
+                                              <img src="{{ env('AWS_URL') }}/Employee_Image/{{$imagpath}}/{{ Auth::user()->EmpCode }}.jpg" alt="Profile Picture">
 
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>

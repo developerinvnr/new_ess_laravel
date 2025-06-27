@@ -1045,10 +1045,15 @@ class AuthController extends Controller
                             ->where('EmployeeId', Auth::user()->EmployeeID)
                             ->where('is_ojas_user', '1')
                             ->exists();
-    $departments_sub = \DB::table('hrm_deptquerysub')->get();
-    $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
+                            $departments_sub = \DB::table('hrm_deptquerysub')->get();
+                            // $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
+                            $query_department_list = \DB::table('hrm_deptquerysub')
+                                ->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_deptquerysub.DepartmentId')
+                                ->select('core_departments.id', 'core_departments.department_name')
+                                ->distinct()
+                                ->get();
 
-        return view('seperation.dashboard',compact('sqlConf','query_department_list','display_ojas','showLetter','missingDates','attRequests','employeeQueryData','leaveRequests','departments_sub')); // Adjust the view name as needed
+                                return view('seperation.dashboard',compact('sqlConf','query_department_list','display_ojas','showLetter','missingDates','attRequests','employeeQueryData','leaveRequests','departments_sub')); // Adjust the view name as needed
 
     }
 
