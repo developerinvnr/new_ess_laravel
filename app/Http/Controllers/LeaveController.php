@@ -365,7 +365,6 @@ class LeaveController extends Controller
                     ];
 
                     mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
-
                 }
             }
         }
@@ -458,7 +457,6 @@ class LeaveController extends Controller
                     ];
 
                     Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
-
                 }
             }
         }
@@ -544,7 +542,6 @@ class LeaveController extends Controller
                     ];
 
                     mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
-
                 }
             }
         }
@@ -630,7 +627,6 @@ class LeaveController extends Controller
                     ];
 
                     mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
-
                 }
             }
         }
@@ -718,7 +714,6 @@ class LeaveController extends Controller
                     ];
 
                     mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
-
                 }
             }
         }
@@ -2697,7 +2692,7 @@ class LeaveController extends Controller
         $endOfMonth = Carbon::now()->endOfMonth();
         $currentYear = now()->year;  // Get the current year
         $currentMonth = now()->month;  // Get the current month
-       
+
 
         $leaveRequests = \DB::table('hrm_employee_applyleave')
             ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
@@ -4369,7 +4364,6 @@ class LeaveController extends Controller
         ];
 
         mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
-
     }
     public function getBirthdays(Request $request)
     {
