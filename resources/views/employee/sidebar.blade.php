@@ -130,6 +130,7 @@ $query->where('Hod_Approved', '!=', 'C')
 
                 </a>
             </li>
+            @if(Auth::user()->CompanyId == 1)
             <li>
                 <a href="{{route('verify.password')}}" title="Salary">
                     <span class="icon-menu feather-icon text-center">
@@ -142,6 +143,7 @@ $query->where('Hod_Approved', '!=', 'C')
 
                 </a>
             </li>
+            @endif
 
             <!--<li>-->
             <!--    <a href="{{route('pmsinfo')}}" title="PMS">-->

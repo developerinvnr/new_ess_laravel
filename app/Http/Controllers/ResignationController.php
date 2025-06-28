@@ -73,16 +73,6 @@ class ResignationController extends Controller
             $fileUrl = Storage::disk('s3')->url("{$folder}/{$fileName}");
         }
 
-
-        // Handle the file upload
-        // if ($request->hasFile('SCopy')) {
-        //     $file = $request->file('SCopy');
-        //     $fileName = time() . '.' . $file->getClientOriginalExtension();
-        //     // $filePath = public_path('uploads/resignation_letters');
-        //     $filePath = base_path('Employee/SprUploadFile');
-        //     $file->move($filePath, $fileName);
-        // }
-
         // Other existing logic to retrieve employee data and prepare for insertion
         $reportingDetails = EmployeeReporting::where('EmployeeID', Auth::user()->EmployeeID)->first();
         $appraid = $reportingDetails->AppraiserId;
@@ -327,11 +317,7 @@ class ResignationController extends Controller
     public function updateRepRelievingDate(Request $request)
     {
         $request->validate([
-            'EmpSepId' => 'required|integer|exists:hrm_employee_separation,EmpSepId',  // Ensuring EmpSepId exists in the table
-            // 'Rep_RelievingDate' => 'nullable|date',  // Ensure date format is correct
-            // 'Rep_Approved' => 'required|in:Y,N',  // Ensure status is either 'Y' or 'N'
-            // 'HR_Approved' => 'required|in:Y,N',  // Ensure status is either 'Y' or 'N'
-            // 'HR_RelievingDate' => 'nullable|date',  // Ensure date format is correct
+            'EmpSepId' => 'required|integer|exists:hrm_employee_separation,EmpSepId',
         ]);
 
         // Find the separation record by ID
@@ -399,22 +385,6 @@ class ResignationController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Reporting status has been updated'], 200);
         }
-        // if ($request->has('HR_Approved') && $request->HR_Approved) {
-        //     $separation->HR_Approved = $request->HR_Approved;
-        // }
-        // if ($request->has('HR_RelievingDate') && $request->HR_RelievingDate) {
-        //     $separation->HR_RelievingDate = $request->HR_RelievingDate;
-        // }
-
-        // Conditionally update the Approval Status if it's provided
-        // if ($request->has('Rep_Approved') && $request->Rep_Approved) {
-        //     $separation->Rep_Approved = $request->Rep_Approved;
-        //     $separation->Rep_Remark = $request->Rep_Remark;
-
-        //     $separation->save();
-        //     return response()->json(['success' => true, 'message' => 'Reporting Approval has been updated'], 200);
-
-        // }
 
         return response()->json(['success' => false, 'message' => 'No separation data found'], 404);
     }
@@ -449,25 +419,6 @@ class ResignationController extends Controller
         ]);
         $buttonId = $request->input('button_id');
 
-        // // Assuming $request and $buttonId are already available
-        // if ($buttonId == "final-submit-btn-it") {
-        //     // Custom validation to ensure all fields are filled
-        //     if (
-        //         empty($request->sim_submitted) || empty($request->sim_recovery_amount) ||
-        //         empty($request->handset_submitted) || empty($request->handset_recovery_amount) ||
-        //         empty($request->laptop_handover) || empty($request->laptop_recovery_amount) ||
-        //         empty($request->camera_submitted) || empty($request->camera_recovery_amount) ||
-        //         empty($request->datacard_submitted) || empty($request->datacard_recovery_amount) ||
-        //         empty($request->email_blocked) || empty($request->email_recovery_amount) ||
-        //         empty($request->mobile_disabled) || empty($request->mobile_recovery_amount)
-        //     ) {
-        //         return response()->json([
-        //             'success' => false,
-        //             'message' => 'All fields are mandatory',
-        //         ], 422);
-        //     }
-        // }
-
         if ($buttonId == "save-draft-btn-it") {
 
             if (
@@ -498,16 +449,12 @@ class ResignationController extends Controller
                 empty($request->email_blocked) || empty($request->email_recovery_amount) ||
                 empty($request->mobile_disabled) || empty($request->mobile_recovery_amount)
             ) {
-
-
                 return response()->json([
                     'success' => false,
                     'message' => 'All fields are mandatory',
                 ], 422);
             }
         }
-
-        // Get the button ID (save-draft-btn or final-submit-btn)
 
         // Initialize variables for final_submit and draft_submit
         $finalSubmit = 'N';
@@ -622,8 +569,6 @@ class ResignationController extends Controller
         $totalAmount += addAmount($validatedData['datacard_recovery_amount'] ?? 0);
         $totalAmount += addAmount($validatedData['email_recovery_amount'] ?? 0);
         $totalAmount += addAmount($validatedData['mobile_recovery_amount'] ?? 0);
-
-
 
         // Prepare the data for insertion or update
         $nocClearanceData = [
@@ -798,19 +743,10 @@ class ResignationController extends Controller
                     $totalRecoveryAmount += (float) $existingRecord->TID_Amt;
                     $totalRecoveryAmount += (float) $existingRecord->APTC_Amt;
                     $totalRecoveryAmount += (float) $existingRecord->HOAS_Amt;
-                    // // Loop through up to 40 parties and add their amounts
-                    // for ($i = 1; $i <= 40; $i++) {
-                    //     $partyAmountKey = "Prtis_{$i}Amt";
-                    //     if (isset($existingRecord->$partyAmountKey)) {
-                    //         $totalRecoveryAmount += (float) $existingRecord->$partyAmountKey;
-                    //     }
-                    // }
+
                     while ($request->has("Parties_{$partyCount}")) {
                         $partyAmount = $request->input("Parties_{$partyCount}_Amt");
-                        $totalRecoveryAmount += $partyAmount;  // Summing up the new party amounts correctly
-
-                        // Additional logic for each party...
-                        // Add party details to $nocClearanceData
+                        $totalRecoveryAmount += $partyAmount;
                         $partyCount++;
                     }
                     $nocClearanceData['TotRepAmt'] = $totalRecoveryAmount;
@@ -864,12 +800,10 @@ class ResignationController extends Controller
                         'Action' => $request->Rep_Approved,
                         'DepartmentName' => $employeeDetailsdep->department_name,
                         'DesigName' => $employeeDetailsdep->designation_name,
-                        'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+                        'site_link' => "https://vnrseeds.co.in"
                     ];
 
                     Mail::to(['vspl.hr@vnrseeds.com', $ReportingEmailId])->send(new SeparationMailLog($details));
-
-                    //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailLog($details));
 
                     // Return success response
                     return response()->json([
@@ -901,53 +835,6 @@ class ResignationController extends Controller
                 $errors = []; // To collect any errors for missing fields
                 $totalRecoveryAmount = 0;
 
-                // while ($request->has("Parties_{$partyCount}")) {
-                //     // Party Name
-                //     $partyName = $request->input("Parties_{$partyCount}");
-
-                //     // Document Data (Y or N)
-                //     $partyDocData = $request->input("Parties_{$partyCount}_docdata");
-                //     $partyDocDataValue = null;
-                //     if ($partyDocData == 'Yes') {
-                //         $partyDocDataValue = 'Y';
-                //     } elseif ($partyDocData == 'No') {
-                //         $partyDocDataValue = 'N';
-                //     }
-                //     elseif ($partyDocData === 'NA') {
-
-                //         $partyDocDataValue = '';
-                //     }
-
-                //     // Recovery Amount
-                //     $partyAmount = $request->input("Parties_{$partyCount}_Amt");
-                //     $totalRecoveryAmount += $partyAmount; // Summing up the amounts correctly
-
-                //     // Remarks (optional)
-                //     $partyRemark = $request->input("Parties_{$partyCount}_Remark");
-
-                //     // Check if the party is present and if the required fields for that party are filled
-                //     if (empty($partyName) || empty($partyDocDataValue) || empty($partyAmount)) {
-                //         // If any required field is missing, add a single error message for this party
-                //         $errors[] = "All fields for Party {$partyCount} (Name, Document Data, and Recovery Amount) must be filled.";
-                //     } else {
-                //         // All required fields are provided, add to nocClearanceData array
-                //         $nocClearanceData["Prtis{$partyCount}"] = $partyName;
-                //         $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
-                //         $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
-                //         $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark; // Remarks is optional, so include even if empty
-                //     }
-
-                //     $partyCount++;
-                // }
-
-                // // If there are any errors, return them as a response
-                // if (count($errors) > 0) {
-                //     return response()->json([
-                //         'success' => false,
-                //         'message' => implode(' ', $errors) // Combine error messages into one string
-                //     ]);
-                // }
-
                 $existingRecordsep = \DB::table('hrm_employee_separation')
                     ->where('EmpSepId', $request->EmpSepId)
                     ->first();
@@ -970,21 +857,6 @@ class ResignationController extends Controller
                     $totalRecoveryAmount += (float) $existingRecord->TID_Amt;
                     $totalRecoveryAmount += (float) $existingRecord->APTC_Amt;
                     $totalRecoveryAmount += (float) $existingRecord->HOAS_Amt;
-                    // // Loop through up to 40 parties and add their amounts
-                    // for ($i = 1; $i <= 40; $i++) {
-                    //     $partyAmountKey = "Prtis_{$i}Amt";
-                    //     if (isset($existingRecord->$partyAmountKey)) {
-                    //         $totalRecoveryAmount += (float) $existingRecord->$partyAmountKey;
-                    //     }
-                    // }
-                    // while ($request->has("Parties_{$partyCount}")) {
-                    //     $partyAmount = $request->input("Parties_{$partyCount}_Amt");
-                    //     $totalRecoveryAmount += $partyAmount;  // Summing up the new party amounts correctly
-
-                    //     // Additional logic for each party...
-                    //     // Add party details to $nocClearanceData
-                    //     $partyCount++;
-                    // }
 
                     while ($request->has("Parties_{$partyCount}")) {
                         // Party Name
@@ -1178,9 +1050,6 @@ class ResignationController extends Controller
                 ];
 
                 Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
-
-                //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailClearRepo($details));
-
             } elseif ($buttonId == "save-draft-btn") {
                 $draftSubmit = 'Y';
                 // Prepare the data for insertion or update
@@ -1241,8 +1110,6 @@ class ResignationController extends Controller
                     \DB::table('hrm_employee_separation_nocrep')->insert($nocClearanceData);
                 }
             }
-
-
             // Return a success response
             return response()->json([
                 'success' => true,
@@ -1254,11 +1121,6 @@ class ResignationController extends Controller
 
     public function getNocData($empSepId, $employeeid)
     {
-        // $nocData = \DB::table('hrm_employee_separation')
-        //             ->leftjoin('hrm_employee_separation_nocrep', 'hrm_employee_separation.EmpSepId', '=', 'hrm_employee_separation_nocrep.EmpSepId')
-        //             ->select('hrm_employee_separation.*', 'hrm_employee_separation_nocrep.*')
-        //             ->where('hrm_employee_separation.EmpSepId', $empSepId)
-        //             ->get();
 
         $nocData = \DB::table('hrm_employee_separation_nocrep as nocrep')
             ->leftJoin('hrm_employee_separation as sep', 'nocrep.EmpSepId', '=', 'sep.EmpSepId')
@@ -1439,7 +1301,6 @@ class ResignationController extends Controller
             // Prepare the data for insertion or update
             $nocClearanceData = [
                 'EmpSepId' => $request->EmpSepId,
-                // 'NocAccId' => $request->NocAccId,
                 'final_submit_acct' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
                 'draft_submit_acct' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
                 'NocSubmAccDate' => now(),  // Current date and time
@@ -1487,8 +1348,6 @@ class ResignationController extends Controller
                 'AccRecy_Remark' => $request->AccRecy_Remark ?? null,
                 'AccOth_Remark' => $request->AccRecy_Remark ?? null,
 
-                // 'TotAmt'=> $request->total_earnings ?? null,
-                // 'TotAmt2'=> $request->total_deductions ?? null,
                 'TotAmt' => $request->accountearnings ?? null,
                 'TotAmt2' => $request->accountdeductions ?? null,
                 'TotAccAmt' => ($request->accountearnings ?? 0) + ($request->accountdeductions ?? 0),
@@ -1506,7 +1365,6 @@ class ResignationController extends Controller
                 // Update the existing record
                 \DB::table('hrm_employee_separation_nocacc')
                     ->where('EmpSepId', $request->EmpSepId)
-                    // ->where('NocAccId', $request->NocAccId)
                     ->update($nocClearanceData);
             } else {
                 // Insert new record
@@ -1571,9 +1429,6 @@ class ResignationController extends Controller
             ];
 
             Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
-
-            //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailAccountClr($details));
-
             // Return a success response
             return response()->json([
                 'success' => true,
@@ -1585,11 +1440,9 @@ class ResignationController extends Controller
             $accnoc = 'N';
             $nocClearanceData = [
                 'EmpSepId' => $request->EmpSepId,
-                // 'NocAccId' => $request->NocAccId,
                 'final_submit_acct' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
                 'draft_submit_acct' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
                 'NocSubmAccDate' => now(),  // Current date and time
-
                 // Handle the account-related fields
                 'AccECP' => $request->AccECP,
                 'AccECP_Amt' => $request->AccECP_Amt ?? null,
@@ -1648,7 +1501,6 @@ class ResignationController extends Controller
                 // Update the existing record
                 \DB::table('hrm_employee_separation_nocacc')
                     ->where('EmpSepId', $request->EmpSepId)
-                    // ->where('NocAccId', $request->NocAccId)
                     ->update($nocClearanceData);
             } else {
                 // Insert new record
@@ -1686,8 +1538,6 @@ class ResignationController extends Controller
 
     public function submitNocClearancehr(Request $request)
     {
-
-
         // Get the button ID (save-draft-btn-hr or final-submit-btn)
         $buttonId = $request->input('button_id');
 
@@ -1868,7 +1718,6 @@ class ResignationController extends Controller
 
     public function submitNocClearancelogdep(Request $request)
     {
-
         // For debugging, you can uncomment the dd() line to check the data
         // Initialize the variables
         $buttonId = $request->input('button_id');
@@ -1991,14 +1840,6 @@ class ResignationController extends Controller
             $totalRecoveryAmount += (float) $existingRecord->TID_Amt;
             $totalRecoveryAmount += (float) $existingRecord->APTC_Amt;
             $totalRecoveryAmount += (float) $existingRecord->HOAS_Amt;
-            // // Loop through up to 40 parties and add their amounts
-            // for ($i = 1; $i <= 40; $i++) {
-            //     $partyAmountKey = "Prtis_{$i}Amt";
-            //     if (isset($existingRecord->$partyAmountKey)) {
-            //         $totalRecoveryAmount += (float) $existingRecord->$partyAmountKey;
-            //     }
-            // }
-
 
             $nocClearanceData['TotRepAmt'] = $totalRecoveryAmount;
             // Update the existing record
@@ -2014,7 +1855,6 @@ class ResignationController extends Controller
             ]);
         } else {
             // Insert new record
-
             \DB::table('hrm_employee_separation_nocrep')->insert($nocClearanceData);
             // Return success response
             return response()->json([
@@ -2066,10 +1906,6 @@ class ResignationController extends Controller
             ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
             ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
             ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
-            //  ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-            //  ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
-            //  ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-            //  ->whereYear('es.created_at', $currentYear)   // Filter for the current year
             ->where('d.id', '15')
             ->where('Log_EmployeeID', Auth::user()->EmployeeID)
             ->select(
@@ -2084,9 +1920,6 @@ class ResignationController extends Controller
             )
             ->orderBy('Emp_ResignationDate', 'desc')
             ->get(); // Paginate the results
-
-
-
         return view('clearanceform.logisticsclearancenoc', compact('approvedEmployees')); // View for Logistics clearance
     }
 
@@ -2104,11 +1937,6 @@ class ResignationController extends Controller
             ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // leftJoin to fetch general employee details
             ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // leftJoin to fetch department name
             ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
-            //  ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-            //  ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
-
-            //  ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-            //  ->whereYear('es.created_at', $currentYear)   // Filter for the current year
             ->select(
                 'es.*',
                 'e.Fname',  // First name
@@ -2356,7 +2184,7 @@ class ResignationController extends Controller
 
         // Get all files in the folder from S3
         $allFiles = Storage::disk('s3')->files($folderPath);
-        $pdfCount = count($allFiles );
+        $pdfCount = count($allFiles);
 
         $employeescode = [];
 
@@ -2403,7 +2231,6 @@ class ResignationController extends Controller
 
             $activeCount = $statusCounts['A'] ?? 0;
             $inactiveCount = $statusCounts['D'] ?? 0;
-
 
             $employeeIds = DB::table('hrm_employee')
                 ->where('CompanyId', 1)
