@@ -144,37 +144,8 @@ class AuthController extends Controller
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);
-            // Fetch additional employee details using EmployeeID
-            $employeeDetails = Employee::with(
-                'stateDetails',
-                'designation',
-                'employeeGeneral',
-                'department',
-                'departments',
-                'departmentsWithQueries',
-                'grade',
-                'personaldetails',
-                'reportingdesignation',
-                'contactDetails',
-                'cityDetails',
-                'parcityDetails',
-                'parstateDetails',
-                'familydata',
-                'qualificationsdata',
-                'languageData',
-                'companyTrainingTitles',
-                'employeeExperience',
-                'employeephoto',
-                'attendancedata',
-                'queryMap',
-                'employeeAttendance',
-                'employeeleave',
-                'employeePaySlip',
-                'employeeAttendanceRequest',
-                'employeeAssetReq',
-                'employeeAssetOffice',
-                'employeeAssetvehcileReq'
-            )->where('EmployeeID', $employee->EmployeeID)->first();
+
+            $employeeDetails = Employee::where('EmployeeID', $employee->EmployeeID)->first();
 
             $hasHrmOpinionData = \DB::table('hrm_opinion')->where('EmployeeID', $employee->EmployeeID)->exists();
 
@@ -182,9 +153,7 @@ class AuthController extends Controller
             if ($employeeDetails->ChangePwd == 'N') {
                 // return view('auth.changepasswordatfirst'); // Replace with the actual view
                 return redirect('/dashboard');
-
             }
-            
         }
 
         // Show error message if authentication fails
@@ -431,7 +400,6 @@ class AuthController extends Controller
     {
         return array_search($code, $strcode) ?: 0; // Returns 0 if not found
     }
-
 
     public function dashboard()
     {

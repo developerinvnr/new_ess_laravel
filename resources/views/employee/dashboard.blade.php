@@ -5252,7 +5252,7 @@ function formatDateddmmyyyy(date) {
                     
                     // Check if the current item date is today
                     const isTodayDatefirst = isToday(currentItem.date);  // Call isToday function outside of the string
-                    const s3BaseUrl = 'https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com';
+                    
                     const companyId = '{{ Auth::user()->CompanyId }}';
 
                     
@@ -5373,8 +5373,8 @@ function formatDateddmmyyyy(date) {
 
                 // Add each item to the modal
                 items.forEach(item => {
-                    const isTodayDateall= isToday(item.date);  // Call isToday function outside of the string
-                const s3BaseUrl = 'https://vnrpeepal.bkt.s3.ap-south-1.amazonaws.com';
+                const isTodayDateall= isToday(item.date);  // Call isToday function outside of the string
+                
                 const companyId = '{{ Auth::user()->CompanyId }}';
 
                     const modalItem = `
@@ -5383,7 +5383,7 @@ function formatDateddmmyyyy(date) {
                                 <!-- Employee Image -->
                                  <!-- Employee Image -->
                                     <img 
-                                        src="${s3BaseUrl}/Employee_Image/${companyId}/${item.EmpCode}.jpg" 
+                                        src="/file-view/Employee_Image/${companyId}/${item.EmpCode}.jpg" 
                                         alt="Employee Image" class="cele-img"
                                         onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
                                 

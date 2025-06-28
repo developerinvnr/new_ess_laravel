@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail\Revertbacksep;
+namespace App\Mail\RevertbackSep;
 
 use Illuminate\Bus\Queueable;
 

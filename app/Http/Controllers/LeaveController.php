@@ -2674,7 +2674,7 @@ class LeaveController extends Controller
         // ->get();
         // dd('vbn');
 
-        //        // Query the attendance table to fetch public holidays
+        // Query the attendance table to fetch public holidays
         $holidays = \DB::table('hrm_employee_attendance') // Assuming your attendance table is named 'attendance'
             ->where('EmployeeID', $employee_id) // Filter by employee ID
             ->where('AttValue', 'HO') // Filter by attendance value 'HO' (public holiday)
@@ -2697,14 +2697,8 @@ class LeaveController extends Controller
         $endOfMonth = Carbon::now()->endOfMonth();
         $currentYear = now()->year;  // Get the current year
         $currentMonth = now()->month;  // Get the current month
+       
 
-        // Step 2: Fetch leave requests for those employees
-        // $leaveRequests = EmployeeApplyLeave::whereIn('EmployeeID', $employeeIds)  // Filter by multiple Employee IDs
-        //     ->whereIn('LeaveStatus', ['0', '4'])  // Where LeaveStatus is either '0' or '3'
-        //     // ->where('LeaveStatus','=','0')  // Where LeaveStatus is either '0' or '3'
-        //     ->where('Apply_SentToApp', $employeeId)  // Ensure Apply_SentToRev matches the employee ID
-        //     ->whereBetween('Apply_Date', [$startOfMonth, $endOfMonth])  // Filter by Apply_Date within the given range
-        //     ->get();  // Get the results
         $leaveRequests = \DB::table('hrm_employee_applyleave')
             ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
             ->whereIn('hrm_employee_applyleave.EmployeeID', $employeeIds)  // Filter by EmployeeID
